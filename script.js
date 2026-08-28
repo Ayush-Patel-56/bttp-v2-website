@@ -10,6 +10,108 @@
   }, { threshold: 0.12 });
   reveals.forEach(el => observer.observe(el));
 
+  const timeline = document.querySelector('.problem-timeline');
+  const pinWrap = document.querySelector('.problem-pin-wrap');
+  if (timeline && pinWrap) {
+    const svg = timeline.querySelector('.timeline-arrow-svg');
+    const guide = timeline.querySelector('.timeline-arrow-guide');
+    const path = timeline.querySelector('.timeline-arrow-path');
+    const maskPath = timeline.querySelector('.timeline-arrow-mask-path');
+    const head = timeline.querySelector('.timeline-arrow-head');
+    const items = Array.from(timeline.querySelectorAll('.problem-item'));
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let totalLength = 0;
+    let itemLengths = [];
+    let ticking = false;
+
+    const buildPath = () => {
+      const rect = timeline.getBoundingClientRect();
+      svg.setAttribute('viewBox', `0 0 ${rect.width} ${rect.height}`);
+
+      const points = items.map(item => {
+        const circle = item.querySelector('.icon-circle');
+        const r = circle.getBoundingClientRect();
+        return { x: r.left + r.width / 2 - rect.left, y: r.top + r.height / 2 - rect.top };
+      });
+
+      let d = `M ${points[0].x} ${points[0].y}`;
+      itemLengths = [0];
+      path.setAttribute('d', d);
+      for (let i = 0; i < points.length - 1; i++) {
+        const p0 = points[i], p1 = points[i + 1];
+        const midX = (p0.x + p1.x) / 2;
+        d += ` C ${midX} ${p0.y}, ${midX} ${p1.y}, ${p1.x} ${p1.y}`;
+        path.setAttribute('d', d);
+        itemLengths.push(path.getTotalLength());
+      }
+      guide.setAttribute('d', d);
+      maskPath.setAttribute('d', d);
+      totalLength = itemLengths[itemLengths.length - 1] || 0;
+      maskPath.style.strokeDasharray = String(totalLength);
+      maskPath.style.strokeDashoffset = String(totalLength);
+      items[0].classList.add('visible');
+    };
+
+    const pinQuery = window.matchMedia('(min-width: 901px)');
+
+    const update = () => {
+      ticking = false;
+      if (!totalLength) return;
+      const vh = window.innerHeight;
+      let progress;
+
+      if (pinQuery.matches) {
+        const wrapRect = pinWrap.getBoundingClientRect();
+        const stickyTop = 88;
+        const childHeight = vh - stickyTop;
+        const holdFraction = 0.72;
+        const range = Math.max((wrapRect.height - childHeight) * holdFraction, 1);
+        const scrolled = stickyTop - wrapRect.top;
+        progress = Math.min(1, Math.max(0, scrolled / range));
+      } else {
+        const rect = timeline.getBoundingClientRect();
+        const startTrigger = vh * 0.82;
+        const endTrigger = vh * 0.3;
+        const range = Math.max(rect.height + startTrigger - endTrigger, 1);
+        const scrolled = startTrigger - rect.top;
+        progress = Math.min(1, Math.max(0, scrolled / range));
+      }
+
+      const currentLength = progress * totalLength;
+      maskPath.style.strokeDashoffset = String(totalLength - currentLength);
+
+      items.forEach((item, i) => {
+        if (currentLength >= itemLengths[i] - 10) item.classList.add('visible');
+      });
+
+      const pt = path.getPointAtLength(currentLength);
+      const pt2 = path.getPointAtLength(Math.min(currentLength + 1, totalLength));
+      const angle = Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * 180 / Math.PI;
+      head.setAttribute('transform', `translate(${pt.x},${pt.y}) rotate(${angle})`);
+      head.style.opacity = progress > 0.01 && progress < 0.995 ? '1' : '0';
+    };
+
+    const onScroll = () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    };
+
+    if (reducedMotion) {
+      buildPath();
+      items.forEach(item => item.classList.add('visible'));
+      maskPath.style.strokeDashoffset = '0';
+    } else {
+      buildPath();
+      update();
+      window.addEventListener('scroll', onScroll, { passive: true });
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => { buildPath(); update(); }, 150);
+      });
+    }
+  }
+
   const menu = document.querySelector('.menu-button');
   const nav = document.querySelector('.nav');
   if (menu && nav) {
