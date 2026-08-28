@@ -190,6 +190,25 @@
     });
   }
 
+  const faqChips = document.querySelectorAll('.faq-chip');
+  const faqAnswer = document.getElementById('faq-answer');
+  const faqQ = document.getElementById('faq-answer-q');
+  const faqA = document.getElementById('faq-answer-a');
+  if (faqChips.length && faqAnswer && faqQ && faqA) {
+    faqChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        if (chip.classList.contains('is-active')) return;
+        faqChips.forEach(c => c.classList.toggle('is-active', c === chip));
+        faqAnswer.classList.add('is-switching');
+        setTimeout(() => {
+          faqQ.textContent = chip.textContent;
+          faqA.textContent = chip.dataset.answer;
+          faqAnswer.classList.remove('is-switching');
+        }, 150);
+      });
+    });
+  }
+
   const track = document.querySelector('.redemption-track');
   const dotsWrap = document.querySelector('.redemption-dots');
   const arrows = document.querySelectorAll('.redemption-arrow');
