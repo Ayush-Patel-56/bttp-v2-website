@@ -10,6 +10,27 @@
   }, { threshold: 0.12 });
   reveals.forEach(el => observer.observe(el));
 
+  const navWrap = document.querySelector('.nav-wrap');
+  const navEl = document.querySelector('.nav');
+  if (navWrap && navEl) {
+    let lastScrollY = window.scrollY;
+    let navTicking = false;
+    const updateNavVisibility = () => {
+      navTicking = false;
+      const y = window.scrollY;
+      if (navEl.classList.contains('mobile-open')) { lastScrollY = y; return; }
+      if (y <= 10 || y < lastScrollY - 2) {
+        navWrap.classList.remove('nav-hidden');
+      } else if (y > lastScrollY + 2) {
+        navWrap.classList.add('nav-hidden');
+      }
+      lastScrollY = y;
+    };
+    window.addEventListener('scroll', () => {
+      if (!navTicking) { navTicking = true; requestAnimationFrame(updateNavVisibility); }
+    }, { passive: true });
+  }
+
   const howSteps = Array.from(document.querySelectorAll('.how-step'));
   const howVisuals = Array.from(document.querySelectorAll('.how-visual-unit'));
   const howPinWrap = document.querySelector('.how-pin-wrap');
@@ -26,7 +47,7 @@
       howTicking = false;
       if (!howPinQuery.matches) return;
       const vh = window.innerHeight;
-      const stickyTop = 88;
+      const stickyTop = 94;
       const wrapRect = howPinWrap.getBoundingClientRect();
       const childHeight = vh - stickyTop;
       const range = Math.max(wrapRect.height - childHeight, 1);
@@ -113,7 +134,7 @@
 
       if (pinQuery.matches) {
         const wrapRect = pinWrap.getBoundingClientRect();
-        const stickyTop = 88;
+        const stickyTop = 94;
         const childHeight = vh - stickyTop;
         const holdFraction = 0.72;
         const range = Math.max((wrapRect.height - childHeight) * holdFraction, 1);
