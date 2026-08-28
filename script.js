@@ -206,7 +206,7 @@
         message.textContent = 'Please enter a valid email address.';
         return;
       }
-      message.textContent = 'Thanks — your early-access request is ready to be connected to the BTTP waitlist backend.';
+      message.textContent = 'Thanks - your early-access request is ready to be connected to the BTTP waitlist backend.';
       form.reset();
     });
   }

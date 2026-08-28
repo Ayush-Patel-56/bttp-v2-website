@@ -3,10 +3,10 @@
 A responsive, Vercel-ready landing page for Back to the Points.
 
 ## Files
-- `index.html` — complete page
-- `styles.css` — responsive visual system
-- `script.js` — animation, mobile navigation, waitlist UI
-- `vercel.json` — Vercel static deployment config
+- `index.html` - complete page
+- `styles.css` - responsive visual system
+- `script.js` - animation, mobile navigation, waitlist UI
+- `vercel.json` - Vercel static deployment config
 
 ## Deploy to Vercel
 1. Unzip this folder.
