@@ -230,6 +230,21 @@
     });
   }
 
+  const storyForm = document.getElementById('story-form');
+  const storyMessage = document.getElementById('story-message');
+  if (storyForm && storyMessage) {
+    storyForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const story = new FormData(storyForm).get('story')?.toString().trim();
+      if (!story) {
+        storyMessage.textContent = 'Please share a few words before submitting.';
+        return;
+      }
+      storyMessage.textContent = 'Thanks for sharing - your story helps us build the right thing.';
+      storyForm.reset();
+    });
+  }
+
   const track = document.querySelector('.redemption-track');
   const dotsWrap = document.querySelector('.redemption-dots');
   const arrows = document.querySelectorAll('.redemption-arrow');
