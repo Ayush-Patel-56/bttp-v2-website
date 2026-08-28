@@ -14,9 +14,7 @@
   const pinWrap = document.querySelector('.problem-pin-wrap');
   if (timeline && pinWrap) {
     const svg = timeline.querySelector('.timeline-arrow-svg');
-    const guide = timeline.querySelector('.timeline-arrow-guide');
     const path = timeline.querySelector('.timeline-arrow-path');
-    const maskPath = timeline.querySelector('.timeline-arrow-mask-path');
     const head = timeline.querySelector('.timeline-arrow-head');
     const items = Array.from(timeline.querySelectorAll('.problem-item'));
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -24,6 +22,17 @@
     let totalLength = 0;
     let itemLengths = [];
     let ticking = false;
+
+    const DOT = 1;
+    const GAP = 9;
+    const dashArrayTo = (len) => {
+      const unit = DOT + GAP;
+      const repeats = Math.max(Math.ceil(len / unit), 0);
+      const arr = [];
+      for (let i = 0; i < repeats; i++) arr.push(DOT, GAP);
+      arr.push(0, Math.max(totalLength * 2, 1000));
+      return arr.join(' ');
+    };
 
     const buildPath = () => {
       const rect = timeline.getBoundingClientRect();
@@ -45,11 +54,8 @@
         path.setAttribute('d', d);
         itemLengths.push(path.getTotalLength());
       }
-      guide.setAttribute('d', d);
-      maskPath.setAttribute('d', d);
       totalLength = itemLengths[itemLengths.length - 1] || 0;
-      maskPath.style.strokeDasharray = String(totalLength);
-      maskPath.style.strokeDashoffset = String(totalLength);
+      path.style.strokeDasharray = dashArrayTo(0);
       items[0].classList.add('visible');
     };
 
@@ -79,7 +85,7 @@
       }
 
       const currentLength = progress * totalLength;
-      maskPath.style.strokeDashoffset = String(totalLength - currentLength);
+      path.style.strokeDasharray = dashArrayTo(currentLength);
 
       items.forEach((item, i) => {
         if (currentLength >= itemLengths[i] - 10) item.classList.add('visible');
@@ -99,7 +105,7 @@
     if (reducedMotion) {
       buildPath();
       items.forEach(item => item.classList.add('visible'));
-      maskPath.style.strokeDashoffset = '0';
+      path.style.strokeDasharray = dashArrayTo(totalLength);
     } else {
       buildPath();
       update();
