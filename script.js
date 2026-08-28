@@ -10,6 +10,50 @@
   }, { threshold: 0.12 });
   reveals.forEach(el => observer.observe(el));
 
+  const howSteps = Array.from(document.querySelectorAll('.how-step'));
+  const howVisuals = Array.from(document.querySelectorAll('.how-visual-unit'));
+  const howPinWrap = document.querySelector('.how-pin-wrap');
+  if (howSteps.length && howVisuals.length && howPinWrap) {
+    const setActiveHowStep = (step) => {
+      howSteps.forEach(el => el.classList.toggle('is-active', el.dataset.howStep === step));
+      howVisuals.forEach(el => el.classList.toggle('is-active', el.dataset.howStep === step));
+    };
+    const howPinQuery = window.matchMedia('(min-width: 901px)');
+    const stepCount = howSteps.length;
+    let howTicking = false;
+
+    const updateHow = () => {
+      howTicking = false;
+      if (!howPinQuery.matches) return;
+      const vh = window.innerHeight;
+      const stickyTop = 88;
+      const wrapRect = howPinWrap.getBoundingClientRect();
+      const childHeight = vh - stickyTop;
+      const range = Math.max(wrapRect.height - childHeight, 1);
+      const scrolled = stickyTop - wrapRect.top;
+      const progress = Math.min(1, Math.max(0, scrolled / range));
+      const idx = Math.min(stepCount - 1, Math.floor(progress * stepCount));
+      setActiveHowStep(String(idx + 1));
+    };
+    const requestHowUpdate = () => {
+      if (!howTicking) {
+        howTicking = true;
+        requestAnimationFrame(updateHow);
+      }
+    };
+    window.addEventListener('scroll', requestHowUpdate, { passive: true });
+    window.addEventListener('resize', requestHowUpdate);
+    updateHow();
+
+    const howObserver = new IntersectionObserver((entries) => {
+      if (howPinQuery.matches) return;
+      entries.forEach(entry => {
+        if (entry.isIntersecting) setActiveHowStep(entry.target.dataset.howStep);
+      });
+    }, { threshold: 0, rootMargin: '-40% 0px -40% 0px' });
+    howSteps.forEach(el => howObserver.observe(el));
+  }
+
   const timeline = document.querySelector('.problem-timeline');
   const pinWrap = document.querySelector('.problem-pin-wrap');
   if (timeline && pinWrap) {
