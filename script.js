@@ -212,20 +212,22 @@
   }
 
   const faqChips = document.querySelectorAll('.faq-chip');
-  const faqAnswer = document.getElementById('faq-answer');
   const faqQ = document.getElementById('faq-answer-q');
   const faqA = document.getElementById('faq-answer-a');
-  if (faqChips.length && faqAnswer && faqQ && faqA) {
+  const faqTyping = document.getElementById('faq-typing');
+  if (faqChips.length && faqQ && faqA && faqTyping) {
     faqChips.forEach(chip => {
       chip.addEventListener('click', () => {
         if (chip.classList.contains('is-active')) return;
         faqChips.forEach(c => c.classList.toggle('is-active', c === chip));
-        faqAnswer.classList.add('is-switching');
+        faqQ.textContent = chip.textContent;
+        faqA.classList.add('is-hidden');
+        faqTyping.classList.add('is-visible');
         setTimeout(() => {
-          faqQ.textContent = chip.textContent;
           faqA.textContent = chip.dataset.answer;
-          faqAnswer.classList.remove('is-switching');
-        }, 150);
+          faqTyping.classList.remove('is-visible');
+          faqA.classList.remove('is-hidden');
+        }, 700);
       });
     });
   }
