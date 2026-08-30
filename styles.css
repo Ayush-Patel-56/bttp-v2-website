@@ -963,6 +963,18 @@ body {
     margin: 12px 0 20px
 }
 
+@media(min-width:901px) {
+    .feature-copy h2 {
+        font-size: clamp(22px, 3.01vw - 5.1px, 36px)
+    }
+}
+
+@media(min-width:641px) and (max-width:900px) {
+    .feature-copy h2 {
+        font-size: clamp(36px, 6.92vw - 8.4px, 47px)
+    }
+}
+
 .feature-copy>p {
     color: #6e6761;
     max-width: 530px
@@ -2214,9 +2226,12 @@ footer {
     }
 
     .section-heading h2,
-    .feature-copy h2,
     .about h2 {
         font-size: 39px
+    }
+
+    .feature-copy h2 {
+        font-size: clamp(17px, 6.25vw - 3px, 37px)
     }
 
     .aspiration {
