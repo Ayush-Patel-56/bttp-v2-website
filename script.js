@@ -196,18 +196,47 @@
     }));
   }
 
+  const GOOGLE_SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+
   const form = document.getElementById('waitlist-form');
   const message = document.getElementById('form-message');
   if (form && message) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = new FormData(form).get('email')?.toString().trim();
+      const formData = new FormData(form);
+      const email = formData.get('email')?.toString().trim();
+      const comment = formData.get('comment')?.toString().trim() || '';
+      const phone = formData.get('phone')?.toString().trim() || '';
+
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         message.textContent = 'Please enter a valid email address.';
         return;
       }
-      message.textContent = 'Thanks - your early-access request is ready to be connected to the BTTP waitlist backend.';
-      form.reset();
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalLabel = submitBtn ? submitBtn.textContent : '';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+      }
+
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, phone, comment })
+        });
+        message.textContent = "Thanks - you're on the BTTP early-access list!";
+        form.reset();
+      } catch (err) {
+        message.textContent = 'Something went wrong. Please try again.';
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalLabel;
+        }
+      }
     });
   }
 
