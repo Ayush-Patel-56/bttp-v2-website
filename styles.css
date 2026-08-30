@@ -1432,6 +1432,103 @@ body {
     color: #d7ead9
 }
 
+.mp-report {
+    margin-top: 6px;
+    padding: 16px;
+    border-radius: 16px;
+    background: linear-gradient(160deg, #2a2320 0%, #1a1614 75%);
+    border: 1px solid rgba(216, 134, 82, .18)
+}
+
+.mp-report-amount {
+    font: 600 32px "Playfair Display", serif;
+    color: #e2703f
+}
+
+.mp-report-caption {
+    font-size: 11px;
+    color: #a69f98;
+    margin: 4px 0 14px
+}
+
+.mp-report-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 12px 0;
+    border-top: 1px solid #372f2a;
+    border-bottom: 1px solid #372f2a
+}
+
+.mp-report-stat {
+    display: grid;
+    gap: 2px
+}
+
+.mp-report-stat strong {
+    font-size: 16px;
+    color: #fff
+}
+
+.mp-report-stat span {
+    font-size: 9px;
+    color: #a69f98;
+    letter-spacing: .02em
+}
+
+.mp-report-stat--accent strong {
+    color: #d18652
+}
+
+.mp-report-insights {
+    display: grid;
+    gap: 9px;
+    margin: 14px 0
+}
+
+.mp-report-insight {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px
+}
+
+.mp-report-warn {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #d18652;
+    color: #1a1614;
+    font-size: 10px;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+    margin-top: 1px
+}
+
+.mp-report-insight small {
+    font-size: 11px;
+    color: #d6d0c7;
+    line-height: 1.35
+}
+
+.mp-report-cta {
+    width: 100%;
+    padding: 12px;
+    border: 0;
+    border-radius: 999px;
+    background: #b86d3c;
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: .25s ease
+}
+
+.mp-report-cta:hover {
+    background: #c77b47
+}
+
 .mp-float-discover {
     left: -84px;
     top: 100px
