@@ -366,70 +366,115 @@
     <section class="rewards-hub section-dark">
       <div class="container">
         <div class="hub-flow reveal">
+          <svg class="hub-circuit" viewBox="0 0 1200 550" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <g>
+              <path d="M520 80 L520 156 Q520 170 506 170 L470 170"/>
+              <path d="M560 60 L560 130"/>
+              <path d="M470 170 L470 230"/>
+              <path d="M680 80 L680 146 Q680 160 694 160 L730 160"/>
+              <path d="M730 160 L730 220"/>
+              <path d="M440 260 L414 260 Q400 260 400 274 L400 320"/>
+              <path d="M760 260 L786 260 Q800 260 800 274 L800 310"/>
+              <path d="M460 440 L460 394 Q460 380 474 380 L510 380"/>
+              <path d="M690 450 L690 404 Q690 390 676 390 L650 390"/>
+              <path d="M600 490 L600 440"/>
+              <path d="M340 150 L366 150 Q380 150 380 136 L380 110"/>
+              <path d="M820 150 L794 150 Q780 150 780 136 L780 110"/>
+              <path d="M340 400 L366 400 Q380 400 380 414 L380 440"/>
+              <path d="M820 400 L794 400 Q780 400 780 414 L780 440"/>
+            </g>
+            <g class="hub-circuit-dots">
+              <circle cx="520" cy="80" r="3"/><circle cx="470" cy="230" r="3"/><circle cx="560" cy="60" r="3"/>
+              <circle cx="680" cy="80" r="3"/><circle cx="730" cy="220" r="3"/><circle cx="400" cy="320" r="3"/>
+              <circle cx="800" cy="310" r="3"/><circle cx="510" cy="380" r="3"/><circle cx="650" cy="390" r="3"/>
+              <circle cx="600" cy="440" r="3"/>
+              <circle cx="340" cy="150" r="3"/><circle cx="820" cy="150" r="3"/>
+              <circle cx="340" cy="400" r="3"/><circle cx="820" cy="400" r="3"/>
+            </g>
+          </svg>
           <div class="hub-inputs">
             <div class="hub-chip">
               <div class="mini-card mini-card--hdfc">
-                <span class="mini-card-chip"></span>
-                <span class="mini-card-logo"><img src="assets/logos/hdfc.svg" alt="HDFC Bank"></span>
+                <img class="mini-card-photo" src="assets/hdfc-infinia.png" alt="HDFC Infinia card">
               </div>
-              <span>HDFC Infinia</span>
-              <span class="hub-chip-line"></span>
-              <span class="hub-chip-arrow"></span>
             </div>
             <div class="hub-chip">
               <div class="mini-card mini-card--axis">
-                <span class="mini-card-chip"></span>
-                <span class="mini-card-logo"><img src="assets/logos/axis.svg" alt="Axis Bank"></span>
+                <img class="mini-card-photo" src="assets/axis_atlas.avif" alt="Axis Atlas card">
               </div>
-              <span>Axis Atlas</span>
-              <span class="hub-chip-line"></span>
-              <span class="hub-chip-arrow"></span>
             </div>
             <div class="hub-chip">
               <div class="mini-card mini-card--airindia">
-                <span class="mini-card-chip"></span>
-                <span class="mini-card-logo"><img src="assets/logos/airindia.svg" alt="Air India"></span>
+                <img class="mini-card-photo" src="assets/air-india-maharaja.avif" alt="Air India Maharaja Club card">
               </div>
-              <span>Air India Maharaja Club</span>
-              <span class="hub-chip-line"></span>
-              <span class="hub-chip-arrow"></span>
             </div>
             <div class="hub-chip">
               <div class="mini-card mini-card--icici">
-                <span class="mini-card-chip"></span>
-                <span class="mini-card-logo"><img src="assets/logos/icici.svg" alt="ICICI Bank"></span>
+                <img class="mini-card-photo" src="assets/icici-bank.webp" alt="ICICI Bank card">
               </div>
-              <span>ICICI Bank</span>
-              <span class="hub-chip-line"></span>
-              <span class="hub-chip-arrow"></span>
             </div>
             <div class="hub-chip">
               <div class="mini-card mini-card--sbi">
-                <span class="mini-card-chip"></span>
-                <span class="mini-card-logo"><img src="assets/logos/sbicard.svg" alt="SBI Card"></span>
+                <img class="mini-card-photo" src="assets/sbi-card.webp" alt="SBI Card">
               </div>
-              <span>SBI Card</span>
-              <span class="hub-chip-line"></span>
-              <span class="hub-chip-arrow"></span>
             </div>
+            <svg class="hub-connector hub-connector-in" viewBox="0 0 68 540" preserveAspectRatio="none" aria-hidden="true">
+              <path class="hub-connector-line" d="M0,42 C20,42 20,270 68,270"/>
+              <path class="hub-connector-line" d="M0,156 C20,156 20,270 68,270"/>
+              <path class="hub-connector-line" d="M0,270 C20,270 20,270 68,270"/>
+              <path class="hub-connector-line" d="M0,384 C20,384 20,270 68,270"/>
+              <path class="hub-connector-line" d="M0,498 C20,498 20,270 68,270"/>
+              <circle class="hub-connector-dot" cx="0" cy="42" r="4"/>
+              <circle class="hub-connector-dot" cx="0" cy="156" r="4"/>
+              <circle class="hub-connector-dot" cx="0" cy="270" r="4"/>
+              <circle class="hub-connector-dot" cx="0" cy="384" r="4"/>
+              <circle class="hub-connector-dot" cx="0" cy="498" r="4"/>
+              <circle class="hub-connector-dot hub-connector-dot--hub" cx="68" cy="270" r="4.5"/>
+              <circle class="hub-connector-pulse" r="2.5"><animateMotion dur="2.4s" begin="0s" repeatCount="indefinite" path="M0,42 C20,42 20,270 68,270"/></circle>
+              <circle class="hub-connector-pulse" r="2.5"><animateMotion dur="2.4s" begin="0.4s" repeatCount="indefinite" path="M0,156 C20,156 20,270 68,270"/></circle>
+              <circle class="hub-connector-pulse" r="2.5"><animateMotion dur="2.4s" begin="0.8s" repeatCount="indefinite" path="M0,270 C20,270 20,270 68,270"/></circle>
+              <circle class="hub-connector-pulse" r="2.5"><animateMotion dur="2.4s" begin="1.2s" repeatCount="indefinite" path="M0,384 C20,384 20,270 68,270"/></circle>
+              <circle class="hub-connector-pulse" r="2.5"><animateMotion dur="2.4s" begin="1.6s" repeatCount="indefinite" path="M0,498 C20,498 20,270 68,270"/></circle>
+            </svg>
           </div>
           <div class="hub-core">
-            <div class="hub-core-mark">BTTP</div>
+            <div class="hub-core-mark">
+              <svg class="hub-core-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 3 3 10.2c-.7.28-.68 1.27.03 1.5l6.4 2.1 2.1 6.4c.23.71 1.22.73 1.5.03L20.2 3.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.4 13.8 21 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>BTTP</span>
+            </div>
           </div>
           <div class="hub-outputs">
+            <svg class="hub-connector hub-connector-out" viewBox="0 0 68 336" preserveAspectRatio="none" aria-hidden="true">
+              <path class="hub-connector-line" d="M0,168 C48,168 48,46 68,46"/>
+              <path class="hub-connector-line" d="M0,168 C48,168 48,168 68,168"/>
+              <path class="hub-connector-line" d="M0,168 C48,168 48,290 68,290"/>
+              <circle class="hub-connector-dot hub-connector-dot--hub" cx="0" cy="168" r="4.5"/>
+              <circle class="hub-connector-dot" cx="68" cy="46" r="4"/>
+              <circle class="hub-connector-dot" cx="68" cy="168" r="4"/>
+              <circle class="hub-connector-dot" cx="68" cy="290" r="4"/>
+              <circle class="hub-connector-pulse" r="2.5"><animateMotion dur="2.4s" begin="0.2s" repeatCount="indefinite" path="M0,168 C48,168 48,46 68,46"/></circle>
+              <circle class="hub-connector-pulse" r="2.5"><animateMotion dur="2.4s" begin="0.7s" repeatCount="indefinite" path="M0,168 C48,168 48,168 68,168"/></circle>
+              <circle class="hub-connector-pulse" r="2.5"><animateMotion dur="2.4s" begin="1.2s" repeatCount="indefinite" path="M0,168 C48,168 48,290 68,290"/></circle>
+            </svg>
             <div class="hub-output">
-              <span class="hub-output-arrow"></span>
-              <div class="reward-art reward-art--flight"><span class="reward-art-icon">✈</span></div>
+              <div class="reward-art reward-art--flight">
+                <!-- TODO: replace with real photo, e.g. <img src="assets/destinations/bangkok.jpg" alt=""> -->
+                <span class="reward-art-badge">✈</span>
+              </div>
               <div><strong>Business Class</strong><small>to Bangkok</small></div>
             </div>
             <div class="hub-output">
-              <span class="hub-output-arrow"></span>
-              <div class="reward-art reward-art--stay"><span class="reward-art-icon">◈</span></div>
+              <div class="reward-art reward-art--stay">
+                <!-- TODO: replace with real photo, e.g. <img src="assets/destinations/udaipur.jpg" alt=""> -->
+                <span class="reward-art-badge">◈</span>
+              </div>
               <div><strong>Palace Stay</strong><small>in Udaipur</small></div>
             </div>
             <div class="hub-output">
-              <span class="hub-output-arrow"></span>
-              <div class="reward-art reward-art--lounge"><span class="reward-art-icon">⇧</span></div>
+              <div class="reward-art reward-art--lounge">
+                <!-- TODO: replace with real photo, e.g. <img src="assets/destinations/dubai.jpg" alt=""> -->
+                <span class="reward-art-badge">⇧</span>
+              </div>
               <div><strong>Lounge Access + Upgrade</strong><small>to Dubai</small></div>
             </div>
           </div>

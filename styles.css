@@ -2458,52 +2458,100 @@ footer {
 
 .hub-flow {
     display: grid;
-    grid-template-columns: 1fr 180px 1fr;
+    grid-template-columns: 1fr 340px 1fr;
     align-items: center;
     gap: 0;
-    margin-top: 64px
+    margin-top: 64px;
+    padding: 40px 0;
+    position: relative
+}
+
+.hub-circuit {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: .12;
+    pointer-events: none;
+    z-index: 0
+}
+
+.hub-circuit path {
+    fill: none;
+    stroke: #b86d3c;
+    stroke-width: 1.5;
+    stroke-linecap: round
+}
+
+.hub-circuit-dots circle {
+    fill: #f0a468
 }
 
 .hub-inputs,
 .hub-outputs {
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    position: relative
+    gap: 30px;
+    position: relative;
+    z-index: 1
 }
 
 .hub-inputs {
-    padding-right: 40px
+    padding-right: 68px
 }
 
 .hub-outputs {
-    padding-left: 40px
+    padding-left: 68px
 }
 
-.hub-inputs:before {
-    content: "";
+.hub-connector {
     position: absolute;
     top: 0;
-    bottom: 0;
-    right: 0;
-    width: 2px;
-    background: rgba(184, 109, 60, .3)
+    pointer-events: none;
+    z-index: 0;
+    overflow: visible
 }
 
-.hub-outputs:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 2px;
-    background: rgba(184, 109, 60, .3)
+.hub-connector-in {
+    left: 100%;
+    width: 68px;
+    height: 540px
+}
+
+.hub-connector-out {
+    right: 100%;
+    width: 68px;
+    height: 336px
+}
+
+.hub-connector-line {
+    fill: none;
+    stroke: rgba(184, 109, 60, .4);
+    stroke-width: 2.5;
+    stroke-linecap: round
+}
+
+.hub-connector-dot {
+    fill: #b86d3c;
+    stroke: #0b0b0a;
+    stroke-width: 3
+}
+
+.hub-connector-dot--hub {
+    fill: #f0a468;
+    stroke: #0b0b0a;
+    stroke-width: 3
+}
+
+.hub-connector-pulse {
+    fill: #f0a468;
+    filter: drop-shadow(0 0 3px rgba(240, 164, 104, .8))
 }
 
 .hub-chip {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 18px;
     background: none;
     border: none;
     border-radius: 0;
@@ -2511,167 +2559,27 @@ footer {
     position: relative
 }
 
-.hub-chip:after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    right: -40px;
-    width: 40px;
-    height: 2px;
-    background: rgba(184, 109, 60, .3);
-    transform: translateY(-1px)
-}
-
-.hub-chip:before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    right: -43.5px;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #b86d3c;
-    transform: translateY(-50%);
-    z-index: 1;
-    box-shadow: 0 0 0 0 rgba(184, 109, 60, .5);
-    animation: hubPulse 2.6s ease-out infinite
-}
-
-.hub-chip span:not(.hub-chip-line) {
-    font-size: 13.5px;
+.hub-chip span {
+    font-size: 14.5px;
     font-weight: 600;
     color: #f1ede7
 }
 
-.hub-chip-line {
-    flex: 1;
-    min-width: 8px;
-    height: 2px;
-    background: rgba(184, 109, 60, .3);
-    position: relative
-}
-
-.hub-chip-line:before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 0;
-    height: 0;
-    border-top: 4px solid transparent;
-    border-bottom: 4px solid transparent;
-    border-left: 7px solid #f0a468;
-    transform: translateY(-50%);
-    filter: drop-shadow(0 0 3px rgba(240, 164, 104, .6));
-    animation: arrowMove 1.8s linear infinite
-}
-
-.hub-chip-arrow {
-    position: absolute;
-    top: 50%;
-    right: -40px;
-    width: 40px;
-    height: 2px;
-    transform: translateY(-1px);
-    pointer-events: none
-}
-
-.hub-chip-arrow:before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 0;
-    height: 0;
-    border-top: 4px solid transparent;
-    border-bottom: 4px solid transparent;
-    border-left: 7px solid #f0a468;
-    transform: translateY(-50%);
-    filter: drop-shadow(0 0 3px rgba(240, 164, 104, .6));
-    animation: arrowMove 1.8s linear infinite
-}
-
 .mini-card {
-    --accent: #b86d3c;
-    width: 92px;
-    height: 60px;
-    border-radius: 12px;
+    width: 128px;
+    height: 84px;
+    border-radius: 14px;
     position: relative;
     overflow: hidden;
     flex-shrink: 0;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    padding: 8px;
-    background: linear-gradient(160deg, #221e1a 0%, #131110 65%);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, .45), inset 0 0 0 1px rgba(255, 255, 255, .08)
+    background: #131110;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, .5), inset 0 0 0 1px rgba(255, 255, 255, .08)
 }
 
-.mini-card:before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, var(--accent) 0%, transparent 60%);
-    opacity: .4
-}
-
-.mini-card:after {
-    content: "";
-    position: absolute;
-    top: -60%;
-    left: -20%;
-    width: 60%;
-    height: 220%;
-    background: rgba(255, 255, 255, .08);
-    transform: rotate(25deg)
-}
-
-.mini-card-chip {
-    width: 16px;
-    height: 12px;
-    border-radius: 3px;
-    background: linear-gradient(135deg, #f3d9a4, #c9974f);
-    position: relative;
-    z-index: 1
-}
-
-.mini-card-logo {
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, .92);
-    display: grid;
-    place-items: center;
-    padding: 3px;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 1
-}
-
-.mini-card-logo img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain
-}
-
-.mini-card--hdfc {
-    --accent: #3b6fd6
-}
-
-.mini-card--axis {
-    --accent: #a83250
-}
-
-.mini-card--airindia {
-    --accent: #c0392b
-}
-
-.mini-card--icici {
-    --accent: #e07b2a
-}
-
-.mini-card--sbi {
-    --accent: #2a7fc9
+.mini-card-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover
 }
 
 .hub-core {
@@ -2682,51 +2590,37 @@ footer {
     justify-content: center
 }
 
-.hub-core:before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: calc(50% - 56px);
-    height: 2px;
-    background: rgba(184, 109, 60, .3);
-    transform: translateY(-1px)
-}
-
-.hub-core:after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    right: 0;
-    width: calc(50% - 56px);
-    height: 2px;
-    background: rgba(184, 109, 60, .3);
-    transform: translateY(-1px)
-}
-
 .hub-core-mark {
-    width: 112px;
-    height: 112px;
-    border-radius: 50%;
-    border: 1.5px solid #b86d3c;
-    background: radial-gradient(circle, rgba(184, 109, 60, .18), transparent 70%);
-    display: grid;
-    place-items: center;
-    color: #f2d0b8;
-    font: 700 16px "DM Sans", sans-serif;
-    letter-spacing: .08em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 236px;
+    height: 92px;
+    border-radius: 28px;
+    background: linear-gradient(135deg, #e69f66 0%, #b86d3c 55%, #8a4d28 100%);
+    color: #1a1310;
+    font: 700 22px "DM Sans", sans-serif;
+    letter-spacing: .03em;
     position: relative;
     z-index: 2;
-    box-shadow: 0 0 40px rgba(184, 109, 60, .2)
+    box-shadow: 0 20px 45px rgba(184, 109, 60, .4), inset 0 1px 0 rgba(255, 255, 255, .35)
 }
 
 .hub-core-mark:before {
     content: "";
     position: absolute;
-    inset: -10px;
-    border-radius: 50%;
+    inset: -12px;
+    border-radius: 38px;
     border: 1px solid rgba(184, 109, 60, .35);
     animation: hubRing 3.2s ease-out infinite
+}
+
+.hub-core-icon {
+    width: 26px;
+    height: 26px;
+    color: #1a1310;
+    flex-shrink: 0
 }
 
 .hub-output {
@@ -2740,67 +2634,22 @@ footer {
     position: relative
 }
 
-.hub-output:before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: -40px;
-    width: 40px;
-    height: 2px;
-    background: rgba(184, 109, 60, .3);
-    transform: translateY(-1px)
-}
-
-.hub-output:after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: -43.5px;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #b86d3c;
-    transform: translateY(-50%);
-    z-index: 1;
-    box-shadow: 0 0 0 0 rgba(184, 109, 60, .5);
-    animation: hubPulse 2.6s ease-out infinite
-}
-
-.hub-output-arrow {
-    position: absolute;
-    top: 50%;
-    left: -40px;
-    width: 40px;
-    height: 2px;
-    transform: translateY(-1px);
-    pointer-events: none
-}
-
-.hub-output-arrow:before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 0;
-    height: 0;
-    border-top: 4px solid transparent;
-    border-bottom: 4px solid transparent;
-    border-left: 7px solid #f0a468;
-    transform: translateY(-50%);
-    filter: drop-shadow(0 0 3px rgba(240, 164, 104, .6));
-    animation: arrowMove 1.8s linear infinite
-}
 
 .reward-art {
-    width: 80px;
-    height: 80px;
+    width: 172px;
+    height: 92px;
     border-radius: 16px;
     position: relative;
     overflow: hidden;
     flex-shrink: 0;
-    display: grid;
-    place-items: center;
-    box-shadow: 0 10px 22px rgba(0, 0, 0, .45), inset 0 0 0 1px rgba(255, 255, 255, .08)
+    box-shadow: 0 12px 26px rgba(0, 0, 0, .5), inset 0 0 0 1px rgba(255, 255, 255, .08)
+}
+
+.reward-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block
 }
 
 .reward-art:before {
@@ -2809,12 +2658,20 @@ footer {
     inset: 0
 }
 
-.reward-art-icon {
-    position: relative;
-    z-index: 2;
-    font-size: 28px;
-    color: #f6e4d4;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .4))
+.reward-art-badge {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(145deg, #f0a468, #b86d3c);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .5), 0 0 0 2px rgba(255, 255, 255, .85);
+    font-size: 13px;
+    color: #1a1310;
+    z-index: 2
 }
 
 .reward-art--flight {
@@ -2843,29 +2700,15 @@ footer {
 
 .hub-output strong {
     display: block;
-    font-size: 14.5px;
+    font-size: 16px;
     color: #fff
 }
 
 .hub-output small {
     display: block;
-    font-size: 12.5px;
+    font-size: 13.5px;
     color: #a69f98;
-    margin-top: 2px
-}
-
-@keyframes hubPulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(184, 109, 60, .5)
-    }
-
-    70% {
-        box-shadow: 0 0 0 8px rgba(184, 109, 60, 0)
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(184, 109, 60, 0)
-    }
+    margin-top: 3px
 }
 
 @keyframes hubRing {
@@ -2880,72 +2723,12 @@ footer {
     }
 }
 
-@keyframes arrowMove {
-    0% {
-        left: 0;
-        opacity: 0
-    }
-
-    8% {
-        opacity: 1
-    }
-
-    92% {
-        opacity: 1
-    }
-
-    100% {
-        left: calc(100% - 7px);
-        opacity: 0
-    }
-}
-
-.hub-chip:nth-child(1) .hub-chip-line:before,
-.hub-chip:nth-child(1) .hub-chip-arrow:before {
-    animation-delay: 0s
-}
-
-.hub-chip:nth-child(2) .hub-chip-line:before,
-.hub-chip:nth-child(2) .hub-chip-arrow:before {
-    animation-delay: .3s
-}
-
-.hub-chip:nth-child(3) .hub-chip-line:before,
-.hub-chip:nth-child(3) .hub-chip-arrow:before {
-    animation-delay: .6s
-}
-
-.hub-chip:nth-child(4) .hub-chip-line:before,
-.hub-chip:nth-child(4) .hub-chip-arrow:before {
-    animation-delay: .9s
-}
-
-.hub-chip:nth-child(5) .hub-chip-line:before,
-.hub-chip:nth-child(5) .hub-chip-arrow:before {
-    animation-delay: 1.2s
-}
-
-.hub-output:nth-child(1) .hub-output-arrow:before {
-    animation-delay: .2s
-}
-
-.hub-output:nth-child(2) .hub-output-arrow:before {
-    animation-delay: .7s
-}
-
-.hub-output:nth-child(3) .hub-output-arrow:before {
-    animation-delay: 1.2s
-}
-
 @media(prefers-reduced-motion:reduce) {
 
-    .hub-chip:before,
-    .hub-output:after,
     .hub-core-mark:before,
-    .hub-chip-line:before,
-    .hub-chip-arrow:before,
-    .hub-output-arrow:before {
-        animation: none
+    .hub-connector-pulse {
+        animation: none;
+        display: none
     }
 }
 
@@ -2967,17 +2750,8 @@ footer {
         height: auto
     }
 
-    .hub-inputs:before,
-    .hub-outputs:before,
-    .hub-chip:before,
-    .hub-chip:after,
-    .hub-output:before,
-    .hub-output:after,
-    .hub-core:before,
-    .hub-core:after,
-    .hub-chip-line,
-    .hub-chip-arrow,
-    .hub-output-arrow {
+    .hub-connector,
+    .hub-circuit {
         display: none
     }
 }
