@@ -2487,7 +2487,6 @@ footer {
     fill: #f0a468
 }
 
-.hub-inputs,
 .hub-outputs {
     display: flex;
     flex-direction: column;
@@ -2497,11 +2496,19 @@ footer {
 }
 
 .hub-inputs {
-    padding-right: 68px
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+    position: relative;
+    z-index: 1
+}
+
+.hub-inputs {
+    padding-right: 0
 }
 
 .hub-outputs {
-    padding-left: 68px
+    padding-left: 0
 }
 
 .hub-connector {
@@ -2515,7 +2522,7 @@ footer {
 .hub-connector-in {
     left: 100%;
     width: 68px;
-    height: 540px
+    height: 362px
 }
 
 .hub-connector-out {
@@ -2565,9 +2572,55 @@ footer {
     color: #f1ede7
 }
 
+.hub-chip-line {
+    flex: 1 1 auto;
+    min-width: 16px;
+    height: 2px;
+    background: rgba(184, 109, 60, .4);
+    position: relative
+}
+
+.hub-chip-line:before {
+    content: "";
+    position: absolute;
+    left: -18px;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #b86d3c;
+    transform: translateY(-50%)
+}
+
+.hub-row-cards {
+    display: flex;
+    align-items: center;
+    gap: 14px
+}
+
+.hub-output-line {
+    flex: 1 1 auto;
+    min-width: 16px;
+    height: 2px;
+    background: rgba(184, 109, 60, .4);
+    position: relative
+}
+
+.hub-output-line:after {
+    content: "";
+    position: absolute;
+    right: -18px;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #b86d3c;
+    transform: translateY(-50%)
+}
+
 .mini-card {
-    width: 128px;
-    height: 84px;
+    width: 150px;
+    height: 98px;
     border-radius: 14px;
     position: relative;
     overflow: hidden;
