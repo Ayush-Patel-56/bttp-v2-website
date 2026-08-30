@@ -381,12 +381,12 @@ body {
 }
 
 .alert-card {
-    left: -11px;
-    top: 108px
+    left: -198px;
+    top: 8px
 }
 
 .trip-card {
-    right: -13px;
+    right: -198px;
     bottom: 113px
 }
 
@@ -2009,15 +2009,17 @@ footer {
     }
 
     .float-card {
-        width: 150px
+        width: 140px
     }
 
     .alert-card {
-        left: -8px
+        right: -28px;
+        top: 30px
     }
 
     .trip-card {
-        right: -7px
+        right: -28px;
+        bottom: 16px
     }
 
     .feature,
