@@ -651,6 +651,27 @@ body {
     color: #aaa
 }
 
+.how-progress-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 28px
+}
+
+.how-progress-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #4c4843;
+    transition: background .25s ease, transform .25s ease
+}
+
+.how-progress-dot.is-active {
+    background: #d58b59;
+    transform: scale(1.4)
+}
+
 .how-pin-wrap {
     position: relative;
     height: auto

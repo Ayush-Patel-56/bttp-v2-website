@@ -33,11 +33,13 @@
 
   const howSteps = Array.from(document.querySelectorAll('.how-step'));
   const howVisuals = Array.from(document.querySelectorAll('.how-visual-unit'));
+  const howProgressDots = Array.from(document.querySelectorAll('.how-progress-dot'));
   const howPinWrap = document.querySelector('.how-pin-wrap');
   if (howSteps.length && howVisuals.length && howPinWrap) {
     const setActiveHowStep = (step) => {
       howSteps.forEach(el => el.classList.toggle('is-active', el.dataset.howStep === step));
       howVisuals.forEach(el => el.classList.toggle('is-active', el.dataset.howStep === step));
+      howProgressDots.forEach(el => el.classList.toggle('is-active', el.dataset.howStep === step));
     };
     const howPinQuery = window.matchMedia('(min-width: 901px)');
     const stepCount = howSteps.length;
