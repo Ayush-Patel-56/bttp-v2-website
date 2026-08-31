@@ -457,15 +457,9 @@ body {
     }
 }
 
-@media(min-width:901px) and (max-height:820px) {
+@media(min-width:901px) {
     .problem-pin .container {
-        transform: scale(.84)
-    }
-}
-
-@media(min-width:901px) and (max-height:660px) {
-    .problem-pin .container {
-        transform: scale(.68)
+        transform-origin: top center
     }
 }
 

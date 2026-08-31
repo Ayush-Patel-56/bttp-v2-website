@@ -84,11 +84,26 @@
     const path = timeline.querySelector('.timeline-arrow-path');
     const head = timeline.querySelector('.timeline-arrow-head');
     const items = Array.from(timeline.querySelectorAll('.problem-item'));
+    const pinEl = document.querySelector('.problem-pin');
+    const container = pinEl ? pinEl.querySelector('.container') : null;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const pinQuery = window.matchMedia('(min-width: 901px)');
 
     let totalLength = 0;
     let itemLengths = [];
     let ticking = false;
+
+    const fitContent = () => {
+      if (!container || !pinEl) return;
+      if (!pinQuery.matches) {
+        container.style.transform = '';
+        return;
+      }
+      const availableHeight = pinEl.clientHeight;
+      const naturalHeight = container.scrollHeight;
+      const scale = Math.min(1, (availableHeight / naturalHeight) * 0.97);
+      container.style.transform = scale < 0.999 ? `scale(${scale})` : 'none';
+    };
 
     const DOT = 1;
     const GAP = 9;
@@ -125,8 +140,6 @@
       path.style.strokeDasharray = dashArrayTo(0);
       items[0].classList.add('visible');
     };
-
-    const pinQuery = window.matchMedia('(min-width: 901px)');
 
     const update = () => {
       ticking = false;
@@ -174,14 +187,23 @@
       items.forEach(item => item.classList.add('visible'));
       path.style.strokeDasharray = dashArrayTo(totalLength);
     } else {
+      fitContent();
       buildPath();
       update();
       window.addEventListener('scroll', onScroll, { passive: true });
       let resizeTimer;
       window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => { buildPath(); update(); }, 150);
+        resizeTimer = setTimeout(() => { fitContent(); buildPath(); update(); }, 150);
       });
+      if (container && window.ResizeObserver) {
+        let roTimer;
+        const ro = new ResizeObserver(() => {
+          clearTimeout(roTimer);
+          roTimer = setTimeout(() => { fitContent(); buildPath(); update(); }, 50);
+        });
+        ro.observe(container);
+      }
     }
   }
 
