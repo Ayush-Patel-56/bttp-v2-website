@@ -2673,37 +2673,69 @@ footer {
     justify-content: center
 }
 
-.hub-core-mark {
+.hub-phone {
+    width: 260px;
+    position: relative;
+    z-index: 2
+}
+
+.hub-pick-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(216, 134, 82, .14);
+    border: 1px solid rgba(216, 134, 82, .35);
+    color: #e2a274;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 12px
+}
+
+.hub-pick-route {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 12px;
-    width: 236px;
-    height: 92px;
-    border-radius: 28px;
-    background: linear-gradient(135deg, #e69f66 0%, #b86d3c 55%, #8a4d28 100%);
-    color: #1a1310;
-    font: 700 22px "DM Sans", sans-serif;
-    letter-spacing: .03em;
-    position: relative;
-    z-index: 2;
-    box-shadow: 0 20px 45px rgba(184, 109, 60, .4), inset 0 1px 0 rgba(255, 255, 255, .35)
+    gap: 10px;
+    margin-bottom: 12px
 }
 
-.hub-core-mark:before {
-    content: "";
-    position: absolute;
-    inset: -12px;
-    border-radius: 38px;
-    border: 1px solid rgba(184, 109, 60, .35);
-    animation: hubRing 3.2s ease-out infinite
+.hub-pick-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08)
 }
 
-.hub-core-icon {
-    width: 26px;
-    height: 26px;
-    color: #1a1310;
+.hub-pick-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block
+}
+
+.hub-pick-arrow {
+    width: 22px;
+    height: 10px;
+    color: #b86d3c;
     flex-shrink: 0
+}
+
+.hub-pick-title {
+    font: 600 14.5px "DM Sans", sans-serif;
+    color: #f1ede7;
+    margin: 0 0 4px
+}
+
+.hub-phone .phone-screen {
+    min-height: auto;
+    padding: 22px 16px 16px
+}
+
+.hub-phone .phone-top {
+    width: 84px
 }
 
 .hub-output {
@@ -2794,21 +2826,7 @@ footer {
     margin-top: 3px
 }
 
-@keyframes hubRing {
-    0% {
-        opacity: .6;
-        transform: scale(.94)
-    }
-
-    100% {
-        opacity: 0;
-        transform: scale(1.18)
-    }
-}
-
 @media(prefers-reduced-motion:reduce) {
-
-    .hub-core-mark:before,
     .hub-connector-pulse {
         animation: none;
         display: none
