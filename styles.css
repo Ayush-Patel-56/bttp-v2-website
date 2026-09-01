@@ -1635,24 +1635,13 @@ body {
     padding-top: 22px
 }
 
-.security-grid article>div {
-    font-size: 26px;
-    color: #c67845
-}
-
-.security-grid article>div svg {
-    width: 26px;
-    height: 26px;
-    display: block
-}
-
 .security-grid h3 {
-    font-size: 16px
+    font-size: 20px
 }
 
 .security-grid p {
     color: #96908a;
-    font-size: 13px
+    font-size: 16px
 }
 
 .security-note {
