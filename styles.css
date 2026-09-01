@@ -2202,22 +2202,7 @@ footer {
     }
 
     .hero-product {
-        transform: scale(.9);
-        margin: -18px 0
-    }
-
-    .float-card {
-        width: 140px
-    }
-
-    .alert-card {
-        right: -28px;
-        top: 30px
-    }
-
-    .trip-card {
-        right: -28px;
-        bottom: 16px
+        display: none
     }
 
     .feature,
