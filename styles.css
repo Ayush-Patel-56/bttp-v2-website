@@ -213,7 +213,9 @@ body {
 
 .hero-sub {
     font-size: 22px;
-    color: #b8b1aa;
+    font-weight: 500;
+    color: #f2ede6;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
     max-width: 640px
 }
 
