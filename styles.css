@@ -1685,12 +1685,22 @@ body {
 }
 
 .cta-inner {
-    max-width: 800px
+    max-width: 900px
 }
 
 .final-cta h2 {
-    font-size: 48px;
+    font-size: clamp(28px, 4.2vw, 48px);
     line-height: 1.1
+}
+
+.cta-line {
+    white-space: nowrap
+}
+
+@media(max-width:640px) {
+    .cta-line {
+        white-space: normal
+    }
 }
 
 .final-cta p {
