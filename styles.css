@@ -275,7 +275,7 @@ body {
 .phone-status {
     display: flex;
     justify-content: space-between;
-    font-size: 11px;
+    font-size: 12px;
     color: #aaa
 }
 
@@ -293,7 +293,7 @@ body {
 }
 
 .mini-label {
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: .09em;
     color: #d58b59;
     font-weight: 700
@@ -312,7 +312,7 @@ body {
 
 .positive {
     color: #55b36a;
-    font-size: 11px
+    font-size: 12px
 }
 
 .wallet-grid {
@@ -333,7 +333,7 @@ body {
 .wallet-row span {
     display: block;
     color: #aaa;
-    font-size: 11px
+    font-size: 12px
 }
 
 .wallet-grid strong,
@@ -359,7 +359,7 @@ body {
 }
 
 .action-needed small {
-    font-size: 11px;
+    font-size: 12px;
     color: #ead5c7
 }
 
@@ -928,7 +928,7 @@ body {
 }
 
 .program small {
-    font-size: 10px
+    font-size: 12px
 }
 
 .program strong {
@@ -1097,7 +1097,7 @@ body {
 
 .compare-box span {
     display: block;
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: .08em;
     color: #8f887f;
     font-weight: 700
@@ -1120,7 +1120,7 @@ body {
     left: 14px;
     background: #b86d3c;
     color: #fff;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     padding: 5px 9px;
     border-radius: 10px;
@@ -1468,7 +1468,7 @@ body {
 }
 
 .mp-confirmed small {
-    font-size: 11px;
+    font-size: 12px;
     color: #d7ead9
 }
 
@@ -1486,7 +1486,7 @@ body {
 }
 
 .mp-report-caption {
-    font-size: 11px;
+    font-size: 12px;
     color: #a69f98;
     margin: 4px 0 14px
 }
@@ -1511,7 +1511,7 @@ body {
 }
 
 .mp-report-stat span {
-    font-size: 9px;
+    font-size: 11px;
     color: #a69f98;
     letter-spacing: .02em
 }
@@ -1534,12 +1534,12 @@ body {
 
 .mp-report-warn {
     flex-shrink: 0;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     background: #d18652;
     color: #1a1614;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     display: grid;
     place-items: center;
@@ -1547,7 +1547,7 @@ body {
 }
 
 .mp-report-insight small {
-    font-size: 11px;
+    font-size: 12px;
     color: #d6d0c7;
     line-height: 1.35
 }
@@ -1616,7 +1616,7 @@ body {
 .security-note {
     text-align: center;
     color: #5f5b57;
-    font-size: 11px;
+    font-size: 13px;
     margin-top: 35px
 }
 
@@ -1897,7 +1897,7 @@ footer {
 
 .faq-chat-online {
     margin-left: auto;
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: .08em;
     color: #9a948d;
     font-weight: 700
@@ -2279,7 +2279,7 @@ footer {
     }
 
     .brand-name {
-        font-size: 10px
+        font-size: 12px
     }
 }
 
@@ -2691,7 +2691,7 @@ footer {
     background: rgba(216, 134, 82, .14);
     border: 1px solid rgba(216, 134, 82, .35);
     color: #e2a274;
-    font-size: 9px;
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: .06em;
     text-transform: uppercase;
