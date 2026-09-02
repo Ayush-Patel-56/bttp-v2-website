@@ -597,52 +597,6 @@ body {
     transform: none
 }
 
-.problem-tag {
-    display: flex;
-    align-items: center;
-    gap: 12px
-}
-
-.icon-circle {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    border: 1px solid #d7c3ac;
-    background: #f6f1ea;
-    display: grid;
-    place-items: center;
-    color: #b86d3c;
-    transform: scale(.5) rotate(-25deg);
-    transition: border-color .5s ease, box-shadow .5s ease .15s, transform .6s cubic-bezier(.34, 1.56, .64, 1) .1s
-}
-
-.problem-item.visible .icon-circle {
-    border-color: #b86d3c;
-    box-shadow: 0 0 0 4px rgba(184, 109, 60, .14);
-    transform: none
-}
-
-.number-label {
-    color: #b86d3c;
-    font: 600 16px "Playfair Display", serif;
-    letter-spacing: .04em;
-    position: relative
-}
-
-.number-label:after {
-    content: "";
-    display: block;
-    height: 1px;
-    width: 0;
-    background: #b86d3c;
-    margin-top: 6px;
-    transition: width .6s ease .15s
-}
-
-.problem-item.visible .number-label:after {
-    width: 100%
-}
-
 .problem-item h3 {
     font: 600 clamp(25px, 2.1vw, 30px) "Playfair Display", serif;
     margin: 18px 0 9px

@@ -82,8 +82,9 @@
   if (timeline && pinWrap) {
     const svg = timeline.querySelector('.timeline-arrow-svg');
     const path = timeline.querySelector('.timeline-arrow-path');
-    const head = timeline.querySelector('.timeline-arrow-head');
+    const headGroup = timeline.querySelector('.timeline-arrow-heads');
     const items = Array.from(timeline.querySelectorAll('.problem-item'));
+    let arrowHeads = [];
     const pinEl = document.querySelector('.problem-pin');
     const container = pinEl ? pinEl.querySelector('.container') : null;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -121,9 +122,9 @@
       svg.setAttribute('viewBox', `0 0 ${rect.width} ${rect.height}`);
 
       const points = items.map(item => {
-        const circle = item.querySelector('.icon-circle');
-        const r = circle.getBoundingClientRect();
-        return { x: r.left + r.width / 2 - rect.left, y: r.top + r.height / 2 - rect.top };
+        const heading = item.querySelector('h3');
+        const r = heading.getBoundingClientRect();
+        return { x: r.left - rect.left, y: r.top - rect.top };
       });
 
       let d = `M ${points[0].x} ${points[0].y}`;
@@ -139,6 +140,19 @@
       totalLength = itemLengths[itemLengths.length - 1] || 0;
       path.style.strokeDasharray = dashArrayTo(0);
       items[0].classList.add('visible');
+
+      headGroup.innerHTML = '';
+      arrowHeads = itemLengths.slice(1).map(len => {
+        const pt = path.getPointAtLength(len);
+        const pt2 = path.getPointAtLength(Math.max(len - 1, 0));
+        const angle = Math.atan2(pt.y - pt2.y, pt.x - pt2.x) * 180 / Math.PI;
+        const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        arrow.setAttribute('class', 'timeline-arrow-head');
+        arrow.setAttribute('d', 'M-7,-5 L7,0 L-7,5 Z');
+        arrow.setAttribute('transform', `translate(${pt.x},${pt.y}) rotate(${angle})`);
+        headGroup.appendChild(arrow);
+        return arrow;
+      });
     };
 
     const update = () => {
@@ -171,11 +185,9 @@
         if (currentLength >= itemLengths[i] - 10) item.classList.add('visible');
       });
 
-      const pt = path.getPointAtLength(currentLength);
-      const pt2 = path.getPointAtLength(Math.min(currentLength + 1, totalLength));
-      const angle = Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * 180 / Math.PI;
-      head.setAttribute('transform', `translate(${pt.x},${pt.y}) rotate(${angle})`);
-      head.style.opacity = progress > 0.01 && progress < 0.995 ? '1' : '0';
+      arrowHeads.forEach((arrow, i) => {
+        arrow.style.opacity = currentLength >= itemLengths[i + 1] - 10 ? '1' : '0';
+      });
     };
 
     const onScroll = () => {
