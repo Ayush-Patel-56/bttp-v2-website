@@ -68,13 +68,19 @@
     window.addEventListener('resize', requestHowUpdate);
     updateHow();
 
-    const howObserver = new IntersectionObserver((entries) => {
-      if (howPinQuery.matches) return;
-      entries.forEach(entry => {
-        if (entry.isIntersecting) setActiveHowStep(entry.target.dataset.howStep);
-      });
-    }, { threshold: 0, rootMargin: '-40% 0px -40% 0px' });
-    howSteps.forEach(el => howObserver.observe(el));
+    const howGrid = document.querySelector('.how-grid');
+    if (howGrid) {
+      let howGridTicking = false;
+      const updateHowGridActive = () => {
+        howGridTicking = false;
+        if (howPinQuery.matches) return;
+        const idx = Math.round(howGrid.scrollLeft / howGrid.clientWidth);
+        setActiveHowStep(String(Math.min(stepCount - 1, Math.max(0, idx)) + 1));
+      };
+      howGrid.addEventListener('scroll', () => {
+        if (!howGridTicking) { howGridTicking = true; requestAnimationFrame(updateHowGridActive); }
+      }, { passive: true });
+    }
   }
 
   const timeline = document.querySelector('.problem-timeline');
