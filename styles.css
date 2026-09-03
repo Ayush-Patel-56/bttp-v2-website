@@ -1413,8 +1413,9 @@ body {
 
 .program-note {
     text-align: center;
-    font-size: 12px;
-    color: #aaa;
+    font-size: 15px;
+    font-weight: 600;
+    color: #77706a;
     margin-top: 18px
 }
 
