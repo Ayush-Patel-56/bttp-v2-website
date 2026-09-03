@@ -216,7 +216,14 @@ body {
     font-weight: 500;
     color: #f2ede6;
     text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
-    max-width: 640px
+    max-width: 640px;
+    display: inline-block;
+    background: rgba(11, 11, 10, .45);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 12px;
+    padding: 14px 18px
 }
 
 .hero-actions {
@@ -506,6 +513,10 @@ body {
     font-size: 16px
 }
 
+.problem .section-heading p {
+    font-weight: 700
+}
+
 .real-redemptions .section-heading,
 .faq .section-heading {
     max-width: none
@@ -582,6 +593,11 @@ body {
     fill: #b86d3c;
     opacity: 0;
     transition: opacity .25s ease
+}
+
+.timeline-flow-arrow {
+    fill: #b86d3c;
+    opacity: 0
 }
 
 .problem-item {
@@ -969,7 +985,8 @@ body {
 
 .feature-copy>p {
     color: #6e6761;
-    max-width: 530px
+    max-width: 530px;
+    font-size: 18px
 }
 
 .check-list {
@@ -980,7 +997,7 @@ body {
 
 .check-list li {
     margin: 14px 0;
-    font-size: 15px
+    font-size: 17px
 }
 
 .check-list li:before {
@@ -2471,13 +2488,13 @@ footer {
 }
 
 .feature-point h3 {
-    font-size: 17px;
+    font-size: 19px;
     margin: 0 0 6px;
     color: #181512
 }
 
 .feature-point p {
-    font-size: 14px;
+    font-size: 16px;
     color: #6e6761;
     margin: 0;
     line-height: 1.55

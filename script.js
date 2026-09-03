@@ -96,6 +96,14 @@
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const pinQuery = window.matchMedia('(min-width: 901px)');
 
+    const flowGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    flowGroup.setAttribute('class', 'timeline-flow-arrows');
+    svg.appendChild(flowGroup);
+    let flowArrows = [];
+    let revealedLength = 0;
+    const FLOW_SPACING = 220;
+    const FLOW_SPEED = 55;
+
     let totalLength = 0;
     let itemLengths = [];
     let ticking = false;
@@ -159,6 +167,33 @@
         headGroup.appendChild(arrow);
         return arrow;
       });
+
+      flowGroup.innerHTML = '';
+      const flowCount = totalLength > 0 ? Math.max(1, Math.round(totalLength / FLOW_SPACING)) : 0;
+      flowArrows = Array.from({ length: flowCount }, (_, i) => {
+        const el = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        el.setAttribute('class', 'timeline-flow-arrow');
+        el.setAttribute('d', 'M-6,-5 L6,0 L-6,5 Z');
+        flowGroup.appendChild(el);
+        return { el, offset: (totalLength / flowCount) * i };
+      });
+    };
+
+    const animateFlow = timestamp => {
+      if (revealedLength > 1 && flowArrows.length) {
+        const t = (timestamp / 1000) * FLOW_SPEED;
+        flowArrows.forEach(f => {
+          const pos = (f.offset + t) % revealedLength;
+          const pt = path.getPointAtLength(pos);
+          const pt2 = path.getPointAtLength(Math.max(pos - 1, 0));
+          const angle = Math.atan2(pt.y - pt2.y, pt.x - pt2.x) * 180 / Math.PI;
+          f.el.setAttribute('transform', `translate(${pt.x},${pt.y}) rotate(${angle})`);
+          f.el.style.opacity = '0.6';
+        });
+      } else {
+        flowArrows.forEach(f => { f.el.style.opacity = '0'; });
+      }
+      requestAnimationFrame(animateFlow);
     };
 
     const update = () => {
@@ -186,13 +221,14 @@
 
       const currentLength = progress * totalLength;
       path.style.strokeDasharray = dashArrayTo(currentLength);
+      revealedLength = currentLength;
 
       items.forEach((item, i) => {
         if (currentLength >= itemLengths[i] - 10) item.classList.add('visible');
       });
 
       arrowHeads.forEach((arrow, i) => {
-        arrow.style.opacity = currentLength >= itemLengths[i + 1] - 10 ? '1' : '0';
+        arrow.style.opacity = currentLength >= itemLengths[i + 1] - 10 ? '0.6' : '0';
       });
     };
 
@@ -222,6 +258,7 @@
         });
         ro.observe(container);
       }
+      requestAnimationFrame(animateFlow);
     }
   }
 
