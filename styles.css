@@ -700,6 +700,7 @@ body {
     position: relative;
     display: flex;
     justify-content: center;
+    align-self: start;
     margin: 8px auto 44px;
     opacity: 1;
     transform: none;
@@ -2234,8 +2235,95 @@ footer {
         margin: 14px 0 6px
     }
 
+    .how-grid {
+        margin-top: 24px
+    }
+
+    .how-visual-unit {
+        margin: 8px auto 28px
+    }
+
     .how-phone {
-        width: 260px
+        width: 190px;
+        padding: 8px;
+        border-radius: 30px
+    }
+
+    .how-phone .phone-screen {
+        min-height: auto;
+        padding: 16px 12px 12px;
+        border-radius: 26px
+    }
+
+    .how-phone .phone-top {
+        width: 62px;
+        height: 14px
+    }
+
+    .how-phone .phone-screen h3 {
+        font-size: 17px;
+        margin: 2px 0 12px
+    }
+
+    .how-phone .big-number {
+        font-size: 30px
+    }
+
+    .how-phone .mp-report-amount {
+        font-size: 24px
+    }
+
+    .how-phone .mini-label {
+        font-size: 10px;
+        letter-spacing: .05em
+    }
+
+    .how-phone .wallet-main {
+        padding: 14px;
+        border-radius: 12px
+    }
+
+    .how-phone .wallet-grid {
+        gap: 7px;
+        margin-top: 7px
+    }
+
+    .how-phone .wallet-grid>div {
+        padding: 11px;
+        border-radius: 11px
+    }
+
+    .how-phone .wallet-grid strong {
+        font-size: 16px
+    }
+
+    .how-phone .action-needed {
+        padding: 12px;
+        border-radius: 12px;
+        margin-top: 9px
+    }
+
+    .how-phone .action-needed strong {
+        font-size: 13px
+    }
+
+    .how-step-num {
+        font-size: 20px;
+        margin-bottom: 6px
+    }
+
+    .how-step h3 {
+        font-size: 26px;
+        margin: 0 0 8px
+    }
+
+    .check-list {
+        margin-top: 18px
+    }
+
+    .check-list li {
+        margin: 10px 0;
+        font-size: 15.5px
     }
 
     .how-visual-unit .float-card {
