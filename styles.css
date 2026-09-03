@@ -2151,12 +2151,26 @@ footer {
 }
 
 @media(max-width:640px) {
+    .feature-summary-wrap {
+        width: calc(100% - 24px)
+    }
+
     .feature-summary {
-        gap: 14px 24px
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        justify-content: stretch;
+        gap: 14px 16px;
+        width: 100%
     }
 
     .feature-summary li {
-        white-space: normal
+        white-space: nowrap;
+        font-size: clamp(11.5px, 3.6vw, 15.5px);
+        margin: 0
+    }
+
+    .feature-summary li:before {
+        margin-right: 6px
     }
 
     .nav-wrap {
