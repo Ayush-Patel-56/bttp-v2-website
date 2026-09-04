@@ -84,50 +84,22 @@
   }
 
   const timeline = document.querySelector('.problem-timeline');
-  const pinWrap = document.querySelector('.problem-pin-wrap');
-  if (timeline && pinWrap) {
+  if (timeline) {
     const svg = timeline.querySelector('.timeline-arrow-svg');
     const path = timeline.querySelector('.timeline-arrow-path');
-    const headGroup = timeline.querySelector('.timeline-arrow-heads');
     const items = Array.from(timeline.querySelectorAll('.problem-item'));
-    let arrowHeads = [];
-    const pinEl = document.querySelector('.problem-pin');
-    const container = pinEl ? pinEl.querySelector('.container') : null;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const pinQuery = window.matchMedia('(min-width: 901px)');
-
-    const flowGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    flowGroup.setAttribute('class', 'timeline-flow-arrows');
-    svg.appendChild(flowGroup);
-    let flowArrows = [];
-    let revealedLength = 0;
-    const FLOW_SPACING = 220;
-    const FLOW_SPEED = 55;
-
-    let totalLength = 0;
-    let itemLengths = [];
-    let ticking = false;
-
-    const fitContent = () => {
-      if (!container || !pinEl) return;
-      if (!pinQuery.matches) {
-        container.style.transform = '';
-        return;
-      }
-      const availableHeight = pinEl.clientHeight;
-      const naturalHeight = container.scrollHeight;
-      const scale = Math.min(1, (availableHeight / naturalHeight) * 0.97);
-      container.style.transform = scale < 0.999 ? `scale(${scale})` : 'none';
-    };
 
     const DOT = 1;
     const GAP = 9;
-    const dashArrayTo = (len) => {
+    const DASH_SPEED = 30;
+    let totalLength = 0;
+
+    const dashArrayFull = () => {
       const unit = DOT + GAP;
-      const repeats = Math.max(Math.ceil(len / unit), 0);
+      const repeats = Math.max(Math.ceil(totalLength / unit), 0);
       const arr = [];
       for (let i = 0; i < repeats; i++) arr.push(DOT, GAP);
-      arr.push(0, Math.max(totalLength * 2, 1000));
       return arr.join(' ');
     };
 
@@ -142,122 +114,43 @@
       });
 
       let d = `M ${points[0].x} ${points[0].y}`;
-      itemLengths = [0];
       path.setAttribute('d', d);
       for (let i = 0; i < points.length - 1; i++) {
         const p0 = points[i], p1 = points[i + 1];
         const midX = (p0.x + p1.x) / 2;
         d += ` C ${midX} ${p0.y}, ${midX} ${p1.y}, ${p1.x} ${p1.y}`;
         path.setAttribute('d', d);
-        itemLengths.push(path.getTotalLength());
       }
-      totalLength = itemLengths[itemLengths.length - 1] || 0;
-      path.style.strokeDasharray = dashArrayTo(0);
-      items[0].classList.add('visible');
-
-      headGroup.innerHTML = '';
-      arrowHeads = itemLengths.slice(1).map(len => {
-        const pt = path.getPointAtLength(len);
-        const pt2 = path.getPointAtLength(Math.max(len - 1, 0));
-        const angle = Math.atan2(pt.y - pt2.y, pt.x - pt2.x) * 180 / Math.PI;
-        const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        arrow.setAttribute('class', 'timeline-arrow-head');
-        arrow.setAttribute('d', 'M-7,-5 L7,0 L-7,5 Z');
-        arrow.setAttribute('transform', `translate(${pt.x},${pt.y}) rotate(${angle})`);
-        headGroup.appendChild(arrow);
-        return arrow;
-      });
-
-      flowGroup.innerHTML = '';
-      const flowCount = totalLength > 0 ? Math.max(1, Math.round(totalLength / FLOW_SPACING)) : 0;
-      flowArrows = Array.from({ length: flowCount }, (_, i) => {
-        const el = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        el.setAttribute('class', 'timeline-flow-arrow');
-        el.setAttribute('d', 'M-6,-5 L6,0 L-6,5 Z');
-        flowGroup.appendChild(el);
-        return { el, offset: (totalLength / flowCount) * i };
-      });
+      totalLength = path.getTotalLength();
+      path.style.strokeDasharray = dashArrayFull();
     };
 
     const animateFlow = timestamp => {
-      if (revealedLength > 1 && flowArrows.length) {
-        const t = (timestamp / 1000) * FLOW_SPEED;
-        flowArrows.forEach(f => {
-          const pos = (f.offset + t) % revealedLength;
-          const pt = path.getPointAtLength(pos);
-          const pt2 = path.getPointAtLength(Math.max(pos - 1, 0));
-          const angle = Math.atan2(pt.y - pt2.y, pt.x - pt2.x) * 180 / Math.PI;
-          f.el.setAttribute('transform', `translate(${pt.x},${pt.y}) rotate(${angle})`);
-          f.el.style.opacity = '0.6';
-        });
-      } else {
-        flowArrows.forEach(f => { f.el.style.opacity = '0'; });
-      }
+      const unit = DOT + GAP;
+      const t = (timestamp / 1000) * DASH_SPEED;
+      path.style.strokeDashoffset = String(-(t % unit));
       requestAnimationFrame(animateFlow);
     };
 
-    const update = () => {
-      ticking = false;
-      if (!totalLength) return;
-      const vh = window.innerHeight;
-      let progress;
-
-      if (pinQuery.matches) {
-        const wrapRect = pinWrap.getBoundingClientRect();
-        const stickyTop = 94;
-        const childHeight = vh - stickyTop;
-        const holdFraction = 0.72;
-        const range = Math.max((wrapRect.height - childHeight) * holdFraction, 1);
-        const scrolled = stickyTop - wrapRect.top;
-        progress = Math.min(1, Math.max(0, scrolled / range));
-      } else {
-        const rect = timeline.getBoundingClientRect();
-        const startTrigger = vh * 0.82;
-        const endTrigger = vh * 0.3;
-        const range = Math.max(rect.height + startTrigger - endTrigger, 1);
-        const scrolled = startTrigger - rect.top;
-        progress = Math.min(1, Math.max(0, scrolled / range));
-      }
-
-      const currentLength = progress * totalLength;
-      path.style.strokeDasharray = dashArrayTo(currentLength);
-      revealedLength = currentLength;
-
-      items.forEach((item, i) => {
-        if (currentLength >= itemLengths[i] - 10) item.classList.add('visible');
-      });
-
-      arrowHeads.forEach((arrow, i) => {
-        arrow.style.opacity = currentLength >= itemLengths[i + 1] - 10 ? '0.6' : '0';
-      });
-    };
-
-    const onScroll = () => {
-      if (!ticking) { ticking = true; requestAnimationFrame(update); }
-    };
+    buildPath();
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(buildPath, 150);
+    });
 
     if (reducedMotion) {
-      buildPath();
       items.forEach(item => item.classList.add('visible'));
-      path.style.strokeDasharray = dashArrayTo(totalLength);
     } else {
-      fitContent();
-      buildPath();
-      update();
-      window.addEventListener('scroll', onScroll, { passive: true });
-      let resizeTimer;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => { fitContent(); buildPath(); update(); }, 150);
-      });
-      if (container && window.ResizeObserver) {
-        let roTimer;
-        const ro = new ResizeObserver(() => {
-          clearTimeout(roTimer);
-          roTimer = setTimeout(() => { fitContent(); buildPath(); update(); }, 50);
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            items.forEach(item => item.classList.add('visible'));
+            revealObserver.unobserve(entry.target);
+          }
         });
-        ro.observe(container);
-      }
+      }, { threshold: 0.12 });
+      revealObserver.observe(timeline);
       requestAnimationFrame(animateFlow);
     }
   }
