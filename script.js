@@ -85,59 +85,8 @@
 
   const timeline = document.querySelector('.problem-timeline');
   if (timeline) {
-    const svg = timeline.querySelector('.timeline-arrow-svg');
-    const path = timeline.querySelector('.timeline-arrow-path');
     const items = Array.from(timeline.querySelectorAll('.problem-item'));
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    const DOT = 1;
-    const GAP = 9;
-    const DASH_SPEED = 30;
-    let totalLength = 0;
-
-    const dashArrayFull = () => {
-      const unit = DOT + GAP;
-      const repeats = Math.max(Math.ceil(totalLength / unit), 0);
-      const arr = [];
-      for (let i = 0; i < repeats; i++) arr.push(DOT, GAP);
-      return arr.join(' ');
-    };
-
-    const buildPath = () => {
-      const rect = timeline.getBoundingClientRect();
-      svg.setAttribute('viewBox', `0 0 ${rect.width} ${rect.height}`);
-
-      const points = items.map(item => {
-        const heading = item.querySelector('h3');
-        const r = heading.getBoundingClientRect();
-        return { x: r.left - rect.left, y: r.top - rect.top };
-      });
-
-      let d = `M ${points[0].x} ${points[0].y}`;
-      path.setAttribute('d', d);
-      for (let i = 0; i < points.length - 1; i++) {
-        const p0 = points[i], p1 = points[i + 1];
-        const midX = (p0.x + p1.x) / 2;
-        d += ` C ${midX} ${p0.y}, ${midX} ${p1.y}, ${p1.x} ${p1.y}`;
-        path.setAttribute('d', d);
-      }
-      totalLength = path.getTotalLength();
-      path.style.strokeDasharray = dashArrayFull();
-    };
-
-    const animateFlow = timestamp => {
-      const unit = DOT + GAP;
-      const t = (timestamp / 1000) * DASH_SPEED;
-      path.style.strokeDashoffset = String(-(t % unit));
-      requestAnimationFrame(animateFlow);
-    };
-
-    buildPath();
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(buildPath, 150);
-    });
 
     if (reducedMotion) {
       items.forEach(item => item.classList.add('visible'));
@@ -151,7 +100,6 @@
         });
       }, { threshold: 0.12 });
       revealObserver.observe(timeline);
-      requestAnimationFrame(animateFlow);
     }
   }
 
