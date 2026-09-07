@@ -116,7 +116,7 @@
     }));
   }
 
-  const GOOGLE_SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzaZDtgC4OYLigKctarU4txKs9d3TPjfCcUaUJ3yJrlIOExoKbAUZR-EqTeo1PvvjaW/exec';
 
   const form = document.getElementById('waitlist-form');
   const message = document.getElementById('form-message');
