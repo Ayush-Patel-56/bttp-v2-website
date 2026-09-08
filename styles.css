@@ -249,8 +249,17 @@ body {
     min-height: 530px;
     display: grid;
     place-items: center;
-    transform: scale(.85);
+    --hero-scale: .85;
+    transform: scale(var(--hero-scale));
     transform-origin: center
+}
+
+.hero-product.reveal {
+    transform: scale(var(--hero-scale)) translateY(26px)
+}
+
+.hero-product.reveal.visible {
+    transform: scale(var(--hero-scale))
 }
 
 .phone-shell {
@@ -286,6 +295,18 @@ body {
 
 .phone-screen::-webkit-scrollbar {
     display: none
+}
+
+.phone-shell-mockup {
+    background-image: none;
+    box-shadow: none
+}
+
+.phone-mockup-shot {
+    display: block;
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 35px 70px rgba(0, 0, 0, .38))
 }
 
 .phone-status {
@@ -2370,7 +2391,7 @@ footer {
     }
 
     .hero-product {
-        transform: scale(.78);
+        --hero-scale: .78;
         margin: -69px 0
     }
 }
@@ -2390,7 +2411,7 @@ footer {
     }
 
     .hero-product {
-        transform: scale(.62);
+        --hero-scale: .62;
         margin: -120px 0
     }
 }
