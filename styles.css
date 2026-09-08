@@ -2714,8 +2714,8 @@ footer {
 }
 
 .hub-output-line {
-    flex: 1 1 auto;
-    min-width: 16px;
+    flex: 0 0 84px;
+    width: 84px;
     height: 2px;
     background: rgba(184, 109, 60, .4);
     position: relative
