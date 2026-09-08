@@ -201,7 +201,7 @@ body {
 .hero h1 {
     font-size: clamp(31px, 2.35vw, 43px);
     line-height: 1.15;
-    margin: 20px 0 26px;
+    margin: 20px 0 56px;
     max-width: none
 }
 
@@ -241,7 +241,7 @@ body {
     gap: 28px;
     color: #b8b1aa;
     font-size: 14px;
-    margin-top: 32px
+    margin-top: 54px
 }
 
 .hero-product {
