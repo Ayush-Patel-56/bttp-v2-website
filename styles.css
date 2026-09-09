@@ -354,14 +354,14 @@ body {
 }
 
 .wallet-main {
-    padding: 18px;
+    padding: 14px;
     border-radius: 16px;
     background: #262422
 }
 
 .big-number {
-    font: 600 45px "Playfair Display", serif;
-    margin: 5px 0
+    font: 600 42px "Playfair Display", serif;
+    margin: 3px 0
 }
 
 .positive {
@@ -371,14 +371,15 @@ body {
 
 .wallet-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 9px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
     margin-top: 9px
 }
 
 .wallet-grid>div,
 .wallet-row {
-    padding: 14px;
+    min-width: 0;
+    padding: 12px 10px;
     border-radius: 13px;
     background: #252321
 }
@@ -387,12 +388,18 @@ body {
 .wallet-row span {
     display: block;
     color: #aaa;
-    font-size: 12px
+    font-size: 11px;
+    line-height: 1.25;
+    min-height: 2.5em
+}
+
+.wallet-row span {
+    min-height: 0
 }
 
 .wallet-grid strong,
 .wallet-row strong {
-    font: 600 19px "Playfair Display", serif
+    font: 600 16px "Playfair Display", serif
 }
 
 .wallet-row {
@@ -401,11 +408,11 @@ body {
 
 .action-needed {
     display: grid;
-    gap: 6px;
+    gap: 5px;
     background: linear-gradient(135deg, #733b23, #9e572f);
-    padding: 16px;
+    padding: 13px;
     border-radius: 15px;
-    margin-top: 11px
+    margin-top: 8px
 }
 
 .action-needed strong {
@@ -2260,17 +2267,17 @@ footer {
     }
 
     .how-phone .phone-screen {
-        padding: 16px 12px 12px;
+        padding: 12px 12px 8px;
         border-radius: 16px
     }
 
     .how-phone .phone-screen h3 {
         font-size: 17px;
-        margin: 2px 0 12px
+        margin: 2px 0 6px
     }
 
     .how-phone .big-number {
-        font-size: 30px
+        font-size: 22px
     }
 
     .how-phone .mp-report-amount {
@@ -2283,32 +2290,42 @@ footer {
     }
 
     .how-phone .wallet-main {
-        padding: 14px;
+        padding: 8px;
         border-radius: 12px
     }
 
     .how-phone .wallet-grid {
-        gap: 7px;
-        margin-top: 7px
+        gap: 6px;
+        margin-top: 2px
     }
 
     .how-phone .wallet-grid>div {
-        padding: 11px;
+        padding: 6px 5px;
         border-radius: 11px
     }
 
+    .how-phone .wallet-grid span {
+        font-size: 9.5px;
+        min-height: 2.5em
+    }
+
     .how-phone .wallet-grid strong {
-        font-size: 16px
+        font-size: 12px
     }
 
     .how-phone .action-needed {
-        padding: 12px;
+        padding: 7px;
         border-radius: 12px;
-        margin-top: 9px
+        margin-top: 4px;
+        gap: 3px
     }
 
     .how-phone .action-needed strong {
-        font-size: 13px
+        font-size: 12px
+    }
+
+    .how-phone .action-needed small {
+        font-size: 10.5px
     }
 
     .how-step-num {
