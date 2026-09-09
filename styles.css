@@ -3,7 +3,10 @@
 }
 
 html {
-    scroll-behavior: smooth
+    scroll-behavior: smooth;
+    /* Prevent desktop browsers from applying their own text-size adjustment. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%
 }
 
 #why-bttp,
@@ -109,15 +112,15 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 20px;
     padding: 15px 24px;
     border-radius: 999px;
     background: #b86d3c;
     color: #fff;
     text-decoration: none;
     border: 1px solid #b86d3c;
-    font-weight: 600;
-    font-size: 16px;
+    font-weight: 700;
+    font-size: 17px;
     cursor: pointer;
     transition: .25s ease
 }
@@ -242,6 +245,20 @@ body {
     color: #b8b1aa;
     font-size: 14px;
     margin-top: 54px
+}
+
+/* macOS desktop browsers need a touch more room around the hero CTA. */
+@media(min-width:901px) {
+    html.is-macos .hero h1 {
+        margin-bottom: 128px
+    }
+
+    html.is-macos .hero-proof {
+        width: min(430px, 100%);
+        justify-content: space-between;
+        gap: 0;
+        margin-top: 104px
+    }
 }
 
 .hero-product {
@@ -2082,6 +2099,19 @@ footer {
         min-height: 520px
     }
 
+    /* Give the compact macOS hero breathing room on every side. */
+    html.is-macos .hero-grid {
+        width: min(760px, calc(100% - 128px))
+    }
+
+    html.is-macos .hero h1 {
+        margin-bottom: 96px
+    }
+
+    html.is-macos .hero-proof {
+        margin-top: 80px
+    }
+
     .redeem-grid,
     .security-grid {
         grid-template-columns: 1fr 1fr
@@ -2390,8 +2420,14 @@ footer {
     }
 
     .hero h1 {
-        font-size: clamp(19px, 1.6vw, 24px);
-        margin: 12px 0 14px
+        /*
+         * Browser chrome on macOS can leave a desktop-width page with a
+         * short layout viewport.  Keep the hero compact in that situation,
+         * but do not reduce the headline to a mobile-sized font.
+         */
+        font-size: clamp(28px, 2.35vw, 38px);
+        line-height: 1.12;
+        margin: 12px 0 20px
     }
 
     .hero-sub {
@@ -2410,6 +2446,18 @@ footer {
     .hero-product {
         --hero-scale: .78;
         margin: -69px 0
+    }
+
+    /* Preserve comfortable spacing when macOS browser chrome shortens the viewport. */
+    html.is-macos .hero h1 {
+        margin-bottom: 88px
+    }
+
+    html.is-macos .hero-proof {
+        width: min(430px, 100%);
+        justify-content: space-between;
+        gap: 0;
+        margin-top: 70px
     }
 }
 
@@ -3002,4 +3050,12 @@ footer {
         width: 100%;
         max-width: 172px
     }
+}
+
+/* Keep the proof points aligned with the CTA span at every macOS viewport size. */
+html.is-macos .hero-proof {
+    width: 430px;
+    max-width: none;
+    justify-content: space-between;
+    gap: 0
 }
