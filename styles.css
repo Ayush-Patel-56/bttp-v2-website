@@ -228,6 +228,14 @@ body {
     padding: 14px 18px
 }
 
+.hero-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: max-content;
+    max-width: 100%
+}
+
 .hero-actions {
     display: flex;
     gap: 14px;
@@ -237,11 +245,12 @@ body {
 .hero-proof {
     display: flex;
     flex-wrap: wrap;
-    justify-content: left;
+    justify-content: center;
     gap: 28px;
     color: #b8b1aa;
     font-size: 14px;
-    margin-top: 54px
+    margin-top: 54px;
+    align-self: center
 }
 
 .hero-product {
@@ -2075,9 +2084,14 @@ footer {
         margin-right: auto
     }
 
+    .hero-cta {
+        width: 100%
+    }
+
     .hero-actions,
     .hero-proof {
-        justify-content: center
+        justify-content: center;
+        align-self: stretch
     }
 
     .hero-product {
