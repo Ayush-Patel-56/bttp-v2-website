@@ -4,12 +4,68 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="description" content="Back to the Points brings your credit card rewards, airline miles and hotel points together - and helps you earn smarter, redeem better and travel further." />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
   <meta name="theme-color" content="#0b0b0a" />
-  <title>Back to the Points - Make Every Point Count</title>
+  <title>Back to the Points - Track, Value & Redeem Credit Card Rewards, Airline Miles & Hotel Points</title>
+  <link rel="canonical" href="https://backtothepoints.com/" />
+
+  <link rel="icon" type="image/jpeg" href="/assets/logo.jpeg" />
+  <link rel="apple-touch-icon" href="/assets/logo.jpeg" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Back to the Points" />
+  <meta property="og:title" content="Back to the Points - Make Every Point Count" />
+  <meta property="og:description" content="Back to the Points brings your credit card rewards, airline miles and hotel points together - and helps you earn smarter, redeem better and travel further." />
+  <meta property="og:url" content="https://backtothepoints.com/" />
+  <meta property="og:image" content="https://backtothepoints.com/assets/logo.jpeg" />
+  <meta property="og:locale" content="en_IN" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Back to the Points - Make Every Point Count" />
+  <meta name="twitter:description" content="Back to the Points brings your credit card rewards, airline miles and hotel points together - and helps you earn smarter, redeem better and travel further." />
+  <meta name="twitter:image" content="https://backtothepoints.com/assets/logo.jpeg" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/dmsans/v17/rP2Yp2ywxg089UriI5-g4vlH9VoD8Cmcqbu0-K6z9mXg.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/playfairdisplay/v40/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKebunDXbtPK_l2q.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/playfairdisplay/v40/nuFRD-vYSZviVYUb_rj3ij__anPXDTnCjmHKM4nYO7KN_naUXtHA-X-oE0o.woff2">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet"></noscript>
   <link rel="stylesheet" href="/styles.css" />
+  <link rel="preload" as="image" fetchpriority="high" href="/assets/hero-boat-poster.jpg">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://backtothepoints.com/#organization",
+        "name": "Back to the Points",
+        "url": "https://backtothepoints.com/",
+        "logo": "https://backtothepoints.com/assets/logo.jpeg",
+        "description": "Back to the Points helps you track, value and redeem credit card rewards, airline miles and hotel points in one place."
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://backtothepoints.com/#website",
+        "name": "Back to the Points",
+        "url": "https://backtothepoints.com/",
+        "publisher": { "@id": "https://backtothepoints.com/#organization" }
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://backtothepoints.com/#webpage",
+        "url": "https://backtothepoints.com/",
+        "name": "Back to the Points - Track, Value & Redeem Credit Card Rewards, Airline Miles & Hotel Points",
+        "description": "Back to the Points brings your credit card rewards, airline miles and hotel points together - and helps you earn smarter, redeem better and travel further.",
+        "isPartOf": { "@id": "https://backtothepoints.com/#website" }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
   <header class="nav-wrap">
@@ -38,7 +94,7 @@
 
   <main id="top">
     <section class="hero section-dark">
-      <video class="hero-bg-video" autoplay muted loop playsinline>
+      <video class="hero-bg-video" autoplay muted loop playsinline preload="auto" poster="assets/hero-boat-poster.jpg" fetchpriority="high">
         <source src="assets/hero-boat.mp4" type="video/mp4">
       </video>
       <div class="hero-bg-overlay"></div>
@@ -75,7 +131,7 @@
               <small>points on your last purchase.</small>
             </div>
 
-            <img class="phone-mockup-shot" src="assets/app-home-mockup.png" alt="Back to the Points app home screen showing your total rewards wallet value">
+            <img fetchpriority="high" decoding="async" class="phone-mockup-shot" src="assets/app-home-mockup.webp" alt="Back to the Points app home screen showing your total rewards wallet value">
 
             <div class="float-card trip-card">
               <span class="mini-label">TRIP READY</span>
@@ -148,9 +204,9 @@
                 <p class="muted tiny">Setup</p>
                 <h3>Connect a program</h3>
                 <div class="program-list">
-                  <div class="program"><span class="program-icon program-icon--card"><img src="assets/amex-rewards.avif" alt="American Express Rewards"></span><div><small>Amex Rewards</small></div><strong class="mp-check">✓</strong></div>
-                  <div class="program"><span class="program-icon program-icon--card"><img src="assets/hdfc.png" alt="HDFC Rewards"></span><div><small>HDFC Rewards</small></div><strong class="mp-check">✓</strong></div>
-                  <div class="program"><span class="program-icon program-icon--card"><img src="assets/air-india-maharaja.avif" alt="Air India Maharaja Club"></span><div><small>Air India Maharaja</small></div><strong class="mp-connecting">•••</strong></div>
+                  <div class="program"><span class="program-icon program-icon--card"><img loading="lazy" decoding="async" src="assets/amex-rewards.avif" alt="American Express Rewards"></span><div><small>Amex Rewards</small></div><strong class="mp-check">✓</strong></div>
+                  <div class="program"><span class="program-icon program-icon--card"><img loading="lazy" decoding="async" src="assets/hdfc.png" alt="HDFC Rewards"></span><div><small>HDFC Rewards</small></div><strong class="mp-check">✓</strong></div>
+                  <div class="program"><span class="program-icon program-icon--card"><img loading="lazy" decoding="async" src="assets/air-india-maharaja.avif" alt="Air India Maharaja Club"></span><div><small>Air India Maharaja</small></div><strong class="mp-connecting">•••</strong></div>
                 </div>
               </div>
             </div>
@@ -386,10 +442,10 @@
             <div class="hub-chip">
               <div class="hub-row-cards">
                 <div class="mini-card mini-card--hdfc">
-                  <img class="mini-card-photo" src="assets/hdfc-infinia.png" alt="HDFC Infinia card">
+                  <img loading="lazy" decoding="async" class="mini-card-photo" src="assets/hdfc-infinia.webp" alt="HDFC Infinia card">
                 </div>
                 <div class="mini-card mini-card--axis">
-                  <img class="mini-card-photo" src="assets/axis_atlas.avif" alt="Axis Atlas card">
+                  <img loading="lazy" decoding="async" class="mini-card-photo" src="assets/axis_atlas.avif" alt="Axis Atlas card">
                 </div>
               </div>
               <span class="hub-chip-line"></span>
@@ -397,10 +453,10 @@
             <div class="hub-chip">
               <div class="hub-row-cards">
                 <div class="mini-card mini-card--airindia">
-                  <img class="mini-card-photo" src="assets/air-india-maharaja.avif" alt="Air India Maharaja Club card">
+                  <img loading="lazy" decoding="async" class="mini-card-photo" src="assets/air-india-maharaja.avif" alt="Air India Maharaja Club card">
                 </div>
                 <div class="mini-card mini-card--icici">
-                  <img class="mini-card-photo" src="assets/icici-bank.webp" alt="ICICI Bank card">
+                  <img loading="lazy" decoding="async" class="mini-card-photo" src="assets/icici-bank.webp" alt="ICICI Bank card">
                 </div>
               </div>
               <span class="hub-chip-line"></span>
@@ -408,10 +464,10 @@
             <div class="hub-chip">
               <div class="hub-row-cards">
                 <div class="mini-card mini-card--sbi">
-                  <img class="mini-card-photo" src="assets/sbi-card.webp" alt="SBI Card">
+                  <img loading="lazy" decoding="async" class="mini-card-photo" src="assets/sbi-card.webp" alt="SBI Card">
                 </div>
                 <div class="mini-card mini-card--amex">
-                  <img class="mini-card-photo" src="assets/amex-rewards.avif" alt="American Express Membership Rewards card">
+                  <img loading="lazy" decoding="async" class="mini-card-photo" src="assets/amex-rewards.avif" alt="American Express Membership Rewards card">
                 </div>
               </div>
               <span class="hub-chip-line"></span>
@@ -439,9 +495,9 @@
                 <div class="mp-report hub-pick">
                   <span class="hub-pick-badge">Best match · 3.2x value</span>
                   <div class="hub-pick-route">
-                    <div class="hub-pick-avatar"><img src="assets/hdfc-infinia.png" alt="HDFC Infinia card"></div>
+                    <div class="hub-pick-avatar"><img loading="lazy" decoding="async" src="assets/hdfc-infinia.webp" alt="HDFC Infinia card"></div>
                     <svg class="hub-pick-arrow" viewBox="0 0 24 10" aria-hidden="true"><path d="M0 5h20M14 1l6 4-6 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    <div class="hub-pick-avatar hub-pick-avatar--dest"><img src="assets/destinations/flight.jpg" alt="Business class flight"></div>
+                    <div class="hub-pick-avatar hub-pick-avatar--dest"><img loading="lazy" decoding="async" src="assets/destinations/flight.jpg" alt="Business class flight"></div>
                   </div>
                   <h4 class="hub-pick-title">HDFC Infinia → Singapore Airlines</h4>
                   <p class="mp-report-caption">65,000 points redeemed for Business Class to Bangkok</p>
@@ -471,7 +527,7 @@
             <div class="hub-output">
               <span class="hub-output-line"></span>
               <div class="reward-art reward-art--flight">
-                <img src="assets/business-class.jpg" alt="Business class cabin seat with champagne and window sunset view">
+                <img loading="lazy" decoding="async" src="assets/business-class.jpg" alt="Business class cabin seat with champagne and window sunset view">
                 <!-- <span class="reward-art-badge">✈</span> -->
               </div>
               <div><strong>Business Class</strong><small>to Bangkok</small></div>
@@ -479,7 +535,7 @@
             <div class="hub-output">
               <span class="hub-output-line"></span>
               <div class="reward-art reward-art--stay">
-                <img src="assets/udaipur.jpg" alt="Luxury overwater resort villas">
+                <img loading="lazy" decoding="async" src="assets/udaipur.jpg" alt="Luxury overwater resort villas">
                 <!-- <span class="reward-art-badge">◈</span> -->
               </div>
               <div><strong>Luxury Stay</strong><small>in Udaipur</small></div>
@@ -487,7 +543,7 @@
             <div class="hub-output">
               <span class="hub-output-line"></span>
               <div class="reward-art reward-art--trip">
-                <img src="assets/destinations/paris.jpg" alt="Eiffel Tower silhouette at sunset, Paris">
+                <img loading="lazy" decoding="async" src="assets/destinations/paris.jpg" alt="Eiffel Tower silhouette at sunset, Paris">
                 <!-- <span class="reward-art-badge">✦</span> -->
               </div>
               <div><strong>Getaway Trip</strong><small>to Paris</small></div>
@@ -539,14 +595,14 @@
         </div>
         <div class="marquee-row reverse reveal">
           <div class="marquee-track">
-            <span class="logo-card"><img src="assets/logos/amex.svg" alt="American Express"></span><span class="logo-card"><img src="assets/logos/hdfc.svg" alt="HDFC Bank"></span><span class="logo-card"><img src="assets/logos/axis.svg" alt="Axis Bank"></span><span class="logo-card"><img src="assets/logos/sbicard.svg" alt="SBI Card"></span><span class="logo-card"><img src="assets/logos/icici.svg" alt="ICICI Bank"></span><span class="logo-card"><img src="assets/logos/yesbank.svg" alt="Yes Bank"></span>
-            <span class="logo-card" aria-hidden="true"><img src="assets/logos/amex.svg" alt=""></span><span class="logo-card" aria-hidden="true"><img src="assets/logos/hdfc.svg" alt=""></span><span class="logo-card" aria-hidden="true"><img src="assets/logos/axis.svg" alt=""></span><span class="logo-card" aria-hidden="true"><img src="assets/logos/sbicard.svg" alt=""></span><span class="logo-card" aria-hidden="true"><img src="assets/logos/icici.svg" alt=""></span><span class="logo-card" aria-hidden="true"><img src="assets/logos/yesbank.svg" alt=""></span>
+            <span class="logo-card"><img loading="lazy" decoding="async" src="assets/logos/amex.svg" alt="American Express"></span><span class="logo-card"><img loading="lazy" decoding="async" src="assets/logos/hdfc.svg" alt="HDFC Bank"></span><span class="logo-card"><img loading="lazy" decoding="async" src="assets/logos/axis.svg" alt="Axis Bank"></span><span class="logo-card"><img loading="lazy" decoding="async" src="assets/logos/sbicard.svg" alt="SBI Card"></span><span class="logo-card"><img loading="lazy" decoding="async" src="assets/logos/icici.svg" alt="ICICI Bank"></span><span class="logo-card"><img loading="lazy" decoding="async" src="assets/logos/yesbank.svg" alt="Yes Bank"></span>
+            <span class="logo-card" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/logos/amex.svg" alt=""></span><span class="logo-card" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/logos/hdfc.svg" alt=""></span><span class="logo-card" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/logos/axis.svg" alt=""></span><span class="logo-card" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/logos/sbicard.svg" alt=""></span><span class="logo-card" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/logos/icici.svg" alt=""></span><span class="logo-card" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/logos/yesbank.svg" alt=""></span>
           </div>
         </div>
         <div class="marquee-row smaller reveal">
           <div class="marquee-track">
-            <span class="logo-card"><img src="assets/logos/airindia.svg" alt="Air India"></span><span class="logo-card"><img src="assets/logos/emirates.svg" alt="Emirates"></span><span class="logo-card"><img src="assets/logos/singapore.svg" alt="Singapore Airlines"></span><span class="logo-card"><img src="assets/logos/qatar.png" alt="Qatar Airways"></span><span class="logo-card"><img src="assets/logos/marriott.jpg" alt="Marriott Bonvoy"></span><span class="logo-card"><img src="assets/logos/hilton.svg" alt="Hilton"></span><span class="logo-card"><img src="assets/logos/ihg.svg" alt="IHG"></span>
-            <span class="logo-card" aria-hidden="true"><img src="assets/logos/airindia.svg" alt=""></span><span class="logo-card" aria-hidden="true"><img src="assets/logos/emirates.svg" alt=""></span><span class="logo-card" aria-hidden="true"><img src="assets/logos/singapore.svg" alt=""></span><span class="logo-card" aria-hidden="true"><img src="assets/logos/qatar.png" alt=""></span><span class="logo-card" aria-hidden="true"><img src="assets/logos/marriott.jpg" alt=""></span><span class="logo-card" aria-hidden="true"><img src="assets/logos/hilton.svg" alt=""></span><span class="logo-card" aria-hidden="true"><img src="assets/logos/ihg.svg" alt=""></span>
+            <span class="logo-card"><img loading="lazy" decoding="async" src="assets/logos/airindia.svg" alt="Air India"></span><span class="logo-card"><img loading="lazy" decoding="async" src="assets/logos/emirates.svg" alt="Emirates"></span><span class="logo-card"><img loading="lazy" decoding="async" src="assets/logos/singapore.svg" alt="Singapore Airlines"></span><span class="logo-card"><img loading="lazy" decoding="async" src="assets/logos/qatar.png" alt="Qatar Airways"></span><span class="logo-card"><img loading="lazy" decoding="async" src="assets/logos/marriott.jpg" alt="Marriott Bonvoy"></span><span class="logo-card"><img loading="lazy" decoding="async" src="assets/logos/hilton.svg" alt="Hilton"></span><span class="logo-card"><img loading="lazy" decoding="async" src="assets/logos/ihg.svg" alt="IHG"></span>
+            <span class="logo-card" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/logos/airindia.svg" alt=""></span><span class="logo-card" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/logos/emirates.svg" alt=""></span><span class="logo-card" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/logos/singapore.svg" alt=""></span><span class="logo-card" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/logos/qatar.png" alt=""></span><span class="logo-card" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/logos/marriott.jpg" alt=""></span><span class="logo-card" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/logos/hilton.svg" alt=""></span><span class="logo-card" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/logos/ihg.svg" alt=""></span>
           </div>
         </div>
         <p class="program-note">More programs added regularly</p>
@@ -638,6 +694,6 @@
     </div>
   </footer>
 
-  <script src="/script.js"></script>
+  <script src="/script.js" defer></script>
 </body>
 </html>

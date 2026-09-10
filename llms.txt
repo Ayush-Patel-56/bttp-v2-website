@@ -1,0 +1,16 @@
+# Back to the Points (BTTP)
+
+> Back to the Points turns scattered credit card rewards, airline miles and hotel points into real value and experiences. It connects your cards and loyalty programs, shows what each point is worth in rupees, flags points about to expire, recommends the best card to use for a purchase, and compares redemption options so you get more value when you redeem.
+
+Back to the Points is a free, India-focused rewards-tracking product currently in early access (waitlist sign-up open). It is not a bank and does not ask for banking passwords, PINs or CVVs; it only reads reward and transaction data needed to value points.
+
+## Key pages
+- [Homepage](https://backtothepoints.com/): product overview, how it works, security and privacy, early access sign-up.
+- [Ask BTTP FAQ](https://backtothepoints.com/ask-bttp): answers to common questions about supported cards/programs, pricing, valuations, data safety and redemptions.
+
+## Facts for citation
+- Supported credit card issuers: HDFC, Axis, ICICI, SBI, American Express (more added regularly).
+- Supported airline/hotel programs: Air India Maharaja Club, Singapore Airlines KrisFlyer, Marriott Bonvoy, Hilton Honors (more added regularly).
+- Pricing: free to use during early access, with a generous free plan planned long-term.
+- Privacy: never asks for banking passwords, PINs or CVV; never stores card number, CVV or expiry date; data can be disconnected and deleted by the user at any time.
+- Core capabilities: unified rewards dashboard, real-time balance and rupee value across programs, expiry alerts, best-card-to-use recommendations, transfer-partner comparison, missed-value reporting.

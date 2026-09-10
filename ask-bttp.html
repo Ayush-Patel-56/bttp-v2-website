@@ -3,13 +3,107 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="Ask BTTP - tap a question and see how the Back to the Points AI assistant answers it." />
+  <meta name="description" content="Ask BTTP answers real questions about credit card rewards, airline miles and hotel points - which card to use, where to transfer, and what your points are worth." />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
   <meta name="theme-color" content="#0b0b0a" />
-  <title>Ask BTTP - Back to the Points</title>
+  <title>Ask BTTP - FAQs on Credit Card Rewards, Points & Miles | Back to the Points</title>
+  <link rel="canonical" href="https://backtothepoints.com/ask-bttp" />
+
+  <link rel="icon" type="image/jpeg" href="/assets/logo.jpeg" />
+  <link rel="apple-touch-icon" href="/assets/logo.jpeg" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Back to the Points" />
+  <meta property="og:title" content="Ask BTTP - FAQs on Credit Card Rewards, Points & Miles" />
+  <meta property="og:description" content="Ask BTTP answers real questions about credit card rewards, airline miles and hotel points - which card to use, where to transfer, and what your points are worth." />
+  <meta property="og:url" content="https://backtothepoints.com/ask-bttp" />
+  <meta property="og:image" content="https://backtothepoints.com/assets/logo.jpeg" />
+  <meta property="og:locale" content="en_IN" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Ask BTTP - FAQs on Credit Card Rewards, Points & Miles" />
+  <meta name="twitter:description" content="Ask BTTP answers real questions about credit card rewards, airline miles and hotel points - which card to use, where to transfer, and what your points are worth." />
+  <meta name="twitter:image" content="https://backtothepoints.com/assets/logo.jpeg" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is Back to the Points free?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Back to the Points is free to use during early access. We'll always keep a generous free plan available." }
+      },
+      {
+        "@type": "Question",
+        "name": "Which credit cards do you support?",
+        "acceptedAnswer": { "@type": "Answer", "text": "We support all major Indian credit card issuers, including HDFC, Axis, ICICI, SBI and American Express, with new banks added regularly." }
+      },
+      {
+        "@type": "Question",
+        "name": "Which airline and hotel programs are supported?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Major airline and hotel loyalty programs, including Air India Maharaja Club, Singapore Airlines KrisFlyer, Marriott Bonvoy, Hilton Honors and more." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do you calculate what my points are worth?",
+        "acceptedAnswer": { "@type": "Answer", "text": "We look at real, achievable redemptions across your connected programs instead of generic average values, so you see what your points can actually get you." }
+      },
+      {
+        "@type": "Question",
+        "name": "Are the valuations guaranteed?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Valuations are estimates based on current redemption rates and can change as programs update their charts and pricing." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you access my bank account?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. We never connect to or access your bank account. We only read the reward and transaction data needed to value your points." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you store card details?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. We never see or store your card number, CVV or expiry date." }
+      },
+      {
+        "@type": "Question",
+        "name": "Will you ever ask for my CVV, PIN or banking password?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Never. We will never ask you for your CVV, PIN or banking password. If someone does, it isn't us." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I manually change the value of my points?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Not currently. Valuations are calculated automatically, though manual overrides may come later based on user feedback." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can Back to the Points tell me which card to use?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. We recommend the best card or program to use for a purchase or redemption based on the value you'll earn." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can it tell me where to transfer my points?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. We compare transfer partners so you can see which option gives you the most value before you move a single point." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I use Back to the Points to book travel?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Booking directly through BTTP is on our roadmap. For now, we help you decide the smartest way to redeem before you book elsewhere." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is my data safe?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Your information is protected throughout the experience, and you can disconnect and delete your data whenever you choose." }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
   <header class="nav-wrap">
@@ -77,6 +171,61 @@
             <button class="faq-chip" data-answer="Yes. We compare transfer partners so you can see which option gives you the most value before you move a single point.">Can it tell me where to transfer my points?</button>
             <button class="faq-chip" data-answer="Booking directly through BTTP is on our roadmap. For now, we help you decide the smartest way to redeem before you book elsewhere.">Can I use Back to the Points to book travel?</button>
             <button class="faq-chip" data-answer="Yes. Your information is protected throughout the experience, and you can disconnect and delete your data whenever you choose.">Is my data safe?</button>
+        </div>
+        <div class="sr-only">
+          <h2>Frequently asked questions</h2>
+          <div>
+            <h3>Is Back to the Points free?</h3>
+            <p>Yes. Back to the Points is free to use during early access. We'll always keep a generous free plan available.</p>
+          </div>
+          <div>
+            <h3>Which credit cards do you support?</h3>
+            <p>We support all major Indian credit card issuers, including HDFC, Axis, ICICI, SBI and American Express, with new banks added regularly.</p>
+          </div>
+          <div>
+            <h3>Which airline and hotel programs are supported?</h3>
+            <p>Major airline and hotel loyalty programs, including Air India Maharaja Club, Singapore Airlines KrisFlyer, Marriott Bonvoy, Hilton Honors and more.</p>
+          </div>
+          <div>
+            <h3>How do you calculate what my points are worth?</h3>
+            <p>We look at real, achievable redemptions across your connected programs instead of generic average values, so you see what your points can actually get you.</p>
+          </div>
+          <div>
+            <h3>Are the valuations guaranteed?</h3>
+            <p>No. Valuations are estimates based on current redemption rates and can change as programs update their charts and pricing.</p>
+          </div>
+          <div>
+            <h3>Do you access my bank account?</h3>
+            <p>No. We never connect to or access your bank account. We only read the reward and transaction data needed to value your points.</p>
+          </div>
+          <div>
+            <h3>Do you store card details?</h3>
+            <p>No. We never see or store your card number, CVV or expiry date.</p>
+          </div>
+          <div>
+            <h3>Will you ever ask for my CVV, PIN or banking password?</h3>
+            <p>Never. We will never ask you for your CVV, PIN or banking password. If someone does, it isn't us.</p>
+          </div>
+          <div>
+            <h3>Can I manually change the value of my points?</h3>
+            <p>Not currently. Valuations are calculated automatically, though manual overrides may come later based on user feedback.</p>
+          </div>
+          <div>
+            <h3>Can Back to the Points tell me which card to use?</h3>
+            <p>Yes. We recommend the best card or program to use for a purchase or redemption based on the value you'll earn.</p>
+          </div>
+          <div>
+            <h3>Can it tell me where to transfer my points?</h3>
+            <p>Yes. We compare transfer partners so you can see which option gives you the most value before you move a single point.</p>
+          </div>
+          <div>
+            <h3>Can I use Back to the Points to book travel?</h3>
+            <p>Booking directly through BTTP is on our roadmap. For now, we help you decide the smartest way to redeem before you book elsewhere.</p>
+          </div>
+          <div>
+            <h3>Is my data safe?</h3>
+            <p>Yes. Your information is protected throughout the experience, and you can disconnect and delete your data whenever you choose.</p>
+          </div>
         </div>
       </div>
     </section>

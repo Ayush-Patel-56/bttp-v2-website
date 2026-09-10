@@ -1,0 +1,16 @@
+{
+  "name": "Back to the Points",
+  "short_name": "BTTP",
+  "description": "Track, value and redeem your credit card rewards, airline miles and hotel points in one place.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0b0a",
+  "theme_color": "#0b0b0a",
+  "icons": [
+    {
+      "src": "/assets/logo.jpeg",
+      "type": "image/jpeg",
+      "sizes": "480x650"
+    }
+  ]
+}

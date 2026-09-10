@@ -276,7 +276,7 @@ body {
     aspect-ratio: 1084 / 2252;
     position: relative;
     z-index: 2;
-    background-image: url('assets/phone-frame.png');
+    background-image: url('assets/phone-frame.webp');
     background-size: 100% 100%;
     background-repeat: no-repeat;
     box-shadow: 0 35px 70px rgba(0, 0, 0, .38)
