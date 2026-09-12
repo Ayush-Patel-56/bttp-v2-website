@@ -2183,6 +2183,10 @@ footer {
         margin: 16px 0 40px
     }
 
+    .hero h1 .hero-break {
+        display: none
+    }
+
     .hero-sub {
         font-size: 17px
     }
