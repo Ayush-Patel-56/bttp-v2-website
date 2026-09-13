@@ -1403,6 +1403,42 @@ body {
     margin-top: 18px
 }
 
+@media(max-width:640px) {
+    .marquee-row {
+        margin-top: 30px
+    }
+
+    .marquee-row.smaller {
+        margin-top: 14px
+    }
+
+    .marquee-track {
+        gap: 10px
+    }
+
+    .logo-card {
+        height: 66px;
+        min-width: 112px;
+        padding: 0 14px;
+        border-radius: 10px
+    }
+
+    .logo-card img {
+        max-height: 28px;
+        max-width: 84px
+    }
+
+    .marquee-row.smaller .logo-card {
+        height: 58px;
+        min-width: 100px
+    }
+
+    .marquee-row.smaller .logo-card img {
+        max-height: 24px;
+        max-width: 74px
+    }
+}
+
 .mp-route {
     display: flex;
     align-items: center;
