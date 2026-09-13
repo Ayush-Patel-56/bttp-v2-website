@@ -1027,6 +1027,12 @@ body {
     color: #b9b1aa
 }
 
+@media(min-width:641px) {
+    .redemption-break-mobile {
+        display: none
+    }
+}
+
 .real-redemptions .micro-proof {
     color: #b86d3c !important;
     font-weight: 700
@@ -2373,6 +2379,10 @@ footer {
         margin-top: 22px
     }
 
+    .real-redemptions .section-heading p {
+        font-size: 15.5px
+    }
+
     .feature-copy h2 {
         font-size: clamp(17px, 6.25vw - 3px, 37px)
     }
@@ -2982,7 +2992,7 @@ footer {
     .hub-flow {
         display: flex;
         flex-wrap: nowrap;
-        align-items: flex-start;
+        align-items: center;
         gap: 0;
         margin-top: 20px;
         padding: 20px 0 10px;
@@ -3022,13 +3032,19 @@ footer {
 
     .hub-chip,
     .hub-output {
-        justify-content: center
+        justify-content: flex-start
     }
 
-    .hub-chip-line,
+    .hub-chip-line {
+        flex: 1 1 auto;
+        min-width: 28px;
+        background: linear-gradient(to right, rgba(184, 109, 60, .5), rgba(184, 109, 60, 0))
+    }
+
     .hub-output-line {
-        flex: 0 0 22px;
-        min-width: 22px
+        flex: 1 1 auto;
+        min-width: 28px;
+        background: linear-gradient(to right, rgba(184, 109, 60, 0), rgba(184, 109, 60, .5))
     }
 
     .hub-row-cards {
