@@ -2111,6 +2111,10 @@ footer {
         text-align: center
     }
 
+    .feature-copy h2 .feature-break {
+        display: none
+    }
+
     .feature-copy>p {
         margin-left: auto;
         margin-right: auto
