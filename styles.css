@@ -2348,6 +2348,22 @@ footer {
         font-size: 39px
     }
 
+    .problem .section-heading h2 {
+        font-size: 28px;
+        line-height: 1.15
+    }
+
+    .problem-item h3 {
+        font-size: 20px;
+        line-height: 1.25;
+        margin: 14px 0 6px
+    }
+
+    .problem-close {
+        font-size: 20px;
+        margin-top: 22px
+    }
+
     .feature-copy h2 {
         font-size: clamp(17px, 6.25vw - 3px, 37px)
     }
