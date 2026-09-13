@@ -703,7 +703,7 @@ body {
 }
 
 .how-phone {
-    width: 320px
+    width: 380px
 }
 
 .how-step {
@@ -809,7 +809,7 @@ body {
     }
 
     .how-phone {
-        width: 300px
+        width: 400px
     }
 
     .how-step[data-how-step] {
@@ -2301,7 +2301,7 @@ footer {
     }
 
     .how-phone {
-        width: 190px
+        width: 260px
     }
 
     .how-phone .phone-screen {
