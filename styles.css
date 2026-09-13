@@ -2419,6 +2419,29 @@ footer {
         font-size: 15.5px
     }
 
+    .security .section-heading h2 {
+        font-size: 28px;
+        line-height: 1.15
+    }
+
+    .security-grid {
+        gap: 22px;
+        margin-top: 28px
+    }
+
+    .security-grid article {
+        padding-top: 16px
+    }
+
+    .security-grid h3 {
+        font-size: 18px
+    }
+
+    .security-grid p {
+        font-size: 14.5px;
+        margin-top: 4px
+    }
+
     .feature-copy h2 {
         font-size: clamp(17px, 6.25vw - 3px, 37px)
     }
