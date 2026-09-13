@@ -2326,8 +2326,13 @@ footer {
     }
 
     .how-step h3 {
-        font-size: 26px;
+        font-size: 21px;
         margin: 0 0 8px
+    }
+
+    .how .section-heading h2 {
+        font-size: 28px;
+        line-height: 1.15
     }
 
     .check-list {
