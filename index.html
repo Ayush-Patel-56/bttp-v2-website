@@ -321,6 +321,7 @@
                 <div class="mini-card mini-card--hdfc">
                   <img loading="lazy" decoding="async" class="mini-card-photo" src="assets/hdfc-infinia.webp" alt="HDFC Infinia card">
                 </div>
+                <span class="hub-card-link" aria-hidden="true"></span>
                 <div class="mini-card mini-card--axis">
                   <img loading="lazy" decoding="async" class="mini-card-photo" src="assets/axis_atlas.avif" alt="Axis Atlas card">
                 </div>
@@ -332,6 +333,7 @@
                 <div class="mini-card mini-card--airindia">
                   <img loading="lazy" decoding="async" class="mini-card-photo" src="assets/air-india-maharaja.avif" alt="Air India Maharaja Club card">
                 </div>
+                <span class="hub-card-link" aria-hidden="true"></span>
                 <div class="mini-card mini-card--icici">
                   <img loading="lazy" decoding="async" class="mini-card-photo" src="assets/icici-bank.webp" alt="ICICI Bank card">
                 </div>
@@ -343,6 +345,7 @@
                 <div class="mini-card mini-card--sbi">
                   <img loading="lazy" decoding="async" class="mini-card-photo" src="assets/sbi-card.webp" alt="SBI Card">
                 </div>
+                <span class="hub-card-link" aria-hidden="true"></span>
                 <div class="mini-card mini-card--amex">
                   <img loading="lazy" decoding="async" class="mini-card-photo" src="assets/amex-rewards.avif" alt="American Express Membership Rewards card">
                 </div>
@@ -362,10 +365,41 @@
               <circle class="hub-connector-pulse" r="2.5"><animateMotion dur="2.4s" begin="0.8s" repeatCount="indefinite" path="M0,313 C40,313 40,181 68,181"/></circle>
             </svg>
           </div>
+          <div class="hub-merge hub-merge-in" aria-hidden="true">
+            <svg class="hub-merge-svg" viewBox="0 0 300 56" preserveAspectRatio="none">
+              <path class="hub-connector-line" d="M50,0 C50,30 150,30 150,56"/>
+              <path class="hub-connector-line" d="M150,0 C150,30 150,30 150,56"/>
+              <path class="hub-connector-line" d="M250,0 C250,30 150,30 150,56"/>
+              <circle class="hub-connector-dot" cx="50" cy="0" r="4"/>
+              <circle class="hub-connector-dot" cx="150" cy="0" r="4"/>
+              <circle class="hub-connector-dot" cx="250" cy="0" r="4"/>
+              <circle class="hub-connector-dot hub-connector-dot--hub" cx="150" cy="56" r="4.5"/>
+              <circle class="hub-connector-pulse" r="2.5"><animateMotion dur="2.4s" begin="0s" repeatCount="indefinite" path="M50,0 C50,30 150,30 150,56"/></circle>
+              <circle class="hub-connector-pulse" r="2.5"><animateMotion dur="2.4s" begin="0.4s" repeatCount="indefinite" path="M150,0 C150,30 150,30 150,56"/></circle>
+              <circle class="hub-connector-pulse" r="2.5"><animateMotion dur="2.4s" begin="0.8s" repeatCount="indefinite" path="M250,0 C250,30 150,30 150,56"/></circle>
+            </svg>
+          </div>
           <div class="hub-core">
             <div class="phone-shell phone-shell-mockup hub-phone">
-              <img loading="lazy" decoding="async" class="phone-mockup-shot" src="assets/real_redemption.png" alt="Your Best Redemption screen">
+              <picture>
+                <source media="(max-width:900px)" srcset="assets/landscape.png">
+                <img loading="lazy" decoding="async" class="phone-mockup-shot" src="assets/real_redemption.png" alt="Your Best Redemption screen">
+              </picture>
             </div>
+          </div>
+          <div class="hub-merge hub-merge-out" aria-hidden="true">
+            <svg class="hub-merge-svg" viewBox="0 0 300 56" preserveAspectRatio="none">
+              <path class="hub-connector-line" d="M150,0 C150,26 50,26 50,56"/>
+              <path class="hub-connector-line" d="M150,0 C150,26 150,26 150,56"/>
+              <path class="hub-connector-line" d="M150,0 C150,26 250,26 250,56"/>
+              <circle class="hub-connector-dot hub-connector-dot--hub" cx="150" cy="0" r="4.5"/>
+              <circle class="hub-connector-dot" cx="50" cy="56" r="4"/>
+              <circle class="hub-connector-dot" cx="150" cy="56" r="4"/>
+              <circle class="hub-connector-dot" cx="250" cy="56" r="4"/>
+              <circle class="hub-connector-pulse" r="2.5"><animateMotion dur="2.4s" begin="0.2s" repeatCount="indefinite" path="M150,0 C150,26 50,26 50,56"/></circle>
+              <circle class="hub-connector-pulse" r="2.5"><animateMotion dur="2.4s" begin="0.7s" repeatCount="indefinite" path="M150,0 C150,26 150,26 150,56"/></circle>
+              <circle class="hub-connector-pulse" r="2.5"><animateMotion dur="2.4s" begin="1.2s" repeatCount="indefinite" path="M150,0 C150,26 250,26 250,56"/></circle>
+            </svg>
           </div>
           <div class="hub-outputs">
             <svg class="hub-connector hub-connector-out" viewBox="0 0 68 336" preserveAspectRatio="none" aria-hidden="true">

@@ -2931,6 +2931,10 @@ footer {
     gap: 14px
 }
 
+.hub-card-link {
+    display: none
+}
+
 .hub-output-line {
     flex: 0 0 84px;
     width: 84px;
@@ -2980,6 +2984,12 @@ footer {
     width: 260px;
     position: relative;
     z-index: 2
+}
+
+.hub-phone picture {
+    display: block;
+    width: 100%;
+    height: 100%
 }
 
 .hub-pick-badge {
@@ -3132,41 +3142,62 @@ footer {
     }
 }
 
+.hub-merge {
+    display: none
+}
+
 @media(max-width:900px) {
     .hub-flow {
         display: flex;
-        flex-wrap: nowrap;
+        flex-direction: column;
         align-items: center;
         gap: 0;
         margin-top: 20px;
         padding: 20px 0 10px;
-        width: 100vw;
-        max-width: 100vw;
-        margin-left: calc(50% - 50vw);
-        overflow-x: auto;
-        overflow-y: hidden;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none
-    }
-
-    .hub-flow::-webkit-scrollbar {
-        display: none
+        width: 100%;
+        max-width: 100%;
+        margin-left: 0;
+        overflow: visible
     }
 
     .hub-inputs,
     .hub-core,
-    .hub-outputs {
-        flex: 0 0 100%;
+    .hub-outputs,
+    .hub-merge {
         width: 100%;
-        scroll-snap-align: center;
-        scroll-snap-stop: always;
+        max-width: 420px;
         box-sizing: border-box;
-        padding: 0 24px
+        padding: 0 20px
     }
 
     .hub-core {
-        height: auto
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center
+    }
+
+    .hub-phone {
+        width: 78%;
+        max-width: 270px;
+        aspect-ratio: 2077/1074
+    }
+
+    .hub-merge {
+        display: block;
+        height: 44px
+    }
+
+    .hub-merge-in,
+    .hub-merge-out {
+        height: 76px
+    }
+
+    .hub-merge-svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+        overflow: visible
     }
 
     .hub-connector,
@@ -3174,40 +3205,81 @@ footer {
         display: none
     }
 
-    .hub-chip,
-    .hub-output {
-        justify-content: flex-start
+    .hub-inputs {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px
     }
 
-    .hub-chip-line {
-        flex: 1 1 auto;
-        min-width: 28px;
-        background: linear-gradient(to right, rgba(184, 109, 60, .5), rgba(184, 109, 60, 0))
+    .hub-chip {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0
     }
 
+    .hub-chip-line,
     .hub-output-line {
-        flex: 1 1 auto;
-        min-width: 28px;
-        background: linear-gradient(to right, rgba(184, 109, 60, 0), rgba(184, 109, 60, .5))
+        display: none
     }
 
     .hub-row-cards {
+        flex-direction: column;
+        align-items: stretch;
         width: 100%;
-        gap: 10px
+        gap: 0
     }
 
     .mini-card {
-        width: auto;
+        width: 100%;
         height: auto;
-        flex: 1 1 0;
+        flex: none;
         min-width: 0;
         aspect-ratio: 1.55
     }
 
+    .hub-card-link {
+        display: block;
+        width: 8px;
+        height: 22px;
+        margin: 0 auto;
+        background-repeat: no-repeat;
+        background-position: top center, bottom center, center;
+        background-size: 8px 8px, 8px 8px, 2px 100%;
+        background-image:
+            radial-gradient(circle, #f0a468 0 45%, transparent 50%),
+            radial-gradient(circle, #b86d3c 0 45%, transparent 50%),
+            linear-gradient(to bottom, #f0a468, #b86d3c)
+    }
+
+    .hub-outputs {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px
+    }
+
+    .hub-output {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 8px
+    }
+
     .reward-art {
-        flex-shrink: 1;
+        flex-shrink: 0;
         min-width: 0;
         width: 100%;
-        max-width: 172px
+        max-width: none;
+        height: auto;
+        aspect-ratio: 1.3
+    }
+}
+
+@media(max-width:520px) {
+    .hub-output strong {
+        font-size: 13px
+    }
+
+    .hub-output small {
+        font-size: 11.5px
     }
 }
