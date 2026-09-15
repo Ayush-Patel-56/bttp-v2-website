@@ -38,6 +38,84 @@ body {
     background: #f6f1ea
 }
 
+/* ── Section theme overrides for proper alternation ──
+   Flow: Hero(dark) → Problem(light) → How(dark) → Redemptions(light) → Universe(dark) → CTA(light) → Footer(dark)
+*/
+
+/* Real Redemptions: override to light theme */
+.real-redemptions.section-dark {
+    background: #f6f1ea;
+    color: #181512
+}
+
+.real-redemptions .section-heading p {
+    color: #77706a
+}
+
+.real-redemptions .eyebrow.copper {
+    color: #b86d3c
+}
+
+/* Rewards Hub (inside Real Redemptions): override to light theme */
+.rewards-hub.section-dark {
+    background: #f6f1ea;
+    color: #181512
+}
+
+.rewards-hub .hub-output strong {
+    color: #181512
+}
+
+.rewards-hub .hub-output small {
+    color: #6e6761
+}
+
+.rewards-hub .hub-chip span {
+    color: #181512
+}
+
+.rewards-hub .hub-connector-dot {
+    stroke: #f6f1ea
+}
+
+.rewards-hub .hub-connector-dot--hub {
+    stroke: #f6f1ea
+}
+
+.rewards-hub .mini-card {
+    background: #e8e0d5;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, .12), inset 0 0 0 1px rgba(0, 0, 0, .08)
+}
+
+.rewards-hub .reward-art {
+    box-shadow: 0 12px 26px rgba(0, 0, 0, .18), inset 0 0 0 1px rgba(0, 0, 0, .08)
+}
+
+/* Universe: override to dark theme */
+.universe {
+    padding: 75px 0;
+    background: #0b0b0a;
+    color: #f8f5ef
+}
+
+.universe .eyebrow.copper {
+    color: #d18652
+}
+
+.universe .program-note {
+    color: #a69f98
+}
+
+.universe .logo-card {
+    background: rgba(255, 255, 255, .92);
+    border-color: rgba(255, 255, 255, .15);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .3)
+}
+
+.universe .logo-card img {
+    opacity: 1
+}
+
 .nav-wrap {
     position: fixed;
     width: 100%;
@@ -1030,7 +1108,7 @@ body {
 }
 
 .real-redemptions .section-heading p {
-    color: #b9b1aa
+    color: #77706a
 }
 
 @media(min-width:641px) {
@@ -1314,7 +1392,8 @@ body {
 
 .universe {
     padding: 75px 0;
-    background: #fff
+    background: #0b0b0a;
+    color: #f8f5ef
 }
 
 .marquee-row {
@@ -1351,10 +1430,10 @@ body {
     height: 92px;
     min-width: 190px;
     padding: 0 34px;
-    background: #fff;
-    border: 1px solid #e6e0d7;
+    background: rgba(255, 255, 255, .92);
+    border: 1px solid rgba(255, 255, 255, .15);
     border-radius: 14px;
-    box-shadow: 0 3px 10px rgba(20, 16, 10, .06)
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .3)
 }
 
 .logo-card img {
@@ -1405,7 +1484,7 @@ body {
     text-align: center;
     font-size: 15px;
     font-weight: 600;
-    color: #77706a;
+    color: #a69f98;
     margin-top: 18px
 }
 
@@ -2794,13 +2873,13 @@ footer {
 
 .hub-connector-dot {
     fill: #b86d3c;
-    stroke: #0b0b0a;
+    stroke: #f6f1ea;
     stroke-width: 3
 }
 
 .hub-connector-dot--hub {
     fill: #f0a468;
-    stroke: #0b0b0a;
+    stroke: #f6f1ea;
     stroke-width: 3
 }
 
@@ -2823,7 +2902,7 @@ footer {
 .hub-chip span {
     font-size: 14.5px;
     font-weight: 600;
-    color: #f1ede7
+    color: #3a352f
 }
 
 .hub-chip-line {
@@ -2879,8 +2958,8 @@ footer {
     position: relative;
     overflow: hidden;
     flex-shrink: 0;
-    background: #131110;
-    box-shadow: 0 10px 22px rgba(0, 0, 0, .5), inset 0 0 0 1px rgba(255, 255, 255, .08)
+    background: #e8e0d5;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, .12), inset 0 0 0 1px rgba(0, 0, 0, .06)
 }
 
 .mini-card-photo {
@@ -2949,7 +3028,7 @@ footer {
 
 .hub-pick-title {
     font: 600 14.5px "DM Sans", sans-serif;
-    color: #f1ede7;
+    color: #3a352f;
     margin: 0 0 4px
 }
 
@@ -2977,7 +3056,7 @@ footer {
     position: relative;
     overflow: hidden;
     flex-shrink: 0;
-    box-shadow: 0 12px 26px rgba(0, 0, 0, .5), inset 0 0 0 1px rgba(255, 255, 255, .08)
+    box-shadow: 0 12px 26px rgba(0, 0, 0, .18), inset 0 0 0 1px rgba(0, 0, 0, .08)
 }
 
 .reward-art img {
@@ -3036,13 +3115,13 @@ footer {
 .hub-output strong {
     display: block;
     font-size: 16px;
-    color: #fff
+    color: #181512
 }
 
 .hub-output small {
     display: block;
     font-size: 13.5px;
-    color: #a69f98;
+    color: #6e6761;
     margin-top: 3px
 }
 
