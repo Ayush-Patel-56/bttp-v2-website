@@ -91,6 +91,37 @@ body {
     box-shadow: 0 12px 26px rgba(0, 0, 0, .18), inset 0 0 0 1px rgba(0, 0, 0, .08)
 }
 
+/* About: override to dark theme */
+#about .eyebrow.copper {
+    color: #d18652
+}
+
+#about .feature-copy>p {
+    color: #b7b0a8
+}
+
+#about .feature-point-icon {
+    background: transparent;
+    border-color: #b86d3c;
+    color: #f2d0b8
+}
+
+#about .feature-point h3 {
+    color: #f8f5ef
+}
+
+#about .feature-point p {
+    color: #b7b0a8
+}
+
+#about .feature-summary {
+    border-top-color: rgba(248, 245, 239, .12)
+}
+
+#about .check-list li:before {
+    color: #d18652
+}
+
 /* Universe: override to dark theme */
 .universe {
     padding: 75px 0;
