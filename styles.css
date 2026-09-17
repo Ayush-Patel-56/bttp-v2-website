@@ -92,6 +92,12 @@ body {
 }
 
 /* About: override to dark theme */
+#about {
+    display: flex;
+    flex-direction: column;
+    justify-content: center
+}
+
 #about .eyebrow.copper {
     color: #d18652
 }
@@ -1737,7 +1743,10 @@ body {
 }
 
 .security {
-    padding: 90px 0
+    padding: 90px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center
 }
 
 .security .section-heading p {
@@ -2006,9 +2015,18 @@ footer {
 
 .faq {
     padding: 92px 0;
-    background: #fff;
-    border-top: 1px solid #e9e2d8;
-    border-bottom: 1px solid #e9e2d8
+    background: #0b0b0a;
+    color: #f8f5ef;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center
+}
+
+.faq .section-heading p {
+    color: #aaa
 }
 
 .faq-chat {
@@ -2017,11 +2035,11 @@ footer {
 }
 
 .faq-chat-window {
-    background: #fff;
-    border: 1px solid #e9e2d8;
+    background: linear-gradient(180deg, #1c1b1a, #121211);
+    border: 1px solid rgba(255, 255, 255, .1);
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 20px 45px rgba(20, 16, 10, .08);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, .35);
     transition: opacity .2s ease
 }
 
@@ -2031,7 +2049,8 @@ footer {
     gap: 10px;
     background: #0b0b0a;
     color: #fff;
-    padding: 16px 22px
+    padding: 16px 22px;
+    border-bottom: 1px solid rgba(255, 255, 255, .08)
 }
 
 .faq-chat-dot {
@@ -2102,8 +2121,8 @@ footer {
 }
 
 .faq-chat-bubble {
-    background: #f1efeb;
-    color: #3a352f;
+    background: rgba(255, 255, 255, .06);
+    color: #ddd6cc;
     border-radius: 16px 16px 16px 4px;
     padding: 12px 18px;
     font-size: 14px;
@@ -2119,7 +2138,7 @@ footer {
     display: none;
     align-items: center;
     gap: 5px;
-    background: #f1efeb;
+    background: rgba(255, 255, 255, .06);
     border-radius: 16px 16px 16px 4px;
     padding: 14px 18px
 }
@@ -2132,7 +2151,7 @@ footer {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #a39c93;
+    background: #8a8378;
     animation: faqTypingBounce 1s infinite ease-in-out
 }
 
@@ -2171,13 +2190,13 @@ footer {
 }
 
 .faq-chip {
-    background: #f6f1ea;
-    border: 1px solid #ddd3c9;
+    background: rgba(255, 255, 255, .05);
+    border: 1px solid rgba(255, 255, 255, .14);
     border-radius: 999px;
     padding: 10px 16px;
     font-family: inherit;
     font-size: 13.5px;
-    color: #3a352f;
+    color: #d8d2c8;
     cursor: pointer;
     transition: .2s ease
 }
@@ -2188,9 +2207,9 @@ footer {
 }
 
 .faq-chip.is-active {
-    background: #fff;
+    background: rgba(184, 109, 60, .14);
     border-color: #b86d3c;
-    color: #b86d3c
+    color: #e8934f
 }
 
 @media(max-width:900px) {
