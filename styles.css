@@ -781,7 +781,7 @@ body {
 .how-pin .container {
     margin: 0;
     padding-top: 20px;
-    transform: scale(clamp(.7, calc((100vh - 114px)/816px), 1.05));
+    transform: scale(clamp(.7, calc((100vh - 114px)/809px), 1.05));
     transform-origin: top center
 }
 
@@ -2423,6 +2423,10 @@ footer {
 
     .problem-item h3 {
         margin: 14px 0 6px
+    }
+
+    .how-progress-dots {
+        display: none
     }
 
     .how-grid {
