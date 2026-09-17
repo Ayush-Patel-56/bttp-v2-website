@@ -41,13 +41,11 @@
       howVisuals.forEach(el => el.classList.toggle('is-active', el.dataset.howStep === step));
       howProgressDots.forEach(el => el.classList.toggle('is-active', el.dataset.howStep === step));
     };
-    const howPinQuery = window.matchMedia('(min-width: 901px)');
     const stepCount = howSteps.length;
     let howTicking = false;
 
     const updateHow = () => {
       howTicking = false;
-      if (!howPinQuery.matches) return;
       const vh = window.innerHeight;
       const stickyTop = 94;
       const wrapRect = howPinWrap.getBoundingClientRect();
@@ -67,20 +65,6 @@
     window.addEventListener('scroll', requestHowUpdate, { passive: true });
     window.addEventListener('resize', requestHowUpdate);
     updateHow();
-
-    const howGrid = document.querySelector('.how-grid');
-    if (howGrid) {
-      let howGridTicking = false;
-      const updateHowGridActive = () => {
-        howGridTicking = false;
-        if (howPinQuery.matches) return;
-        const idx = Math.round(howGrid.scrollLeft / howGrid.clientWidth);
-        setActiveHowStep(String(Math.min(stepCount - 1, Math.max(0, idx)) + 1));
-      };
-      howGrid.addEventListener('scroll', () => {
-        if (!howGridTicking) { howGridTicking = true; requestAnimationFrame(updateHowGridActive); }
-      }, { passive: true });
-    }
   }
 
   const timeline = document.querySelector('.problem-timeline');
