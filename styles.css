@@ -780,8 +780,8 @@ body {
 
 .how-pin .container {
     margin: 0;
-    padding-top: 20px;
-    transform: scale(clamp(.7, calc((100vh - 114px)/809px), 1.05));
+    padding-top: 6px;
+    transform: scale(clamp(.66, calc((100vh - 114px)/855px), 1.05));
     transform-origin: top center
 }
 
@@ -818,7 +818,7 @@ body {
 }
 
 .how-phone {
-    width: 260px
+    width: 300px
 }
 
 .how-step {
@@ -2430,7 +2430,7 @@ footer {
     }
 
     .how-grid {
-        margin-top: 24px
+        margin-top: 8px
     }
 
     .how-phone .phone-screen {
