@@ -332,13 +332,15 @@ body {
 }
 
 .hero h1 {
-    font-size: clamp(31px, 2.35vw, 43px);
-    line-height: 1.15;
-    margin: 20px 0 56px;
-    max-width: none
+    font-size: clamp(40px, 4.4vw, 60px);
+    line-height: 1.1;
+    margin: 14px 0 2px;
+    max-width: none;
+    color: #c67845;
+    font-style: normal;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, .5)
 }
 
-.hero h1 em,
 .feature-copy h2 em,
 .security h2 em,
 .final-cta h2 em {
@@ -347,18 +349,16 @@ body {
 }
 
 .hero-sub {
-    font-size: 22px;
+    font-family: "Playfair Display", serif;
+    font-size: clamp(30px, 3.3vw, 47px);
     font-weight: 500;
+    line-height: 1.2;
     color: #f2ede6;
     text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
-    max-width: 640px;
-    display: inline-block;
-    background: rgba(11, 11, 10, .45);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    border: 1px solid rgba(255, 255, 255, .08);
-    border-radius: 12px;
-    padding: 14px 18px
+    max-width: 720px;
+    display: block;
+    margin: 0 0 34px;
+    text-wrap: pretty
 }
 
 .hero-cta {
@@ -378,12 +378,47 @@ body {
 .hero-proof {
     display: flex;
     flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 48px;
+    color: #ded8cf;
+    font-size: 17px;
+    font-weight: 700;
+    margin-top: 44px;
+    align-self: flex-start
+}
+
+.hero-proof-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    line-height: 1.15
+}
+
+.hero-proof-icon {
+    width: 28px;
+    height: 28px;
+    color: #d18652;
+    flex-shrink: 0
+}
+
+.hero-proof-divider {
+    width: 1px;
+    height: 34px;
+    background: rgba(255, 255, 255, .22);
+    display: block
+}
+
+.play-icon {
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
-    gap: 28px;
-    color: #b8b1aa;
-    font-size: 14px;
-    margin-top: 54px;
-    align-self: center
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, .35);
+    font-size: 9px;
+    line-height: 1
 }
 
 .hero-product {
@@ -2356,6 +2391,10 @@ footer {
     .hero-proof {
         justify-content: center;
         align-self: stretch
+    }
+
+    .hero-proof-divider {
+        display: none
     }
 
     .hero-product {
