@@ -1526,12 +1526,6 @@ body {
     margin: 5px 0 0
 }
 
-.universe {
-    padding: 75px 0;
-    background: #0b0b0a;
-    color: #f8f5ef
-}
-
 .marquee-row {
     overflow: hidden;
     margin-top: 46px;
@@ -1911,14 +1905,19 @@ body {
 }
 
 .final-cta {
-    padding: 95px 0
+    padding: 0 0 95px
+}
+
+.cta-universe {
+    padding-bottom: 60px
 }
 
 .cta-grid {
     display: grid;
     grid-template-columns: 1.05fr .95fr;
     align-items: center;
-    gap: 72px
+    gap: 72px;
+    padding-top: 95px
 }
 
 .final-cta h2 {
@@ -1994,36 +1993,6 @@ body {
     height: 17px
 }
 
-.cta-trusted-label {
-    color: #9a9186;
-    font-weight: 700;
-    font-size: 11px;
-    letter-spacing: .14em;
-    margin-bottom: 16px
-}
-
-.cta-trusted-logos {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 20px
-}
-
-.cta-trusted-logos img {
-    height: 20px;
-    width: auto;
-    max-width: 72px;
-    object-fit: contain;
-    filter: grayscale(1);
-    opacity: .7
-}
-
-.cta-trusted-more {
-    margin-top: 14px;
-    font-size: 13px;
-    color: #9a9186
-}
-
 /* Right column: floating card stack + form card */
 .cta-panel {
     position: relative
@@ -2066,47 +2035,6 @@ body {
     min-height: 140px
 }
 
-.cta-floaters {
-    position: absolute;
-    top: -30px;
-    right: -70px;
-    bottom: -30px;
-    width: 190px;
-    z-index: 1;
-    pointer-events: none
-}
-
-.cta-float-card {
-    position: absolute;
-    width: 130px;
-    border-radius: 14px;
-    box-shadow: 0 16px 32px rgba(23, 21, 18, .18);
-    object-fit: cover
-}
-
-.cta-float-1 {
-    top: 0;
-    right: 0;
-    height: 82px;
-    z-index: 3
-}
-
-.cta-float-2 {
-    top: 130px;
-    right: 40px;
-    height: 100px;
-    z-index: 2;
-    transform: rotate(6deg)
-}
-
-.cta-float-3 {
-    top: 270px;
-    right: -10px;
-    height: 100px;
-    z-index: 1;
-    transform: rotate(-4deg)
-}
-
 .cta-disclaimer {
     display: flex;
     align-items: center;
@@ -2145,8 +2073,6 @@ body {
 
     .cta-eyebrow-rule,
     .cta-features,
-    .cta-trusted,
-    .cta-floaters,
     .cta-card-logo,
     .cta-card-title,
     .cta-card-sub {
