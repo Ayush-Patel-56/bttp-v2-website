@@ -2599,10 +2599,29 @@ footer {
         width: 100%
     }
 
-    .hero-actions,
-    .hero-proof {
+    .hero-actions {
         justify-content: center;
         align-self: stretch
+    }
+
+    .hero-proof {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 28px;
+        font-size: 14.5px;
+        align-self: stretch
+    }
+
+    .hero-proof-item {
+        gap: 7px
+    }
+
+    .hero-proof-icon {
+        width: 19px;
+        height: 19px
     }
 
     .hero-proof-divider {
@@ -2709,7 +2728,7 @@ footer {
     }
 
     .hero h1 {
-        font-size: clamp(28px, 8vw, 38px);
+        font-size: clamp(32px, 9.5vw, 46px);
         margin: 16px 0 40px
     }
 
@@ -2718,7 +2737,7 @@ footer {
     }
 
     .hero-sub {
-        font-size: 17px
+        font-size: 21px
     }
 
     .hero-actions {
