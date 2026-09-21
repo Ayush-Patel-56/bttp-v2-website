@@ -2619,7 +2619,13 @@ footer {
     }
 
     .nav.mobile-open .nav-cta {
-        display: none
+        display: block;
+        padding: 24px
+    }
+
+    .nav.mobile-open .nav-cta .button {
+        display: flex;
+        width: 100%
     }
 
     .hero {
