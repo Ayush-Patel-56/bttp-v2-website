@@ -212,6 +212,16 @@ body {
     display: none
 }
 
+.footer-brand-name {
+    display: none
+}
+
+@media(min-width:901px) {
+    .footer-brand-name {
+        display: inline
+    }
+}
+
 .nav-links {
     margin-left: auto;
     display: flex;
