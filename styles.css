@@ -871,59 +871,113 @@ body {
     width: 300px
 }
 
-.how-step {
+.how-timeline {
     grid-area: step;
-    text-align: center;
-    padding: 0 0 20px;
-    opacity: 0;
-    transform: translateY(14px);
-    pointer-events: none;
-    transition: opacity .4s ease, transform .4s ease
+    width: 100%;
+    max-width: 420px;
+    text-align: left
 }
 
-.how-step.is-active {
-    opacity: 1;
-    transform: none;
-    pointer-events: auto
+.how-step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    column-gap: 20px;
+    padding-bottom: 22px
+}
+
+.how-step:last-child {
+    padding-bottom: 0
+}
+
+.how-step-marker {
+    position: relative;
+    display: flex;
+    justify-content: center
+}
+
+.how-step-circle {
+    position: relative;
+    z-index: 2;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid #514e4a;
+    background: #14110f;
+    display: grid;
+    place-items: center;
+    font: 600 13px "Playfair Display", serif;
+    color: #a69f98;
+    transition: background .35s ease, border-color .35s ease, color .35s ease
+}
+
+.how-step:not(:last-child) .how-step-marker:after {
+    content: "";
+    position: absolute;
+    top: 38px;
+    bottom: -22px;
+    left: 50%;
+    width: 1px;
+    background: #3a3733;
+    transform: translateX(-50%);
+    z-index: 1;
+    transition: background .4s ease
+}
+
+.how-step.is-active .how-step-circle,
+.how-step.is-complete .how-step-circle {
+    background: #d58b59;
+    border-color: #d58b59;
+    color: #1c1a17
+}
+
+.how-step.is-complete:not(:last-child) .how-step-marker:after {
+    background: #b86d3c
+}
+
+.how-step-body {
+    min-width: 0
+}
+
+.how-step h3 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #8f8a84;
+    margin: 6px 0 0;
+    transition: color .35s ease, font-size .35s ease
+}
+
+.how-step.is-active h3 {
+    font-size: 26px;
+    font-weight: 600;
+    color: #f5f1ec;
+    margin-top: 0
+}
+
+.how-step-detail {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows .4s ease
+}
+
+.how-step.is-active .how-step-detail {
+    grid-template-rows: 1fr
+}
+
+.how-step-detail-inner {
+    overflow: hidden
 }
 
 .how-step .check-list {
     text-align: left;
-    display: inline-block
-}
-
-.how-step-num {
-    display: block;
-    color: #d18652;
-    font: 600 24px "Playfair Display", serif;
-    margin-bottom: 12px
-}
-
-.how-step .step-icon {
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    border: 1px solid #514e4a;
-    display: grid;
-    place-items: center;
-    font-size: 25px;
-    margin: 0 0 14px
-}
-
-.how-step h3 {
-    font-size: 30px;
-    margin: 0 0 10px
+    display: block
 }
 
 .how-step p {
-    font-size: 16px;
+    font-size: 15px;
     color: #a69f98;
-    max-width: 420px
-}
-
-.how-step.step-highlight .step-icon {
-    background: #b86d3c;
-    border-color: #b86d3c
+    max-width: 400px;
+    margin-top: 10px
 }
 
 @media(min-width:901px) {
@@ -976,25 +1030,9 @@ body {
         width: 400px
     }
 
-    .how-step[data-how-step] {
+    .how-timeline {
         grid-area: step;
-        align-self: center;
-        text-align: left;
-        padding: 0;
-        opacity: 0;
-        transform: translateY(14px);
-        pointer-events: none;
-        transition: opacity .4s ease, transform .4s ease
-    }
-
-    .how-step .check-list {
-        display: block
-    }
-
-    .how-step.is-active {
-        opacity: 1;
-        transform: none;
-        pointer-events: auto
+        align-self: center
     }
 
     .how-pin .container {
@@ -1015,8 +1053,21 @@ body {
     }
 
     .how-visual-unit,
-    .how-step {
+    .how-step,
+    .how-step-circle,
+    .how-step-detail,
+    .how-step h3 {
         transition: none
+    }
+
+    .how-step-detail {
+        grid-template-rows: 1fr
+    }
+
+    .how-step h3 {
+        font-size: 26px;
+        font-weight: 600;
+        color: #f5f1ec
     }
 }
 
@@ -2634,14 +2685,25 @@ footer {
         font-size: 10.5px
     }
 
-    .how-step-num {
-        font-size: 20px;
-        margin-bottom: 6px
+    .how-step-circle {
+        width: 32px;
+        height: 32px;
+        font-size: 12px
     }
 
-    .how-step h3 {
-        font-size: 21px;
-        margin: 0 0 8px
+    .how-step:not(:last-child) .how-step-marker:after {
+        top: 32px;
+        bottom: -18px
+    }
+
+    .how-step {
+        grid-template-columns: 32px 1fr;
+        column-gap: 14px;
+        padding-bottom: 18px
+    }
+
+    .how-step.is-active h3 {
+        font-size: 21px
     }
 
     .how .section-heading h2 {

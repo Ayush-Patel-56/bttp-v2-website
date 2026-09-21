@@ -37,7 +37,12 @@
   const howPinWrap = document.querySelector('.how-pin-wrap');
   if (howSteps.length && howVisuals.length && howPinWrap) {
     const setActiveHowStep = (step) => {
-      howSteps.forEach(el => el.classList.toggle('is-active', el.dataset.howStep === step));
+      const activeNum = Number(step);
+      howSteps.forEach(el => {
+        const num = Number(el.dataset.howStep);
+        el.classList.toggle('is-active', num === activeNum);
+        el.classList.toggle('is-complete', num < activeNum);
+      });
       howVisuals.forEach(el => el.classList.toggle('is-active', el.dataset.howStep === step));
       howProgressDots.forEach(el => el.classList.toggle('is-active', el.dataset.howStep === step));
     };
