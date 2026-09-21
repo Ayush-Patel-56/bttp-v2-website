@@ -3029,8 +3029,10 @@ footer {
     }
 
     .footer-inner {
-        flex-direction: column;
-        text-align: center
+        flex-wrap: wrap;
+        justify-content: space-between;
+        row-gap: 12px;
+        text-align: left
     }
 
     .footer-links {
