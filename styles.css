@@ -2722,19 +2722,24 @@ footer {
 
     .feature-summary {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        justify-content: stretch;
-        gap: 14px 16px;
+        grid-template-columns: max-content max-content;
+        justify-content: start;
+        column-gap: 24px;
+        row-gap: 14px;
         width: 100%
     }
 
     .feature-summary li {
-        white-space: normal;
-        font-size: clamp(11.5px, 3.6vw, 15.5px);
+        display: flex;
+        align-items: flex-start;
+        white-space: nowrap;
+        font-size: clamp(11.5px, 3.6vw, 14.5px);
+        line-height: 1.35;
         margin: 0
     }
 
     .feature-summary li:before {
+        flex: none;
         margin-right: 6px
     }
 
