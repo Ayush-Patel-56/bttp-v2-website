@@ -226,6 +226,12 @@ body {
     font-size: 15px
 }
 
+@media(min-width:901px) {
+    .nav-link-mobile-only {
+        display: none
+    }
+}
+
 .nav-cta {
     display: contents
 }
