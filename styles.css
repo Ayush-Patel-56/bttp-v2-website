@@ -1911,12 +1911,14 @@ body {
 }
 
 .final-cta {
-    padding: 95px 0;
-    text-align: center
+    padding: 95px 0
 }
 
-.cta-inner {
-    max-width: 900px
+.cta-grid {
+    display: grid;
+    grid-template-columns: 1.05fr .95fr;
+    align-items: center;
+    gap: 72px
 }
 
 .final-cta h2 {
@@ -1936,6 +1938,239 @@ body {
 
 .final-cta p {
     color: #6e6761
+}
+
+/* Left column: eyebrow, headline, feature bullets, trusted-programs strip */
+.cta-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px
+}
+
+.cta-eyebrow-rule {
+    width: 28px;
+    height: 1px;
+    background: #d18652
+}
+
+.cta-copy-sub {
+    max-width: 480px;
+    font-size: 17px
+}
+
+.cta-features {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 22px;
+    margin: 34px 0
+}
+
+.cta-feature {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #181512;
+    line-height: 1.3
+}
+
+.cta-feature-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 999px;
+    background: rgba(184, 109, 60, .14);
+    color: #b86d3c
+}
+
+.cta-feature-icon svg {
+    width: 17px;
+    height: 17px
+}
+
+.cta-trusted-label {
+    color: #9a9186;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: .14em;
+    margin-bottom: 16px
+}
+
+.cta-trusted-logos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px
+}
+
+.cta-trusted-logos img {
+    height: 20px;
+    width: auto;
+    max-width: 72px;
+    object-fit: contain;
+    filter: grayscale(1);
+    opacity: .7
+}
+
+.cta-trusted-more {
+    margin-top: 14px;
+    font-size: 13px;
+    color: #9a9186
+}
+
+/* Right column: floating card stack + form card */
+.cta-panel {
+    position: relative
+}
+
+.cta-card {
+    position: relative;
+    z-index: 2;
+    background: #fff;
+    border-radius: 28px;
+    padding: 44px 40px 32px;
+    box-shadow: 0 24px 60px rgba(23, 21, 18, .1);
+    text-align: center
+}
+
+.cta-card-logo {
+    display: block;
+    margin: 0 auto 14px
+}
+
+.cta-card-title {
+    font-family: "Playfair Display", serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0 0 6px
+}
+
+.cta-card-sub {
+    color: #6e6761;
+    font-size: 14px;
+    margin: 0
+}
+
+.cta-card .waitlist-form {
+    max-width: none;
+    margin: 24px 0 6px
+}
+
+.cta-card .waitlist-form textarea {
+    min-height: 140px
+}
+
+.cta-floaters {
+    position: absolute;
+    top: -30px;
+    right: -70px;
+    bottom: -30px;
+    width: 190px;
+    z-index: 1;
+    pointer-events: none
+}
+
+.cta-float-card {
+    position: absolute;
+    width: 130px;
+    border-radius: 14px;
+    box-shadow: 0 16px 32px rgba(23, 21, 18, .18);
+    object-fit: cover
+}
+
+.cta-float-1 {
+    top: 0;
+    right: 0;
+    height: 82px;
+    z-index: 3
+}
+
+.cta-float-2 {
+    top: 130px;
+    right: 40px;
+    height: 100px;
+    z-index: 2;
+    transform: rotate(6deg)
+}
+
+.cta-float-3 {
+    top: 270px;
+    right: -10px;
+    height: 100px;
+    z-index: 1;
+    transform: rotate(-4deg)
+}
+
+.cta-disclaimer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px
+}
+
+.cta-disclaimer svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: #9a9186
+}
+
+@media(min-width:961px) {
+    .cta-card .waitlist-form input,
+    .cta-card .waitlist-form textarea {
+        font-size: 15px
+    }
+}
+
+@media(max-width:960px) {
+    .final-cta {
+        text-align: center
+    }
+
+    .cta-grid {
+        display: block;
+        max-width: 900px;
+        margin: auto
+    }
+
+    .cta-break {
+        display: none
+    }
+
+    .cta-eyebrow-rule,
+    .cta-features,
+    .cta-trusted,
+    .cta-floaters,
+    .cta-card-logo,
+    .cta-card-title,
+    .cta-card-sub {
+        display: none
+    }
+
+    .cta-copy-sub {
+        max-width: none;
+        margin-left: auto;
+        margin-right: auto
+    }
+
+    .cta-card {
+        background: none;
+        box-shadow: none;
+        border-radius: 0;
+        padding: 0;
+        text-align: left
+    }
+
+    .cta-card .waitlist-form {
+        max-width: 530px;
+        margin: 32px auto 8px
+    }
 }
 
 .waitlist-form {
