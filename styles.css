@@ -396,31 +396,31 @@ body {
     flex-wrap: wrap;
     justify-content: flex-start;
     align-items: center;
-    gap: 48px;
+    gap: 32px;
     color: #ded8cf;
-    font-size: 17px;
+    font-size: 14px;
     font-weight: 700;
-    margin-top: 44px;
+    margin-top: 30px;
     align-self: flex-start
 }
 
 .hero-proof-item {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
     line-height: 1.15
 }
 
 .hero-proof-icon {
-    width: 28px;
-    height: 28px;
+    width: 20px;
+    height: 20px;
     color: #d18652;
     flex-shrink: 0
 }
 
 .hero-proof-divider {
     width: 1px;
-    height: 34px;
+    height: 24px;
     background: rgba(255, 255, 255, .22);
     display: block
 }
