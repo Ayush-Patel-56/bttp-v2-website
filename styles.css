@@ -929,7 +929,7 @@ body {
 .how-timeline {
     grid-area: step;
     width: 100%;
-    max-width: 420px;
+    max-width: 450px;
     text-align: left
 }
 
@@ -1123,6 +1123,12 @@ body {
     .how-pin .container {
         transform: scale(clamp(.62, calc((100vh - 88px)/860px), 1));
         transform-origin: center
+    }
+}
+
+@media(min-width:1150px) {
+    .how-step[data-how-step="3"] .check-list li:last-child {
+        white-space: nowrap
     }
 }
 
