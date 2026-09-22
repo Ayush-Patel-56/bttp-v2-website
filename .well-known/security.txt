@@ -1,0 +1,4 @@
+Contact: mailto:security@backtothepoints.com
+Expires: 2027-09-22T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://backtothepoints.com/.well-known/security.txt

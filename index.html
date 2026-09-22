@@ -9,8 +9,9 @@
   <title>Back to the Points - Track, Value & Redeem Credit Card Rewards, Airline Miles & Hotel Points</title>
   <link rel="canonical" href="https://backtothepoints.com/" />
 
-  <link rel="icon" type="image/jpeg" href="/assets/logo.jpeg" />
-  <link rel="apple-touch-icon" href="/assets/logo.jpeg" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
 
   <meta property="og:type" content="website" />
@@ -31,8 +32,7 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/dmsans/v17/rP2Yp2ywxg089UriI5-g4vlH9VoD8Cmcqbu0-K6z9mXg.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/playfairdisplay/v40/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKebunDXbtPK_l2q.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/playfairdisplay/v40/nuFRD-vYSZviVYUb_rj3ij__anPXDTnCjmHKM4nYO7KN_naUXtHA-X-oE0o.woff2">
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,600&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,600&display=swap">
   <link rel="stylesheet" href="/styles.css" />
   <link rel="preload" as="image" fetchpriority="high" href="/assets/hero-boat-poster.jpg">
 
@@ -542,7 +542,7 @@
       </div>
     </section> -->
 
-    <section id="early-access" class="final-cta light-section">
+    <section class="final-cta light-section">
       <div class="universe cta-universe">
         <div class="container">
           <div class="section-heading centered reveal">
@@ -563,7 +563,7 @@
           <p class="program-note">More programs added regularly</p>
         </div>
       </div>
-      <div class="container cta-grid reveal">
+      <div id="early-access" class="container cta-grid reveal">
         <div class="cta-copy">
           <p class="eyebrow cta-eyebrow">COMING SOON<span class="cta-eyebrow-rule" aria-hidden="true"></span></p>
           <h2><span class="cta-line">You’ve already earned <br class="cta-break">the points</span><br><em>Now make them count</em></h2>
@@ -605,6 +605,27 @@
               <input id="email" name="email" type="email" autocomplete="email" placeholder="Enter your email" required />
               <label class="sr-only" for="phone">Phone number</label>
               <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="Enter your phone number (optional)" />
+
+              <!-- Honeypot: hidden from real visitors via CSS (.hp-field), left blank by
+                   humans, often filled in by bots. api/waitlist.js silently drops the
+                   submission when this is non-empty. Not a substitute for Turnstile below. -->
+              <div class="hp-field" aria-hidden="true">
+                <label for="website">Leave this field blank</label>
+                <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
+              </div>
+
+              <!-- Cloudflare Turnstile widget. This is Cloudflare's public TEST site key
+                   (always passes, gives zero real protection). Before launch, replace it
+                   with your own site key from
+                   https://dash.cloudflare.com/?to=/:account/turnstile and set the matching
+                   TURNSTILE_SECRET_KEY env var in Vercel (see api/waitlist.js). -->
+              <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="dark"></div>
+
+              <label class="waitlist-consent">
+                <input type="checkbox" id="waitlist-consent" name="consent" required />
+                <span>I agree to the <a href="privacy.html">Privacy Policy</a>.</span>
+              </label>
+
               <button class="button" type="submit">Get Early Access →</button>
             </form>
             <p class="form-message" id="form-message" aria-live="polite"></p>
@@ -627,12 +648,14 @@
       <div class="footer-links">
         <a href="about.html">About</a>
         <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
         <a href="ask-bttp.html#faq">FAQ</a>
       </div>
       <span>© 2026 BTTP</span>
     </div>
   </footer>
 
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script src="/script.js" defer></script>
 </body>
 </html>

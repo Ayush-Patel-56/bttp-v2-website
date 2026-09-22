@@ -105,7 +105,11 @@
     }));
   }
 
-  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzaZDtgC4OYLigKctarU4txKs9d3TPjfCcUaUJ3yJrlIOExoKbAUZR-EqTeo1PvvjaW/exec';
+  // The browser only ever talks to our own /api/waitlist proxy now (see
+  // api/waitlist.js). It holds the Google Apps Script URL and shared secret
+  // server-side, verifies Turnstile, and returns a real JSON result instead
+  // of the old opaque no-cors response (fixes BTTP-01 and BTTP-05).
+  const PHONE_RE = /^[0-9+\-\s()]{7,20}$/;
 
   const form = document.getElementById('waitlist-form');
   const message = document.getElementById('form-message');
@@ -116,9 +120,20 @@
       const email = formData.get('email')?.toString().trim();
       const comment = formData.get('comment')?.toString().trim() || '';
       const phone = formData.get('phone')?.toString().trim() || '';
+      const website = formData.get('website')?.toString().trim() || ''; // honeypot
+      const consent = form.querySelector('#waitlist-consent');
+      const turnstileToken = form.querySelector('[name="cf-turnstile-response"]')?.value || '';
 
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         message.textContent = 'Please enter a valid email address.';
+        return;
+      }
+      if (phone && !PHONE_RE.test(phone)) {
+        message.textContent = 'Please enter a valid phone number, or leave it blank.';
+        return;
+      }
+      if (consent && !consent.checked) {
+        message.textContent = 'Please agree to the Privacy Policy to continue.';
         return;
       }
 
@@ -130,14 +145,24 @@
       }
 
       try {
-        await fetch(GOOGLE_SCRIPT_URL, {
+        const response = await fetch('/api/waitlist', {
           method: 'POST',
-          mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, phone, comment })
+          body: JSON.stringify({ email, phone, comment, website, turnstileToken })
         });
-        message.textContent = "Thanks - you're on the BTTP early-access list!";
-        form.reset();
+        const result = await response.json().catch(() => null);
+
+        if (response.ok && result?.ok) {
+          message.textContent = "Thanks - you're on the BTTP early-access list!";
+          form.reset();
+          if (window.turnstile) window.turnstile.reset();
+        } else if (result?.error === 'captcha_failed') {
+          message.textContent = 'Please complete the verification checkbox and try again.';
+        } else if (result?.error === 'rate_limited') {
+          message.textContent = "You've already signed up recently - thanks!";
+        } else {
+          message.textContent = 'Something went wrong. Please try again.';
+        }
       } catch (err) {
         message.textContent = 'Something went wrong. Please try again.';
       } finally {
@@ -170,20 +195,10 @@
     });
   }
 
-  const storyForm = document.getElementById('story-form');
-  const storyMessage = document.getElementById('story-message');
-  if (storyForm && storyMessage) {
-    storyForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const story = new FormData(storyForm).get('story')?.toString().trim();
-      if (!story) {
-        storyMessage.textContent = 'Please share a few words before submitting.';
-        return;
-      }
-      storyMessage.textContent = 'Thanks for sharing - your story helps us build the right thing.';
-      storyForm.reset();
-    });
-  }
+  // Story form removed (BTTP-07): the section is commented out of the HTML
+  // and its old handler only ever printed a fake thank-you without sending
+  // the story anywhere. Re-add a real handler wired to /api/waitlist-style
+  // storage if/when the story section comes back.
 
   const track = document.querySelector('.redemption-track');
   const dotsWrap = document.querySelector('.redemption-dots');
