@@ -2710,7 +2710,7 @@ footer {
         display: block
     }
 
-    .brand {
+    .nav .brand {
         margin-left: auto
     }
 
@@ -3217,14 +3217,17 @@ footer {
     }
 
     .footer-inner {
-        flex-wrap: wrap;
-        justify-content: space-between;
-        row-gap: 12px;
-        text-align: left
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        text-align: center
     }
 
     .footer-links {
-        margin-left: 0
+        margin-left: 0;
+        flex-wrap: wrap;
+        justify-content: center
     }
 
     .brand-name {
