@@ -107,8 +107,8 @@
 
   // The browser only ever talks to our own /api/waitlist proxy now (see
   // api/waitlist.js). It holds the Google Apps Script URL and shared secret
-  // server-side, verifies Turnstile, and returns a real JSON result instead
-  // of the old opaque no-cors response (fixes BTTP-01 and BTTP-05).
+  // server-side, and returns a real JSON result instead of the old opaque
+  // no-cors response (fixes BTTP-01 and BTTP-05).
   const PHONE_RE = /^[0-9+\-\s()]{7,20}$/;
 
   const form = document.getElementById('waitlist-form');
@@ -122,7 +122,6 @@
       const phone = formData.get('phone')?.toString().trim() || '';
       const website = formData.get('website')?.toString().trim() || ''; // honeypot
       const consent = form.querySelector('#waitlist-consent');
-      const turnstileToken = form.querySelector('[name="cf-turnstile-response"]')?.value || '';
 
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         message.textContent = 'Please enter a valid email address.';
@@ -148,16 +147,13 @@
         const response = await fetch('/api/waitlist', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, phone, comment, website, turnstileToken })
+          body: JSON.stringify({ email, phone, comment, website })
         });
         const result = await response.json().catch(() => null);
 
         if (response.ok && result?.ok) {
           message.textContent = "Thanks - you're on the BTTP early-access list!";
           form.reset();
-          if (window.turnstile) window.turnstile.reset();
-        } else if (result?.error === 'captcha_failed') {
-          message.textContent = 'Please complete the verification checkbox and try again.';
         } else if (result?.error === 'rate_limited') {
           message.textContent = "You've already signed up recently - thanks!";
         } else {

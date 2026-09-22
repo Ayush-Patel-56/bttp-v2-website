@@ -2336,10 +2336,6 @@ body {
     white-space: nowrap;
 }
 
-.cf-turnstile {
-    margin: 4px 0;
-}
-
 .waitlist-consent {
     display: flex;
     align-items: flex-start;

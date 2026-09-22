@@ -608,18 +608,11 @@
 
               <!-- Honeypot: hidden from real visitors via CSS (.hp-field), left blank by
                    humans, often filled in by bots. api/waitlist.js silently drops the
-                   submission when this is non-empty. Not a substitute for Turnstile below. -->
+                   submission when this is non-empty. -->
               <div class="hp-field" aria-hidden="true">
                 <label for="website">Leave this field blank</label>
                 <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
               </div>
-
-              <!-- Cloudflare Turnstile widget. This is Cloudflare's public TEST site key
-                   (always passes, gives zero real protection). Before launch, replace it
-                   with your own site key from
-                   https://dash.cloudflare.com/?to=/:account/turnstile and set the matching
-                   TURNSTILE_SECRET_KEY env var in Vercel (see api/waitlist.js). -->
-              <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="dark"></div>
 
               <label class="waitlist-consent">
                 <input type="checkbox" id="waitlist-consent" name="consent" required />
@@ -655,7 +648,6 @@
     </div>
   </footer>
 
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script src="/script.js" defer></script>
 </body>
 </html>

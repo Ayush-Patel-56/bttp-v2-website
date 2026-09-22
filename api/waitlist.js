@@ -9,13 +9,10 @@
 // Required environment variables (set in Vercel project settings):
 //   GOOGLE_SCRIPT_URL        - the Apps Script /exec URL (see google-apps-script.gs)
 //   WAITLIST_SHARED_SECRET   - random string, must match SHARED_SECRET in the Apps Script
-//   TURNSTILE_SECRET_KEY     - Cloudflare Turnstile secret key (optional; if unset,
-//                              Turnstile verification is skipped, which is fine for local/dev
-//                              but should be set before real launch)
 
 // Best-effort in-memory rate limit. This resets whenever the serverless
 // instance cold-starts, so it is not a durable guarantee - it is a cheap
-// second layer behind Turnstile + the honeypot, not a replacement for one.
+// second layer behind the honeypot, not a replacement for one.
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
 const RATE_LIMIT_MAX = 5;
 const hits = new Map();
@@ -45,29 +42,6 @@ function sanitizeCell(value) {
   return /^[=+\-@]/.test(v) ? `'${v}` : v;
 }
 
-async function verifyTurnstile(token, ip) {
-  const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return true; // not configured yet - see comment above
-  if (!token) return false;
-
-  const params = new URLSearchParams();
-  params.set('secret', secret);
-  params.set('response', token);
-  if (ip) params.set('remoteip', ip);
-
-  try {
-    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params
-    });
-    const data = await res.json();
-    return data.success === true;
-  } catch {
-    return false;
-  }
-}
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -95,7 +69,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ ok: false, error: 'invalid_json' });
   }
 
-  const { email, phone, comment, website, turnstileToken } = body;
+  const { email, phone, comment, website } = body;
 
   // Honeypot: a real visitor never fills this hidden field in. A bot filling
   // every field usually will. Silently report success so we don't teach
@@ -113,11 +87,6 @@ export default async function handler(req, res) {
   }
   if (cleanPhone && !PHONE_RE.test(cleanPhone)) {
     return res.status(400).json({ ok: false, error: 'invalid_phone' });
-  }
-
-  const captchaOk = await verifyTurnstile(turnstileToken, ip);
-  if (!captchaOk) {
-    return res.status(400).json({ ok: false, error: 'captcha_failed' });
   }
 
   const scriptUrl = process.env.GOOGLE_SCRIPT_URL;
