@@ -772,12 +772,6 @@ body {
     background: rgba(24, 21, 18, .12)
 }
 
-.policy-modal-loading {
-    padding: 48px 0;
-    text-align: center;
-    color: #9a8f80
-}
-
 @media(max-width:640px) {
     .policy-modal-overlay {
         padding: 0
@@ -2050,6 +2044,40 @@ body {
     color: #5f5b57;
     font-size: 13px;
     margin-top: 35px
+}
+
+.security-cta {
+    text-align: center;
+    margin-top: 44px
+}
+
+.security-see-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 26px;
+    border: 1px solid rgba(248, 245, 239, .25);
+    border-radius: 999px;
+    background: transparent;
+    color: #f8f5ef;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease
+}
+
+.security-see-more:hover {
+    background: rgba(248, 245, 239, .08);
+    border-color: rgba(248, 245, 239, .5)
+}
+
+.security-see-more span {
+    transition: transform .15s ease
+}
+
+.security-see-more:hover span {
+    transform: translateX(3px)
 }
 
 .about-inner {

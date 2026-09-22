@@ -261,73 +261,44 @@
     startAutoplay();
   }
 
-  // Privacy/Terms open as a modal instead of navigating away, on any page
-  // that links to privacy.html or terms.html. Falls back to a normal
-  // navigation if the fetch fails (e.g. opened via file://).
-  const policyCache = new Map();
-  let overlay, modal, modalBody, closeBtn, lastFocused;
+  const policyTrigger = document.querySelector('[data-policy-toggle]');
+  const policySource = document.querySelector('.policy-content');
+  if (policyTrigger && policySource) {
+    let overlay, modal, closeBtn, lastFocused;
 
-  const buildOverlay = () => {
-    overlay = document.createElement('div');
-    overlay.className = 'policy-modal-overlay';
-    overlay.innerHTML = `
-      <div class="policy-modal" role="dialog" aria-modal="true">
-        <button type="button" class="policy-modal-close" aria-label="Close">&times;</button>
-        <div class="policy-content policy-modal-body"><div class="policy-modal-loading">Loading…</div></div>
-      </div>`;
-    document.body.appendChild(overlay);
-    modal = overlay.querySelector('.policy-modal');
-    modalBody = overlay.querySelector('.policy-modal-body');
-    closeBtn = overlay.querySelector('.policy-modal-close');
+    const buildOverlay = () => {
+      overlay = document.createElement('div');
+      overlay.className = 'policy-modal-overlay';
+      overlay.innerHTML = `
+        <div class="policy-modal" role="dialog" aria-modal="true">
+          <button type="button" class="policy-modal-close" aria-label="Close">&times;</button>
+          <div class="policy-content">${policySource.innerHTML}</div>
+        </div>`;
+      document.body.appendChild(overlay);
+      modal = overlay.querySelector('.policy-modal');
+      closeBtn = overlay.querySelector('.policy-modal-close');
 
-    closeBtn.addEventListener('click', closeModal);
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && overlay.classList.contains('is-open')) closeModal();
-    });
-  };
+      closeBtn.addEventListener('click', closeModal);
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.classList.contains('is-open')) closeModal();
+      });
+    };
 
-  const openModal = () => {
-    if (!overlay) buildOverlay();
-    lastFocused = document.activeElement;
-    overlay.classList.add('is-open');
-    document.body.style.overflow = 'hidden';
-    closeBtn.focus();
-  };
+    const closeModal = () => {
+      if (!overlay) return;
+      overlay.classList.remove('is-open');
+      document.body.style.overflow = '';
+      if (lastFocused) lastFocused.focus();
+    };
 
-  const closeModal = () => {
-    if (!overlay) return;
-    overlay.classList.remove('is-open');
-    document.body.style.overflow = '';
-    if (lastFocused) lastFocused.focus();
-  };
-
-  const loadPolicy = async (href) => {
-    modalBody.innerHTML = '<div class="policy-modal-loading">Loading…</div>';
-    try {
-      let html = policyCache.get(href);
-      if (!html) {
-        const res = await fetch(href);
-        if (!res.ok) throw new Error('fetch failed');
-        html = await res.text();
-        policyCache.set(href, html);
-      }
-      const doc = new DOMParser().parseFromString(html, 'text/html');
-      const content = doc.querySelector('.policy-content');
-      if (!content) throw new Error('no content');
-      modalBody.innerHTML = content.innerHTML;
+    policyTrigger.addEventListener('click', () => {
+      if (!overlay) buildOverlay();
+      lastFocused = document.activeElement;
+      overlay.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
       modal.scrollTop = 0;
-    } catch (err) {
-      closeModal();
-      window.location.href = href;
-    }
-  };
-
-  document.addEventListener('click', (e) => {
-    const link = e.target.closest('a[href="privacy.html"], a[href="terms.html"]');
-    if (!link) return;
-    e.preventDefault();
-    openModal();
-    loadPolicy(link.getAttribute('href'));
-  });
+      closeBtn.focus();
+    });
+  }
 })();
