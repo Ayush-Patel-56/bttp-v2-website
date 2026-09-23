@@ -98,6 +98,11 @@ body {
     justify-content: center
 }
 
+#about > .container {
+    margin-top: 0;
+    margin-bottom: 0
+}
+
 #about .eyebrow.copper {
     color: #d18652
 }
@@ -126,6 +131,10 @@ body {
 
 #about .check-list li:before {
     color: #d18652
+}
+
+#about .security-cta {
+    margin-top: 72px
 }
 
 /* Universe: override to dark theme */
@@ -205,7 +214,8 @@ body {
 
 .brand-name {
     font-size: 14px;
-    letter-spacing: .14em
+    letter-spacing: .14em;
+    text-transform: uppercase
 }
 
 .brand-name-short {
@@ -1379,8 +1389,8 @@ body {
     justify-content: center;
     flex-wrap: wrap;
     gap: 12px 40px;
-    margin-top: 56px;
-    padding-top: 40px;
+    margin-top: 48px;
+    padding-top: 32px;
     border-top: 1px solid rgba(24, 21, 18, .1)
 }
 
