@@ -1,0 +1,48 @@
+name: Refresh calculator data
+
+# Regenerates data/calculator-data.json from Supabase and commits it when it changed.
+# Vercel redeploys on the commit, so the live calculator picks up new ratios.
+#
+# One-time setup: add a repository secret named CALCULATOR_DATABASE_URL holding a
+# connection string for a READ-ONLY Postgres role that can select from the corpus schema.
+on:
+  schedule:
+    - cron: "0 3 * * 1" # Mondays 03:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-calculator-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pg
+        run: npm install --no-save --no-package-lock pg
+
+      - name: Regenerate data
+        env:
+          CALCULATOR_DATABASE_URL: ${{ secrets.CALCULATOR_DATABASE_URL }}
+        run: node scripts/refresh-calculator-data.mjs
+
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- data/calculator-data.json; then
+            echo "No data changes."
+            exit 0
+          fi
+          git config user.name "calculator-data-bot"
+          git config user.email "calculator-data-bot@users.noreply.github.com"
+          git add data/calculator-data.json
+          git commit -m "chore: refresh calculator data"
+          git push
