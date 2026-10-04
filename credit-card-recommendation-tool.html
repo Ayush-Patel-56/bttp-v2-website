@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Free credit card recommendation tool for India. Tell us your monthly spend, categories, preferred transfer partners, fee limit and goals to see which credit cards fit you best." />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#0b0b0a" />
+  <title>Credit Card Recommendation Tool - Back to the Points</title>
+  <link rel="canonical" href="https://backtothepoints.com/credit-card-recommendation-tool" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Back to the Points" />
+  <meta property="og:title" content="Credit Card Recommendation Tool - Back to the Points" />
+  <meta property="og:description" content="Find the credit card that fits how you spend, with estimated monthly points, annual fee and transfer partners side by side." />
+  <meta property="og:url" content="https://backtothepoints.com/credit-card-recommendation-tool" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/dmsans/v17/rP2Yp2ywxg089UriI5-g4vlH9VoD8Cmcqbu0-K6z9mXg.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/playfairdisplay/v40/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKebunDXbtPK_l2q.woff2">
+  <link rel="preload" as="fetch" type="application/json" crossorigin href="/data/recommender-data.json">
+  <link rel="preload" as="fetch" type="application/json" crossorigin href="/data/calculator-data.json">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap">
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/calculator.css" />
+  <link rel="stylesheet" href="/recommender.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://backtothepoints.com/credit-card-recommendation-tool#app",
+        "name": "Credit Card Recommendation Tool",
+        "url": "https://backtothepoints.com/credit-card-recommendation-tool",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Any",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
+        "publisher": { "@id": "https://backtothepoints.com/#organization" }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How does the credit card recommendation tool rank cards?",
+            "acceptedAnswer": { "@type": "Answer", "text": "It estimates the rewards each card earns on your monthly spend across the categories you choose, then weighs that with how well the card fits your preferred transfer partners, annual fee limit and goals. Cards with more complete data rank slightly higher." }
+          },
+          {
+            "@type": "Question",
+            "name": "Are points from different banks comparable?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Not directly. A point from one bank is worth a different amount than a point from another, so we compare cards by the rupee value of what they earn wherever we have a published value, and show estimated points in each card's own currency." }
+          },
+          {
+            "@type": "Question",
+            "name": "Why do some cards say partial data?",
+            "acceptedAnswer": { "@type": "Answer", "text": "We only show what we have verified from issuer documents. If a card's earn rate, annual fee or transfer partners are not yet recorded, the card is still listed but marked as partial so you know what is missing." }
+          },
+          {
+            "@type": "Question",
+            "name": "Do the estimates include caps and exclusions?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. Estimates use each card's standard earn rates and split your spend evenly across the categories you pick. Monthly caps, excluded merchants and time-limited offers are not applied, so treat results as a guide and check the issuer's terms." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="nav-wrap">
+    <nav class="nav container">
+      <a href="/" class="brand" aria-label="Back to the Points home">
+        <img src="/assets/logo-nav.png" alt="BTTP Logo" height="46">
+        <span class="brand-name"><span class="brand-name-full">BACK TO THE POINTS</span><span class="brand-name-short">BTTP</span></span>
+      </a>
+
+      <button class="menu-button" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="nav-links">
+        <a href="/#top" class="nav-link-mobile-only">Home</a>
+        <a href="/#why-bttp">Why BTTP</a>
+        <a href="/#how">How it works</a>
+        <a href="/about.html">About</a>
+        <a href="/#redemption">Redemption</a>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true">Free Tools</button>
+          <div class="nav-dropdown-menu">
+            <a href="/credit-card-reward-points-calculator.html">Points Calculator</a>
+            <a href="/credit-card-recommendation-tool.html" aria-current="page">Card Recommender</a>
+          </div>
+        </div>
+        <a href="/privacy.html" class="nav-link-mobile-only">Privacy</a>
+        <a href="/ask-bttp.html#faq" class="nav-link-mobile-only">FAQ</a>
+        <div class="nav-cta">
+          <a class="button button-small" href="/#early-access">Get Early Access</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="calc-hero section-dark">
+      <div class="container calc-hero-inner">
+        <p class="eyebrow copper">FREE TOOL</p>
+        <h1>Credit Card <br class="calc-break">Recommendation Tool</h1>
+        <p class="calc-lede">Tell us how you spend and what you value. We estimate what each card would earn you every month and rank the ones that fit best.</p>
+      </div>
+    </section>
+
+    <section class="calc-section light-section rec-section" id="rec-app" aria-labelledby="rec-title">
+      <div class="container">
+        <div class="calc-head">
+          <h2 id="rec-title">Find the card that fits how you spend</h2>
+          <p>Four quick steps. Nothing is stored or sent anywhere.</p>
+        </div>
+
+        <!-- Wizard -->
+        <div class="rec-grid" id="rec-wizard">
+          <div class="calc-panel rec-intro">
+            <p class="calc-panel-eyebrow">CARD RECOMMENDATION TOOL</p>
+            <h3 class="rec-intro-title" id="rec-intro-title">Map your monthly spending</h3>
+            <p class="rec-intro-text" id="rec-intro-text">We start with your spending so the estimates reflect your real volume, not generic assumptions.</p>
+            <div class="rec-profile" aria-label="Your profile so far">
+              <p class="rec-profile-title">CURRENT PROFILE</p>
+              <dl class="rec-profile-list">
+                <div><dt>Monthly spend</dt><dd id="rec-p-spend">Not set</dd></div>
+                <div><dt>Categories</dt><dd id="rec-p-cats">Not set</dd></div>
+                <div><dt>Partners</dt><dd id="rec-p-partners">Open</dd></div>
+                <div><dt>Annual fee</dt><dd id="rec-p-fee">No limit</dd></div>
+                <div><dt>Goals</dt><dd id="rec-p-goals">Not set</dd></div>
+              </dl>
+            </div>
+          </div>
+
+          <div class="calc-panel rec-steps-panel">
+            <ol class="rec-stepper" aria-label="Progress">
+              <li><button type="button" class="rec-step is-active" data-step-btn="1" aria-current="step"><span class="rec-step-bar"></span><span class="rec-step-meta"><span>Spend</span><span>01</span></span></button></li>
+              <li><button type="button" class="rec-step" data-step-btn="2" disabled><span class="rec-step-bar"></span><span class="rec-step-meta"><span>Categories</span><span>02</span></span></button></li>
+              <li><button type="button" class="rec-step" data-step-btn="3" disabled><span class="rec-step-bar"></span><span class="rec-step-meta"><span>Partners</span><span>03</span></span></button></li>
+              <li><button type="button" class="rec-step" data-step-btn="4" disabled><span class="rec-step-bar"></span><span class="rec-step-meta"><span>Goals</span><span>04</span></span></button></li>
+            </ol>
+
+            <div class="rec-pane" data-step="1">
+              <h3 class="rec-q">How much do you spend monthly?</h3>
+              <p class="rec-qsub">We use this to estimate the rewards you would earn each month.</p>
+              <div class="rec-box">
+                <label class="calc-label" for="rec-spend">Monthly spend</label>
+                <div class="calc-input-wrap">
+                  <span class="calc-prefix" aria-hidden="true">₹</span>
+                  <input id="rec-spend" class="calc-input calc-input-prefixed" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 50,000" />
+                </div>
+                <p class="calc-hint rec-hint">Leave blank to skip. We will rank on earn rate alone.</p>
+              </div>
+            </div>
+
+            <div class="rec-pane" data-step="2" hidden>
+              <h3 class="rec-q">Where do you spend the most?</h3>
+              <p class="rec-qsub">Select every category that applies. Your spend is split evenly across them.</p>
+              <p class="rec-count" id="rec-cat-count" aria-live="polite">None selected</p>
+              <div class="rec-tiles" id="rec-cats" role="group" aria-label="Spending categories"></div>
+            </div>
+
+            <div class="rec-pane" data-step="3" hidden>
+              <h3 class="rec-q">Preferred transfer partners?</h3>
+              <p class="rec-qsub">Pick the airlines or hotels you would like to transfer to. Skip if you are open.</p>
+              <p class="rec-count" id="rec-partner-count" aria-live="polite">None selected</p>
+              <div class="rec-chips" id="rec-partners" role="group" aria-label="Transfer partners"></div>
+              <div class="rec-chip-actions">
+                <button type="button" class="rec-link" id="rec-partner-more" hidden>Show all partners</button>
+                <button type="button" class="rec-link" id="rec-partner-clear" hidden>Clear selection</button>
+              </div>
+              <div class="rec-box rec-fee-box">
+                <h4 class="rec-fee-title" id="rec-fee-label">Maximum annual fee you are comfortable with?</h4>
+                <div class="rec-opts" id="rec-fees" role="group" aria-labelledby="rec-fee-label"></div>
+              </div>
+            </div>
+
+            <div class="rec-pane" data-step="4" hidden>
+              <h3 class="rec-q">What are your goals?</h3>
+              <p class="rec-qsub">Select everything that matters to you.</p>
+              <p class="rec-count" id="rec-goal-count" aria-live="polite">None selected</p>
+              <div class="rec-goals" id="rec-goals" role="group" aria-label="Goals"></div>
+            </div>
+
+            <div class="rec-nav">
+              <button type="button" class="rec-btn rec-btn-ghost" id="rec-back" hidden>Back</button>
+              <button type="button" class="rec-btn rec-btn-solid" id="rec-next">Next <span aria-hidden="true">→</span></button>
+            </div>
+          </div>
+        </div>
+
+        <p class="rec-error" id="rec-error" role="alert" hidden></p>
+
+        <!-- Results -->
+        <div class="rec-results" id="rec-results" hidden>
+          <div class="rec-results-head">
+            <div>
+              <p class="calc-panel-eyebrow">PERSONALISED SHORTLIST</p>
+              <h3 class="rec-results-title" id="rec-results-title" tabindex="-1">Your top matches</h3>
+              <p class="rec-results-sub" id="rec-results-sub"></p>
+            </div>
+            <div class="rec-results-actions">
+              <span class="rec-pill" id="rec-results-count"></span>
+              <button type="button" class="rec-btn rec-btn-solid rec-btn-small" id="rec-restart">Start over</button>
+            </div>
+          </div>
+          <div class="rec-cards" id="rec-cards"></div>
+          <div class="rec-more-wrap"><button type="button" class="rec-btn rec-btn-ghost" id="rec-show-more" hidden>Show more cards</button></div>
+          <p class="rec-disclaimer">Estimates use each card's standard earn rates and split your spend evenly across the categories you picked. They do not apply monthly caps, exclusions or limited-time offers. Points are shown in each card's own currency, so cards are compared by rupee value where we have a published value. Always confirm terms with the issuer. Card images belong to their respective issuers and are shown for identification only.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="calc-explain section-dark">
+      <div class="container calc-explain-grid">
+        <div class="calc-explain-copy">
+          <p class="eyebrow copper">HOW WE RANK</p>
+          <h2>Ranked on what you would actually earn</h2>
+          <p>We never rank on headline marketing. Each card is scored on the rewards it earns on your spend, how well it fits your transfer partners and fee limit, and how closely it matches your goals.</p>
+          <ol class="calc-steps">
+            <li><strong>Estimate.</strong> Your monthly spend is split across your categories and priced at each card's standard rates.</li>
+            <li><strong>Compare.</strong> Cards are compared by rupee value where we have one, because a point from one bank is not worth the same as another's.</li>
+            <li><strong>Fit.</strong> Partners, annual fee and goals adjust the order. Cards with missing data are still shown, marked as partial.</li>
+          </ol>
+        </div>
+
+        <div class="calc-faq" id="faq">
+          <h3 class="calc-faq-title">Frequently asked questions</h3>
+          <details class="calc-faq-item">
+            <summary>How does the tool rank cards?</summary>
+            <p>It estimates the rewards each card earns on your monthly spend across the categories you choose, then weighs that with how well the card fits your preferred transfer partners, annual fee limit and goals. Cards with more complete data rank slightly higher.</p>
+          </details>
+          <details class="calc-faq-item">
+            <summary>Are points from different banks comparable?</summary>
+            <p>Not directly. A point from one bank is worth a different amount than a point from another, so we compare cards by the rupee value of what they earn wherever we have a published value, and show estimated points in each card's own currency.</p>
+          </details>
+          <details class="calc-faq-item">
+            <summary>Why do some cards say partial data?</summary>
+            <p>We only show what we have verified from issuer documents. If a card's earn rate, annual fee or transfer partners are not yet recorded, the card is still listed but marked as partial so you know what is missing.</p>
+          </details>
+          <details class="calc-faq-item">
+            <summary>Do the estimates include caps and exclusions?</summary>
+            <p>No. Estimates use each card's standard earn rates and split your spend evenly across the categories you pick. Monthly caps, excluded merchants and time-limited offers are not applied, so treat results as a guide and check the issuer's terms.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="rec-modal" id="rec-modal" aria-labelledby="rec-modal-title">
+    <div class="rec-modal-body" id="rec-modal-body"></div>
+  </dialog>
+
+  <footer>
+    <div class="container footer-inner">
+      <a href="/" class="brand">
+        <img src="/assets/logo-nav.png" alt="BTTP Logo" height="46">
+        <span class="brand-name footer-brand-name">Back to the Points</span>
+      </a>
+      <div class="footer-links">
+        <a href="/about.html">About</a>
+        <a href="/credit-card-reward-points-calculator.html">Points Calculator</a>
+        <a href="/credit-card-recommendation-tool.html">Card Recommender</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+        <a href="/ask-bttp.html#faq">FAQ</a>
+        <a href="/#early-access">Early Access</a>
+      </div>
+      <span>© 2026 BTTP</span>
+    </div>
+  </footer>
+
+  <script src="/script.js" defer></script>
+  <script src="/recommender.js" defer></script>
+</body>
+</html>
