@@ -1,6 +1,6 @@
 name: Refresh calculator data
 
-# Regenerates data/calculator-data.json from Supabase and commits it when it changed.
+# Regenerates data/calculator-data.json and data/recommender-data.json from Supabase and commits them when changed.
 # Vercel redeploys on the commit, so the live calculator picks up new ratios.
 #
 # One-time setup: add a repository secret named CALCULATOR_DATABASE_URL holding a
@@ -37,12 +37,12 @@ jobs:
 
       - name: Commit if changed
         run: |
-          if git diff --quiet -- data/calculator-data.json; then
+          if git diff --quiet -- data/calculator-data.json data/recommender-data.json; then
             echo "No data changes."
             exit 0
           fi
           git config user.name "calculator-data-bot"
           git config user.email "calculator-data-bot@users.noreply.github.com"
-          git add data/calculator-data.json
-          git commit -m "chore: refresh calculator data"
+          git add data/calculator-data.json data/recommender-data.json
+          git commit -m "chore: refresh calculator and recommender data"
           git push

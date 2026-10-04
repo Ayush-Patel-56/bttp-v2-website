@@ -1,21 +1,18 @@
-// Regenerates data/calculator-data.json from Supabase using scripts/calculator-data.sql.
+// Regenerates the site's data files from Supabase:
+//   data/calculator-data.json   <- scripts/calculator-data.sql
+//   data/recommender-data.json  <- scripts/recommender-data.sql
 //
 //   CALCULATOR_DATABASE_URL=postgres://... node scripts/refresh-calculator-data.mjs
 //
-// Use a read-only database role. The file is only rewritten when the card, route
-// or partner data actually changed, so a refresh with no changes leaves git clean.
+// Use a read-only database role. Each file is only rewritten when its content actually changed
+// (generatedAt is ignored), so a refresh with no changes leaves git clean. data/card-art.json is
+// hand-maintained and never touched here.
 import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import pg from 'pg';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const sqlPath = path.join(root, 'scripts', 'calculator-data.sql');
-const outPath = path.join(root, 'data', 'calculator-data.json');
-
-// Refuse to publish a suspiciously small result (bad query, wrong schema, empty table).
-const MIN_CARDS = 30;
-const MIN_ROUTES = 100;
 
 const url = process.env.CALCULATOR_DATABASE_URL;
 if (!url) {
@@ -23,48 +20,85 @@ if (!url) {
   process.exit(1);
 }
 
+const countRoutes = d => d.cards.reduce((n, c) => n + c.r.length, 0);
+
+// Each dataset: where it comes from, where it goes, and what a sane result looks like.
+const DATASETS = [
+  {
+    name: 'calculator',
+    sql: 'scripts/calculator-data.sql',
+    column: 'calculator_data',
+    out: 'data/calculator-data.json',
+    keys: ['banks', 'cards', 'partners'],
+    // Refuse to publish a suspiciously small result (bad query, wrong schema, empty table).
+    check(d) {
+      const routes = countRoutes(d);
+      if (d.cards.length < 30 || routes < 100) throw new Error(`only ${d.cards.length} cards / ${routes} routes (minimum 30 / 100)`);
+      const banks = new Set(d.banks.map(b => b.id));
+      for (const c of d.cards) {
+        if (!banks.has(c.b)) throw new Error(`card ${c.id} references unknown bank ${c.b}`);
+        for (const r of c.r) if (!d.partners[r[0]]) throw new Error(`card ${c.id} references unknown partner ${r[0]}`);
+      }
+      return `${d.cards.length} cards, ${routes} routes, ${Object.keys(d.partners).length} partners`;
+    }
+  },
+  {
+    name: 'recommender',
+    sql: 'scripts/recommender-data.sql',
+    column: 'recommender_data',
+    out: 'data/recommender-data.json',
+    keys: ['banks', 'cards'],
+    check(d) {
+      if (d.cards.length < 30) throw new Error(`only ${d.cards.length} cards (minimum 30)`);
+      const banks = new Set(d.banks.map(b => b.id));
+      const seen = new Set();
+      for (const c of d.cards) {
+        if (!c.id || !c.n || !banks.has(c.b)) throw new Error(`card ${c.id} is missing a name or has an unknown bank`);
+        if (seen.has(c.id)) throw new Error(`duplicate card ${c.id}`);
+        seen.add(c.id);
+        for (const k of ['e', 'f', 'v']) if (c[k] != null && !(c[k] >= 0)) throw new Error(`card ${c.id} has an invalid ${k}`);
+        for (const [cat, v] of Object.entries(c.k ?? {})) if (!(v >= 0)) throw new Error(`card ${c.id} has an invalid ${cat} rate`);
+      }
+      const withEarn = d.cards.filter(c => c.e != null).length;
+      if (withEarn < 20) throw new Error(`only ${withEarn} cards have an earn rate (minimum 20)`);
+      return `${d.cards.length} cards, ${withEarn} with earn rates, ${d.cards.filter(c => c.f != null).length} with fees`;
+    }
+  }
+];
+
+const pick = (d, keys) => Object.fromEntries(keys.map(k => [k, d[k]]));
+
 const client = new pg.Client({ connectionString: url, ssl: { rejectUnauthorized: false } });
 await client.connect();
-let data;
+
+let failed = false;
 try {
-  await client.query('begin read only');
-  const { rows } = await client.query(await readFile(sqlPath, 'utf8'));
-  await client.query('rollback');
-  data = rows[0].calculator_data;
+  for (const ds of DATASETS) {
+    try {
+      await client.query('begin read only');
+      const { rows } = await client.query(await readFile(path.join(root, ds.sql), 'utf8'));
+      await client.query('rollback');
+      const data = rows[0][ds.column];
+      const summary = ds.check(data);
+
+      const outPath = path.join(root, ds.out);
+      let previous = null;
+      try { previous = JSON.parse(await readFile(outPath, 'utf8')); } catch { /* first run */ }
+
+      if (previous && JSON.stringify(pick(previous, ds.keys)) === JSON.stringify(pick(data, ds.keys))) {
+        console.log(`[${ds.name}] no changes (${summary}).`);
+      } else {
+        await writeFile(outPath, `${JSON.stringify({ generatedAt: data.generatedAt, ...pick(data, ds.keys) })}\n`);
+        console.log(`[${ds.name}] wrote ${ds.out}: ${summary}.`);
+      }
+    } catch (err) {
+      // One dataset failing must not stop the other, but the job still fails so it is noticed.
+      failed = true;
+      await client.query('rollback').catch(() => {});
+      console.error(`[${ds.name}] FAILED, file left unchanged: ${err.message}`);
+    }
+  }
 } finally {
   await client.end();
 }
-
-const cards = data.cards ?? [];
-const routes = cards.reduce((n, c) => n + c.r.length, 0);
-if (cards.length < MIN_CARDS || routes < MIN_ROUTES) {
-  console.error(`Refusing to write: only ${cards.length} cards / ${routes} routes (minimum ${MIN_CARDS} / ${MIN_ROUTES}).`);
-  process.exit(1);
-}
-
-// Every route must point at a known partner and every card at a known bank.
-const bankIds = new Set(data.banks.map(b => b.id));
-for (const c of cards) {
-  if (!bankIds.has(c.b)) throw new Error(`Card ${c.id} references unknown bank ${c.b}`);
-  for (const r of c.r) {
-    if (!data.partners[r[0]]) throw new Error(`Card ${c.id} references unknown partner ${r[0]}`);
-  }
-}
-
-// Stable key order and compact output keep diffs small.
-const { generatedAt, ...content } = data;
-const next = JSON.stringify({ generatedAt, banks: content.banks, cards: content.cards, partners: content.partners });
-
-let previous = null;
-try {
-  previous = JSON.parse(await readFile(outPath, 'utf8'));
-} catch {
-  // first run
-}
-const strip = d => d && JSON.stringify({ banks: d.banks, cards: d.cards, partners: d.partners });
-if (previous && strip(previous) === strip({ banks: content.banks, cards: content.cards, partners: content.partners })) {
-  console.log(`No changes (${cards.length} cards, ${routes} routes).`);
-} else {
-  await writeFile(outPath, `${next}\n`);
-  console.log(`Wrote ${outPath}: ${cards.length} cards, ${routes} routes, ${Object.keys(data.partners).length} partners.`);
-}
+if (failed) process.exit(1);

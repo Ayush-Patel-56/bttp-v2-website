@@ -107,4 +107,4 @@ select jsonb_build_object(
       'id', id, 'n', name, 'b', issuer_id, 'c', currency, 'e', round(base_ppc, 2), 'f', fee, 'k', cats, 'v', round(value, 4), 'p', case when status = 'paused' then 1 end,
       'l', case when lounge then 1 end, 'g', case when golf then 1 end, 'q', case when concierge then 1 end,
       'm', case when membership then 1 end, 'w', case when welcome then 1 end)) order by issuer_id, name) from out)
-)::text as recommender_data;
+) as recommender_data;
