@@ -16,6 +16,10 @@
     cardVisual: $('calc-card-visual'),
     cardName: $('calc-card-name'),
     cardBank: $('calc-card-bank'),
+    art: $('calc-art'),
+    artImg: $('calc-art-img'),
+    artName: $('calc-art-name'),
+    artBank: $('calc-art-bank'),
     cardCurrency: $('calc-card-currency'),
     cardValue: $('calc-card-value'),
     verdict: $('calc-verdict'),
@@ -43,7 +47,7 @@
   ];
 
   const inr = new Intl.NumberFormat('en-IN');
-  const state = { data: null, mode: 'airline', cardsById: new Map() };
+  const state = { data: null, art: {}, mode: 'airline', cardsById: new Map() };
 
   const digits = value => value.replace(/[^\d]/g, '');
   const parseNumber = value => Number(digits(value)) || 0;
@@ -86,8 +90,23 @@
 
   const updateCardVisual = () => {
     const card = state.cardsById.get(els.card.value);
-    els.cardName.textContent = card ? card.n : 'Select a card';
     const bank = state.data && card ? state.data.banks.find(b => b.id === card.b) : null;
+    const art = card ? state.art[card.id] : null;
+
+    // Official card image when we have one, otherwise the generic themed card.
+    if (art) {
+      els.artImg.src = `/assets/cards/${art.f}`;
+      els.artImg.width = art.w;
+      els.artImg.height = art.h;
+      els.artImg.alt = `${card.n} credit card`;
+      els.art.classList.toggle('is-vertical', art.h > art.w);
+      els.artName.textContent = card.n;
+      els.artBank.textContent = bank ? bank.name : '';
+    }
+    els.art.hidden = !art;
+    els.cardVisual.hidden = !!art;
+
+    els.cardName.textContent = card ? card.n : 'Select a card';
     els.cardBank.textContent = bank ? bank.name : 'Choose your bank and card';
     els.cardCurrency.textContent = card && card.c ? card.c : '—';
     els.cardVisual.dataset.state = card ? 'selected' : 'empty';
@@ -193,9 +212,12 @@
 
   const load = async () => {
     try {
+      // Card art is optional: a missing or broken file just means every card uses the themed design.
+      const artRequest = fetch('/data/card-art.json').then(r => (r.ok ? r.json() : {})).catch(() => ({}));
       const res = await fetch('/data/calculator-data.json');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       state.data = await res.json();
+      state.art = await artRequest;
       state.data.cards.forEach(c => state.cardsById.set(c.id, c));
       if (state.data.generatedAt && els.source) {
         const when = new Date(state.data.generatedAt);

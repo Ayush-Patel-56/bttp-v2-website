@@ -288,7 +288,64 @@
 
 .calc-card-stage {
     display: flex;
-    justify-content: center
+    justify-content: center;
+    align-items: center;
+    min-height: 240px
+}
+
+/* Official card image */
+.calc-art {
+    margin: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px
+}
+
+.calc-art[hidden],
+.calc-card[hidden] {
+    display: none
+}
+
+.calc-art-img {
+    display: block;
+    width: 100%;
+    max-width: 380px;
+    height: auto;
+    border-radius: 14px;
+    filter: drop-shadow(0 18px 24px rgba(24, 21, 18, .32))
+}
+
+.calc-art.is-vertical .calc-art-img {
+    width: auto;
+    max-width: 100%;
+    max-height: 250px;
+    border-radius: 12px
+}
+
+.calc-art-caption {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    text-align: center;
+    font-size: 13px;
+    color: #77706a
+}
+
+.calc-art-caption strong {
+    font-size: 15px;
+    color: #181512
+}
+
+.calc-art-note {
+    margin: 28px auto 0;
+    max-width: 640px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #8a8176
 }
 
 /* Real card proportions (ISO/IEC 7810 ID-1, 85.6 x 54 mm) at a capped width.
