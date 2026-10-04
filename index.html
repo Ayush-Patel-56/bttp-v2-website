@@ -19,13 +19,13 @@
   <meta property="og:title" content="Back to the Points - Make Every Point Count" />
   <meta property="og:description" content="Back to the Points brings your credit card rewards, airline miles and hotel points together - and helps you earn smarter, redeem better and travel further." />
   <meta property="og:url" content="https://backtothepoints.com/" />
-  <meta property="og:image" content="https://backtothepoints.com/assets/logo.jpeg" />
+  <meta property="og:image" content="https://backtothepoints.com/assets/og-image.jpg" />
   <meta property="og:locale" content="en_IN" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Back to the Points - Make Every Point Count" />
   <meta name="twitter:description" content="Back to the Points brings your credit card rewards, airline miles and hotel points together - and helps you earn smarter, redeem better and travel further." />
-  <meta name="twitter:image" content="https://backtothepoints.com/assets/logo.jpeg" />
+  <meta name="twitter:image" content="https://backtothepoints.com/assets/og-image.jpg" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,6 +56,18 @@
         "publisher": { "@id": "https://backtothepoints.com/#organization" }
       },
       {
+        "@type": "SoftwareApplication",
+        "@id": "https://backtothepoints.com/#app",
+        "name": "Back to the Points",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Android, iOS",
+        "description": "Track, value and redeem credit card rewards, airline miles and hotel points in one place. Free during early access.",
+        "url": "https://backtothepoints.com/",
+        "inLanguage": "en-IN",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
+        "publisher": { "@id": "https://backtothepoints.com/#organization" }
+      },
+      {
         "@type": "WebPage",
         "@id": "https://backtothepoints.com/#webpage",
         "url": "https://backtothepoints.com/",
@@ -71,7 +83,7 @@
   <header class="nav-wrap">
     <nav class="nav container">
       <a href="#top" class="brand" aria-label="Back to the Points home">
-        <img src="assets/logo-nav.png" alt="BTTP Logo" height="46">
+        <img src="assets/logo-nav.webp" alt="BTTP Logo" height="46">
         <span class="brand-name"><span class="brand-name-full">BACK TO THE POINTS</span><span class="brand-name-short">BTTP</span></span>
       </a>
 
@@ -83,10 +95,10 @@
         <a href="#top" class="nav-link-mobile-only">Home</a>
         <a href="#why-bttp">Why BTTP</a>
         <a href="#how">How it works</a>
-        <a href="about.html">About</a>
+        <a href="/about">About</a>
         <a href="#redemption">Redemption</a>
-        <a href="privacy.html" class="nav-link-mobile-only">Privacy</a>
-        <a href="ask-bttp.html#faq" class="nav-link-mobile-only">FAQ</a>
+        <a href="/privacy" class="nav-link-mobile-only">Privacy</a>
+        <a href="/ask-bttp#faq" class="nav-link-mobile-only">FAQ</a>
         <div class="nav-cta">
           <a class="button button-small" href="#early-access">Get Early Access</a>
         </div>
@@ -138,7 +150,7 @@
               <small>points on your last purchase.</small>
             </div> -->
 
-            <img fetchpriority="high" decoding="async" class="phone-mockup-shot" src="assets/firefly.png" alt="Back to the Points app home screen showing your total rewards wallet value">
+            <img fetchpriority="high" decoding="async" class="phone-mockup-shot" src="assets/firefly.webp" alt="Back to the Points app home screen showing your total rewards wallet value">
 
             <!-- <div class="float-card trip-card">
               <span class="mini-label">TRIP READY</span>
@@ -207,12 +219,12 @@
         <div class="how-grid">
           <div class="how-visual-unit is-active" data-how-step="1">
             <div class="phone-shell phone-shell-mockup how-phone">
-              <img loading="lazy" decoding="async" class="phone-mockup-shot" src="assets/new_connect.png" alt="Connect a program screen">
+              <img loading="lazy" decoding="async" class="phone-mockup-shot" src="assets/new_connect.webp" alt="Connect a program screen">
             </div>
           </div>
           <div class="how-visual-unit" data-how-step="2">
             <div class="phone-shell phone-shell-mockup how-phone">
-              <img loading="lazy" decoding="async" class="phone-mockup-shot" src="assets/new_reward.png" alt="Rewards wallet screen">
+              <img loading="lazy" decoding="async" class="phone-mockup-shot" src="assets/new_reward.webp" alt="Rewards wallet screen">
             </div>
             <div class="float-card mp-float-discover">
               <span class="mini-label">MISSED REWARDS</span>
@@ -222,7 +234,7 @@
           </div>
           <div class="how-visual-unit" data-how-step="3">
             <div class="phone-shell phone-shell-mockup how-phone">
-              <img loading="lazy" decoding="async" class="phone-mockup-shot" src="assets/new_report.png" alt="Missed value report screen">
+              <img loading="lazy" decoding="async" class="phone-mockup-shot" src="assets/new_report.webp" alt="Missed value report screen">
             </div>
             <div class="float-card mp-float-optimise">
               <span class="mini-label">SMART PICK</span>
@@ -232,7 +244,7 @@
           </div>
           <div class="how-visual-unit" data-how-step="4">
             <div class="phone-shell phone-shell-mockup how-phone">
-              <img loading="lazy" decoding="async" class="phone-mockup-shot" src="assets/new_flight.png" alt="Find your flight screen">
+              <img loading="lazy" decoding="async" class="phone-mockup-shot" src="assets/new_flight.webp" alt="Find your flight screen">
             </div>
           </div>
 
@@ -413,8 +425,8 @@
           <div class="hub-core">
             <div class="phone-shell phone-shell-mockup hub-phone">
               <picture>
-                <source media="(max-width:900px)" srcset="assets/landscape.png">
-                <img loading="lazy" decoding="async" class="phone-mockup-shot" src="assets/real_redemption.png" alt="Your Best Redemption screen">
+                <source media="(max-width:900px)" srcset="assets/landscape.webp">
+                <img loading="lazy" decoding="async" class="phone-mockup-shot" src="assets/real_redemption.webp" alt="Your Best Redemption screen">
               </picture>
             </div>
           </div>
@@ -594,7 +606,7 @@
         <div class="cta-panel">
 
           <div class="cta-card">
-            <img class="cta-card-logo" src="assets/logo-nav.png" alt="BTTP logo" height="40">
+            <img class="cta-card-logo" src="assets/logo-nav.webp" alt="BTTP logo" height="40">
             <h3 class="cta-card-title">Get Early Access</h3>
             <p class="cta-card-sub">Be the first to know when we launch.</p>
 
@@ -616,7 +628,7 @@
 
               <label class="waitlist-consent">
                 <input type="checkbox" id="waitlist-consent" name="consent" required />
-                <span>I agree to the <a href="privacy.html">Privacy Policy</a>.</span>
+                <span>I agree to the <a href="/privacy">Privacy Policy</a>.</span>
               </label>
 
               <button class="button" type="submit">Get Early Access →</button>
@@ -635,14 +647,14 @@
   <footer>
     <div class="container footer-inner">
       <a href="#top" class="brand">
-        <img src="assets/logo-nav.png" alt="BTTP Logo" height="46">
+        <img src="assets/logo-nav.webp" alt="BTTP Logo" height="46">
         <span class="brand-name footer-brand-name">Back to the Points</span>
       </a>
       <div class="footer-links">
-        <a href="about.html">About</a>
-        <a href="privacy.html">Privacy</a>
-        <a href="terms.html">Terms</a>
-        <a href="ask-bttp.html#faq">FAQ</a>
+        <a href="/about">About</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="/ask-bttp#faq">FAQ</a>
       </div>
       <span>© 2026 BTTP</span>
     </div>
