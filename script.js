@@ -105,6 +105,20 @@
     }));
   }
 
+  // Free Tools dropdown: opens on hover (CSS) and on click/tap/keyboard (this), closes on outside click or Escape.
+  document.querySelectorAll('.nav-dropdown').forEach(dd => {
+    const toggle = dd.querySelector('.nav-dropdown-toggle');
+    const setOpen = open => {
+      dd.classList.toggle('is-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+    };
+    toggle.addEventListener('click', () => setOpen(!dd.classList.contains('is-open')));
+    document.addEventListener('click', e => { if (!dd.contains(e.target)) setOpen(false); });
+    dd.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { setOpen(false); toggle.focus(); }
+    });
+  });
+
   // The browser only ever talks to our own /api/waitlist proxy now (see
   // api/waitlist.js). It holds the Google Apps Script URL and shared secret
   // server-side, and returns a real JSON result instead of the old opaque
