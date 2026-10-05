@@ -218,7 +218,17 @@
       els.zone.textContent = `${partnerName(state.partner)} prices this as ${zoneText(O)} to ${zoneText(D)}.`;
       els.zone.hidden = false;
     } else if (els.dest.value.trim() && O.length) {
-      els.zone.textContent = `We have no ${partnerName(state.partner)} price for "${els.dest.value.trim()}" from here. Pick a country or city from the list.`;
+      const known = regionsOf(els.dest);
+      const name = els.dest.value.trim();
+      if (known.length) {
+        // A real place, but the programme prints no fixed price for this pair of zones.
+        const pair = `${zoneText(O)} to ${zoneText(known)}`;
+        els.zone.textContent = state.partner === 'krisflyer'
+          ? `KrisFlyer does not publish a fixed price for ${pair}. Its award chart marks these routes "use the mileage calculator", so check the exact miles on singaporeair.com before you plan.`
+          : `${partnerName(state.partner)} does not publish a price for ${pair} in the award chart we hold. Check the exact price on the airline's site.`;
+      } else {
+        els.zone.textContent = `We could not find "${name}". Pick a country or city from the list.`;
+      }
       els.zone.hidden = false;
     } else {
       els.zone.hidden = true;
