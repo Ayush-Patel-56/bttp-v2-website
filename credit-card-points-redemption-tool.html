@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Free credit card points redemption planner. See how many credit card points you need for a flight or hotel night after the transfer ratio, whether your balance covers it, and how other redemption options compare." />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#0b0b0a" />
+  <title>Credit Card Points Redemption Planner - Back to the Points</title>
+  <link rel="canonical" href="https://backtothepoints.com/credit-card-points-redemption-tool" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Back to the Points" />
+  <meta property="og:title" content="Credit Card Points Redemption Planner - Back to the Points" />
+  <meta property="og:description" content="Find out how many card points a flight or hotel night costs after transfer, and whether your balance is enough." />
+  <meta property="og:url" content="https://backtothepoints.com/credit-card-points-redemption-tool" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/dmsans/v17/rP2Yp2ywxg089UriI5-g4vlH9VoD8Cmcqbu0-K6z9mXg.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/playfairdisplay/v40/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKebunDXbtPK_l2q.woff2">
+  <link rel="preload" as="fetch" type="application/json" crossorigin href="/data/redemption-data.json">
+  <link rel="preload" as="fetch" type="application/json" crossorigin href="/data/calculator-data.json">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap">
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/calculator.css" />
+  <link rel="stylesheet" href="/redemption.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://backtothepoints.com/credit-card-points-redemption-tool#app",
+        "name": "Credit Card Points Redemption Planner",
+        "url": "https://backtothepoints.com/credit-card-points-redemption-tool",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Any",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
+        "publisher": { "@id": "https://backtothepoints.com/#organization" }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How many credit card points do I need for a flight?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Find the partner miles the flight costs on the airline's award chart, then convert them to card points using your bank's transfer ratio. For example, a 5:2 ratio means 5 card points become 2 partner miles, so 20,000 miles needs 50,000 card points. This planner does both steps and checks your balance." }
+          },
+          {
+            "@type": "Question",
+            "name": "What are Saver and Advantage awards?",
+            "acceptedAnswer": { "@type": "Answer", "text": "KrisFlyer prices some Singapore Airlines award seats at a lower Saver rate and others at a higher Advantage rate. Saver seats are limited, so the planner shows both prices." }
+          },
+          {
+            "@type": "Question",
+            "name": "Do the point costs include taxes and fees?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. Award charts show the points or miles only. Airlines and hotels usually charge taxes, fees and sometimes fuel surcharges on top, paid in cash." }
+          },
+          {
+            "@type": "Question",
+            "name": "Why is my card or airline not listed?",
+            "acceptedAnswer": { "@type": "Answer", "text": "The planner covers transfer partners whose award charts we have verified and that can be priced by region: KrisFlyer, Maharaja Club, Finnair Plus and Wyndham Rewards. Distance-based charts such as Aeroplan and Qantas, and others, are being added." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="nav-wrap">
+    <nav class="nav container">
+      <a href="/" class="brand" aria-label="Back to the Points home">
+        <img src="/assets/logo-nav.png" alt="BTTP Logo" height="46">
+        <span class="brand-name"><span class="brand-name-full">BACK TO THE POINTS</span><span class="brand-name-short">BTTP</span></span>
+      </a>
+
+      <button class="menu-button" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="nav-links">
+        <a href="/#top" class="nav-link-mobile-only">Home</a>
+        <a href="/#why-bttp">Why BTTP</a>
+        <a href="/#how">How it works</a>
+        <a href="/about.html">About</a>
+        <a href="/#redemption">Redemption</a>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true">Free Tools</button>
+          <div class="nav-dropdown-menu">
+            <a href="/credit-card-reward-points-calculator.html">Points Calculator</a>
+            <a href="/credit-card-recommendation-tool.html">Card Recommender</a>
+            <a href="/credit-card-points-redemption-tool.html" aria-current="page">Redemption Planner</a>
+          </div>
+        </div>
+        <a href="/privacy.html" class="nav-link-mobile-only">Privacy</a>
+        <a href="/ask-bttp.html#faq" class="nav-link-mobile-only">FAQ</a>
+        <div class="nav-cta">
+          <a class="button button-small" href="/#early-access">Get Early Access</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="calc-hero section-dark">
+      <div class="container calc-hero-inner">
+        <p class="eyebrow copper">FREE TOOL</p>
+        <h1>Points Redemption <br class="calc-break">Planner</h1>
+        <p class="calc-lede">See how many card points a flight or hotel night really costs after transfer, whether your balance covers it, and how your other redemption options compare.</p>
+      </div>
+    </section>
+
+    <section class="calc-section light-section" aria-labelledby="red-title">
+      <div class="container">
+        <div class="calc-head">
+          <h2 id="red-title">Plan your redemption</h2>
+          <p>Choose your card and balance, then the trip. Prices exclude taxes and fees.</p>
+        </div>
+
+        <div class="calc-grid">
+          <form class="calc-panel" id="red-form" novalidate>
+            <p class="calc-panel-eyebrow">YOUR POINTS</p>
+
+            <div class="calc-field">
+              <label class="calc-label" for="red-bank">Select bank</label>
+              <select id="red-bank" class="calc-select" disabled><option value="">Loading banks…</option></select>
+            </div>
+            <div class="calc-field">
+              <label class="calc-label" for="red-card">Select credit card</label>
+              <select id="red-card" class="calc-select" disabled><option value="">Select a bank first</option></select>
+            </div>
+            <div class="calc-field">
+              <label class="calc-label" for="red-balance">Points balance</label>
+              <input id="red-balance" class="calc-input" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 120,000" />
+              <p class="calc-hint red-hint">Your current balance in the card's own reward points.</p>
+            </div>
+
+            <p class="calc-panel-eyebrow red-eyebrow-gap">YOUR TRIP</p>
+            <p class="red-note" id="red-no-plan" hidden></p>
+
+            <div id="red-trip">
+              <div class="calc-field">
+                <label class="calc-label" for="red-partner">Transfer partner</label>
+                <select id="red-partner" class="calc-select" disabled><option value="">Select a card first</option></select>
+              </div>
+
+              <div id="red-flight">
+                <div class="calc-row">
+                  <div class="calc-field">
+                    <label class="calc-label" for="red-origin">From</label>
+                    <select id="red-origin" class="calc-select" disabled><option value="">Select region</option></select>
+                  </div>
+                  <div class="calc-field">
+                    <label class="calc-label" for="red-dest">To</label>
+                    <select id="red-dest" class="calc-select" disabled><option value="">Select region</option></select>
+                  </div>
+                </div>
+                <div class="calc-row">
+                  <div class="calc-field">
+                    <label class="calc-label" for="red-cabin">Cabin</label>
+                    <select id="red-cabin" class="calc-select" disabled><option value="">Select cabin</option></select>
+                  </div>
+                  <div class="calc-field">
+                    <label class="calc-label" for="red-pax">Passengers</label>
+                    <select id="red-pax" class="calc-select"></select>
+                  </div>
+                </div>
+                <fieldset class="calc-field calc-field-plain" id="red-trip-type" hidden>
+                  <legend class="calc-label">Trip</legend>
+                  <div class="calc-toggle" role="group" aria-label="Trip type">
+                    <button type="button" class="calc-toggle-btn is-active" data-trip="1" aria-pressed="true">One way</button>
+                    <button type="button" class="calc-toggle-btn" data-trip="2" aria-pressed="false">Round trip</button>
+                  </div>
+                </fieldset>
+              </div>
+
+              <div id="red-hotel" hidden>
+                <div class="calc-field">
+                  <label class="calc-label" for="red-nights">Nights</label>
+                  <input id="red-nights" class="calc-input" type="text" inputmode="numeric" autocomplete="off" value="1" />
+                </div>
+              </div>
+
+              <div class="calc-field">
+                <label class="calc-label" for="red-fare" id="red-fare-label">Cash fare for this trip (optional)</label>
+                <div class="calc-input-wrap">
+                  <span class="calc-prefix" aria-hidden="true">₹</span>
+                  <input id="red-fare" class="calc-input calc-input-prefixed" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 45,000" />
+                </div>
+                <p class="calc-hint red-hint">Enter the cash price (excluding taxes and fees) to see your rupee value per point.</p>
+              </div>
+            </div>
+
+            <p class="calc-error" id="red-error" role="alert" hidden></p>
+          </form>
+
+          <div class="calc-result" aria-live="polite">
+            <div class="red-art" id="red-art">
+              <div class="red-art-stage" id="red-art-stage"></div>
+              <p class="red-art-name" id="red-art-name">Select a card</p>
+              <p class="red-art-bank" id="red-art-bank">Choose your bank and card</p>
+            </div>
+
+            <div class="calc-verdict red-verdict" id="red-verdict" data-tier="none">
+              <p class="calc-verdict-badge" id="red-badge">Waiting</p>
+              <p class="calc-verdict-caption" id="red-caption">Card points needed</p>
+              <p class="calc-verdict-value" id="red-needed">--</p>
+              <p class="calc-verdict-label" id="red-label">Waiting for your inputs</p>
+              <p class="calc-verdict-detail" id="red-detail">Choose a card, a transfer partner and a route to see what it costs in your card points.</p>
+            </div>
+
+            <div class="red-options" id="red-options" hidden></div>
+            <div class="red-transfer" id="red-transfer" hidden></div>
+            <p class="red-asof" id="red-asof" hidden></p>
+          </div>
+        </div>
+
+        <!-- Other ways to redeem -->
+        <div class="red-other" id="red-other" hidden>
+          <div class="red-other-head">
+            <p class="calc-panel-eyebrow">OTHER WAYS TO REDEEM</p>
+            <h3 class="red-other-title" id="red-other-title">How your points compare</h3>
+            <p class="red-other-sub" id="red-other-sub"></p>
+          </div>
+          <ol class="red-ways" id="red-ways"></ol>
+          <p class="red-other-note">Values are the bank's published redemption values, in rupees per point. "Up to" marks a published ceiling, so your actual value may be lower. Transfers to airline and hotel partners are not ranked here because partner points have no fixed rupee value: add a cash fare above to see yours.</p>
+        </div>
+
+        <noscript><p class="calc-noscript">This planner needs JavaScript. To work it out by hand: card points needed = partner miles from the award chart × (card points ÷ partner points in your bank's transfer ratio).</p></noscript>
+      </div>
+    </section>
+
+    <section class="calc-explain section-dark">
+      <div class="container calc-explain-grid">
+        <div class="calc-explain-copy">
+          <p class="eyebrow copper">HOW IT WORKS</p>
+          <h2>From award chart to card points</h2>
+          <p>An airline's award chart tells you the miles a flight costs. Your bank's transfer ratio tells you how many card points it takes to buy those miles. We join the two, then check them against your balance.</p>
+          <ol class="calc-steps">
+            <li><strong>Price.</strong> We look up the partner's miles for your route, cabin and award type.</li>
+            <li><strong>Convert.</strong> Miles are multiplied by your card's transfer ratio and rounded to the transfer rules.</li>
+            <li><strong>Check.</strong> We compare the result with your balance and show transfer minimums, limits and timing.</li>
+          </ol>
+          <p class="calc-formula"><code>card points = partner miles × (card points ÷ partner points)</code></p>
+          <p class="calc-source">Award charts change without notice and availability is never guaranteed. Always confirm the price and seat on the airline's own site before transferring points, because transfers cannot be reversed.</p>
+        </div>
+
+        <div class="calc-faq" id="faq">
+          <h3 class="calc-faq-title">Frequently asked questions</h3>
+          <details class="calc-faq-item">
+            <summary>How many credit card points do I need for a flight?</summary>
+            <p>Find the partner miles the flight costs on the airline's award chart, then convert them to card points using your bank's transfer ratio. For example, a 5:2 ratio means 5 card points become 2 partner miles, so 20,000 miles needs 50,000 card points. This planner does both steps and checks your balance.</p>
+          </details>
+          <details class="calc-faq-item">
+            <summary>What are Saver and Advantage awards?</summary>
+            <p>KrisFlyer prices some Singapore Airlines award seats at a lower Saver rate and others at a higher Advantage rate. Saver seats are limited, so the planner shows both prices.</p>
+          </details>
+          <details class="calc-faq-item">
+            <summary>Do the point costs include taxes and fees?</summary>
+            <p>No. Award charts show the points or miles only. Airlines and hotels usually charge taxes, fees and sometimes fuel surcharges on top, paid in cash.</p>
+          </details>
+          <details class="calc-faq-item">
+            <summary>Why is my card or airline not listed?</summary>
+            <p>The planner covers transfer partners whose award charts we have verified and that can be priced by region: KrisFlyer, Maharaja Club, Finnair Plus and Wyndham Rewards. Distance-based charts such as Aeroplan and Qantas, and others, are being added.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <a href="/" class="brand">
+        <img src="/assets/logo-nav.png" alt="BTTP Logo" height="46">
+        <span class="brand-name footer-brand-name">Back to the Points</span>
+      </a>
+      <div class="footer-links">
+        <a href="/about.html">About</a>
+        <a href="/credit-card-reward-points-calculator.html">Points Calculator</a>
+        <a href="/credit-card-recommendation-tool.html">Card Recommender</a>
+        <a href="/credit-card-points-redemption-tool.html">Redemption Planner</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+        <a href="/ask-bttp.html#faq">FAQ</a>
+        <a href="/#early-access">Early Access</a>
+      </div>
+      <span>© 2026 BTTP</span>
+    </div>
+  </footer>
+
+  <script src="/script.js" defer></script>
+  <script src="/redemption.js" defer></script>
+</body>
+</html>
