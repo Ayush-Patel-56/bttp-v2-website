@@ -373,3 +373,17 @@
         gap: 2px
     }
 }
+
+.red-zone {
+    margin: -6px 0 16px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #f1ece3;
+    color: #6b6255;
+    font-size: 13px;
+    line-height: 1.5
+}
+
+.red-zone[hidden] {
+    display: none
+}

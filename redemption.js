@@ -10,7 +10,7 @@
 
   const els = {
     bank: $('red-bank'), card: $('red-card'), balance: $('red-balance'), partner: $('red-partner'),
-    origin: $('red-origin'), dest: $('red-dest'), cabin: $('red-cabin'), pax: $('red-pax'), nights: $('red-nights'), fare: $('red-fare'),
+    origin: $('red-origin'), dest: $('red-dest'), originList: $('red-origin-list'), destList: $('red-dest-list'), zone: $('red-zone'), cabin: $('red-cabin'), pax: $('red-pax'), nights: $('red-nights'), fare: $('red-fare'),
     flight: $('red-flight'), hotel: $('red-hotel'), tripType: $('red-trip-type'), noPlan: $('red-no-plan'), trip: $('red-trip'), error: $('red-error'),
     artStage: $('red-art-stage'), artName: $('red-art-name'), artBank: $('red-art-bank'),
     verdict: $('red-verdict'), badge: $('red-badge'), caption: $('red-caption'), needed: $('red-needed'), label: $('red-label'), detail: $('red-detail'),
@@ -141,14 +141,33 @@
   const isHotel = () => rows().length > 0 && rows()[0][6] === 2;
 
   const setFlightMode = flight => { els.flight.hidden = !flight; els.hotel.hidden = flight; };
+  const regionName = i => state.red.charts[state.partner].regions[i];
+
+  // ── Places: users pick a country or city, we map it to the programme's pricing zone ──
+  const places = () => (state.partner ? state.red.charts[state.partner].places || [] : []);
+  const fillList = (list, items) => {
+    list.replaceChildren();
+    Array.from(new Set(items.map(p => p[0]))).sort((a, b) => a.localeCompare(b)).forEach(name => {
+      const o = document.createElement('option');
+      o.value = name;
+      list.appendChild(o);
+    });
+  };
+  const regionsOf = input => {
+    const v = input.value.trim().toLowerCase();
+    return v ? Array.from(new Set(places().filter(p => p[0].toLowerCase() === v).map(p => p[1]))) : [];
+  };
+  const originRegions = () => (els.origin.disabled && state.partner ? Array.from(new Set(rows().map(r => r[0]))) : regionsOf(els.origin));
+  const reachable = O => new Set(rows().filter(r => O.includes(r[0])).map(r => r[1]));
+  const destRegions = () => { const ok = reachable(originRegions()); return regionsOf(els.dest).filter(i => ok.has(i)); };
+
   const clearRoute = () => {
-    setOptions(els.origin, 'Select region', [], true);
-    setOptions(els.dest, 'Select region', [], true);
+    [els.origin, els.dest].forEach(i => { i.value = ''; i.disabled = true; });
+    els.originList.replaceChildren(); els.destList.replaceChildren();
     setOptions(els.cabin, 'Select cabin', [], true);
     els.tripType.hidden = true;
+    els.zone.hidden = true;
   };
-
-  const regionName = i => state.red.charts[state.partner].regions[i];
 
   const onPartnerChange = () => {
     state.partner = els.partner.value;
@@ -160,10 +179,19 @@
     } else {
       setFlightMode(true);
       $('red-fare-label').textContent = 'Cash fare for this trip (optional)';
-      const origins = Array.from(new Set(rows().map(r => r[0])));
-      const items = origins.map(i => ({ value: i, text: regionName(i) })).sort((a, b) => a.text.localeCompare(b.text));
-      setOptions(els.origin, 'Select region', items, items.length === 1);
-      if (items.length === 1) els.origin.value = items[0].value;
+      const origins = new Set(rows().map(r => r[0]));
+      const originPlaces = places().filter(p => origins.has(p[1]));
+      fillList(els.originList, originPlaces);
+      els.origin.value = '';
+      els.origin.disabled = false;
+      if (origins.size === 1) {
+        // One departure zone only (Maharaja Club from India, Finnair from Helsinki): fixed.
+        els.origin.value = originPlaces.length === 1 ? originPlaces[0][0] : regionName(Array.from(origins)[0]);
+        els.origin.disabled = true;
+      } else if (originPlaces.some(p => p[0] === 'India')) {
+        els.origin.value = 'India';
+      }
+      els.dest.value = '';
       els.tripType.hidden = !ROUND_TRIP_DOUBLES.has(state.partner);
       if (els.tripType.hidden) setTrip(1);
       onOriginChange();
@@ -172,18 +200,29 @@
   };
 
   const onOriginChange = () => {
-    const o = els.origin.value;
-    const dests = Array.from(new Set(rows().filter(r => String(r[0]) === o).map(r => r[1])));
-    const items = dests.map(i => ({ value: i, text: regionName(i) })).sort((a, b) => a.text.localeCompare(b.text));
-    setOptions(els.dest, 'Select region', items, !o, true);
+    const O = originRegions();
+    els.dest.disabled = !O.length;
+    if (!O.length) els.dest.value = '';
+    const ok = reachable(O);
+    fillList(els.destList, places().filter(p => ok.has(p[1])));
     onDestChange();
   };
 
+  const zoneText = regions => regions.map(regionName).join(' / ');
   const onDestChange = () => {
-    const o = els.origin.value, d = els.dest.value;
-    const cabins = Array.from(new Set(rows().filter(r => String(r[0]) === o && String(r[1]) === d).map(r => r[2])))
+    const O = originRegions(), D = destRegions();
+    const cabins = Array.from(new Set(rows().filter(r => O.includes(r[0]) && D.includes(r[1])).map(r => r[2])))
       .sort((a, b) => CABIN_ORDER.indexOf(a) - CABIN_ORDER.indexOf(b));
-    setOptions(els.cabin, 'Select cabin', cabins.map(c => ({ value: c, text: CABIN[c] })), !d, true);
+    setOptions(els.cabin, 'Select cabin', cabins.map(c => ({ value: c, text: CABIN[c] })), !D.length, true);
+    if (O.length && D.length) {
+      els.zone.textContent = `${partnerName(state.partner)} prices this as ${zoneText(O)} to ${zoneText(D)}.`;
+      els.zone.hidden = false;
+    } else if (els.dest.value.trim() && O.length) {
+      els.zone.textContent = `We have no ${partnerName(state.partner)} price for "${els.dest.value.trim()}" from here. Pick a country or city from the list.`;
+      els.zone.hidden = false;
+    } else {
+      els.zone.hidden = true;
+    }
     compute();
   };
 
@@ -216,10 +255,15 @@
       mult = nights;
       descr = `${nights} night${nights === 1 ? '' : 's'}`;
     } else {
-      const o = els.origin.value, d = els.dest.value, c = els.cabin.value;
-      if (o === '' || d === '' || !c) { resetResult(); renderOther(); return; }
-      matches = rows().filter(r => String(r[0]) === o && String(r[1]) === d && r[2] === c).sort((a, b) => a[3] - b[3])
-        .map(r => ({ row: r, label: r[7] >= 0 ? `${chart.labels[r[7]]}${/^(Saver|Advantage)$/.test(chart.labels[r[7]]) ? ' award' : ''}` : `${CABIN[c]} award`, unitsText: null }));
+      const O = originRegions(), D = destRegions(), c = els.cabin.value;
+      if (!O.length || !D.length || !c) { resetResult(); renderOther(); return; }
+      const multiZone = O.length > 1 || D.length > 1; // e.g. "United States" is priced differently for East and West Coast
+      matches = rows().filter(r => O.includes(r[0]) && D.includes(r[1]) && r[2] === c).sort((a, b) => a[3] - b[3])
+        .map(r => {
+          const tier = r[7] >= 0 ? chart.labels[r[7]] : '';
+          const kind = tier ? (/^(Saver|Advantage)$/.test(tier) ? `${tier} award` : tier) : `${CABIN[c]} award`;
+          return { row: r, label: multiZone ? `${regionName(r[0])} to ${regionName(r[1])}: ${kind}` : kind, unitsText: null };
+        });
       const pax = Number(els.pax.value) || 1;
       const trip = ROUND_TRIP_DOUBLES.has(state.partner) ? state.trip : 1;
       mult = pax * trip;
@@ -341,8 +385,10 @@
   els.bank.addEventListener('change', onBankChange);
   els.card.addEventListener('change', onCardChange);
   els.partner.addEventListener('change', onPartnerChange);
-  els.origin.addEventListener('change', onOriginChange);
-  els.dest.addEventListener('change', onDestChange);
+  ['input', 'change'].forEach(ev => {
+    els.origin.addEventListener(ev, onOriginChange);
+    els.dest.addEventListener(ev, onDestChange);
+  });
   els.cabin.addEventListener('change', compute);
   els.pax.addEventListener('change', compute);
   document.querySelectorAll('[data-trip]').forEach(b => b.addEventListener('click', () => { setTrip(Number(b.dataset.trip)); compute(); }));

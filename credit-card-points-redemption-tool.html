@@ -151,14 +151,17 @@
               <div id="red-flight">
                 <div class="calc-row">
                   <div class="calc-field">
-                    <label class="calc-label" for="red-origin">From</label>
-                    <select id="red-origin" class="calc-select" disabled><option value="">Select region</option></select>
+                    <label class="calc-label" for="red-origin">From (country or city)</label>
+                    <input id="red-origin" class="calc-input" type="text" list="red-origin-list" autocomplete="off" placeholder="e.g. India" disabled />
+                    <datalist id="red-origin-list"></datalist>
                   </div>
                   <div class="calc-field">
-                    <label class="calc-label" for="red-dest">To</label>
-                    <select id="red-dest" class="calc-select" disabled><option value="">Select region</option></select>
+                    <label class="calc-label" for="red-dest">To (country or city)</label>
+                    <input id="red-dest" class="calc-input" type="text" list="red-dest-list" autocomplete="off" placeholder="e.g. Singapore" disabled />
+                    <datalist id="red-dest-list"></datalist>
                   </div>
                 </div>
+                <p class="red-zone" id="red-zone" hidden></p>
                 <div class="calc-row">
                   <div class="calc-field">
                     <label class="calc-label" for="red-cabin">Cabin</label>
