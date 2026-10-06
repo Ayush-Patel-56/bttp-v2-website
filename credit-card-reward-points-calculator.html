@@ -172,13 +172,17 @@
                 <div class="calc-row">
                   <div class="calc-field">
                     <label class="calc-label" for="calc-origin">From (country or city)</label>
-                    <input id="calc-origin" class="calc-input" type="text" list="calc-origin-list" autocomplete="off" placeholder="e.g. India" />
-                    <datalist id="calc-origin-list"></datalist>
+                    <div class="calc-combo">
+                      <input id="calc-origin" class="calc-input" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="calc-origin-list" autocomplete="off" spellcheck="false" placeholder="e.g. India" />
+                      <ul class="calc-combo-list" id="calc-origin-list" role="listbox" aria-label="Departure places" hidden></ul>
+                    </div>
                   </div>
                   <div class="calc-field">
                     <label class="calc-label" for="calc-dest">To (country or city)</label>
-                    <input id="calc-dest" class="calc-input" type="text" list="calc-dest-list" autocomplete="off" placeholder="e.g. Singapore" />
-                    <datalist id="calc-dest-list"></datalist>
+                    <div class="calc-combo">
+                      <input id="calc-dest" class="calc-input" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="calc-dest-list" autocomplete="off" spellcheck="false" placeholder="Search a country or city" />
+                      <ul class="calc-combo-list" id="calc-dest-list" role="listbox" aria-label="Destinations" hidden></ul>
+                    </div>
                   </div>
                 </div>
                 <p class="calc-zone" id="calc-zone" hidden></p>

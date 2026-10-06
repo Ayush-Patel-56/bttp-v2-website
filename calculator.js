@@ -90,9 +90,127 @@
   const reachable = O => new Set(rows().filter(r => O.includes(r[0])).map(r => r[1]));
   const destRegions = () => { const ok = reachable(originRegions()); return regionsOf(els.dest).filter(i => ok.has(i)); };
   const zoneText = regions => regions.map(regionName).join(' / ');
-  const fillList = (list, items) => {
-    list.replaceChildren();
-    Array.from(new Set(items.map(p => p[0]))).sort((a, b) => a.localeCompare(b)).forEach(name => { const o = el('option'); o.value = name; list.appendChild(o); });
+
+  // ── Search box for places: popular choices first, type to search everything ──
+  const POPULAR_DEST = ['Singapore', 'United Arab Emirates', 'Thailand', 'United Kingdom', 'United States', 'Japan', 'Australia', 'Malaysia', 'Indonesia',
+    'Hong Kong SAR, China', 'Hong Kong', 'Maldives', 'Sri Lanka', 'Nepal', 'Vietnam', 'France', 'Germany', 'Italy', 'Switzerland', 'Canada', 'Turkey',
+    'Spain', 'Netherlands', 'Dubai', 'London', 'Paris', 'Bangkok', 'Tokyo', 'New York'];
+  const POPULAR_ORIGIN = ['India', 'Singapore', 'United Arab Emirates', 'United Kingdom', 'United States', 'Australia', 'Thailand', 'Malaysia', 'Canada', 'Germany', 'France', 'Dubai', 'London'];
+  // Everyday names people type, mapped to the country a programme actually prices. Only used when the programme has that country.
+  const ALIASES = {
+    dubai: 'United Arab Emirates', 'abu dhabi': 'United Arab Emirates', uae: 'United Arab Emirates', doha: 'Qatar', muscat: 'Oman',
+    london: 'United Kingdom', uk: 'United Kingdom', england: 'United Kingdom', scotland: 'United Kingdom', manchester: 'United Kingdom',
+    paris: 'France', nice: 'France', rome: 'Italy', milan: 'Italy', venice: 'Italy', barcelona: 'Spain', madrid: 'Spain', amsterdam: 'Netherlands', holland: 'Netherlands',
+    zurich: 'Switzerland', geneva: 'Switzerland', frankfurt: 'Germany', munich: 'Germany', berlin: 'Germany', istanbul: 'Turkey', athens: 'Greece', lisbon: 'Portugal',
+    'new york': 'United States', usa: 'United States', america: 'United States', 'los angeles': 'United States', 'san francisco': 'United States', chicago: 'United States',
+    seattle: 'United States', dallas: 'United States', miami: 'United States', houston: 'United States', toronto: 'Canada', vancouver: 'Canada',
+    tokyo: 'Japan', osaka: 'Japan', seoul: 'South Korea', bangkok: 'Thailand', phuket: 'Thailand', pattaya: 'Thailand', 'chiang mai': 'Thailand',
+    bali: 'Indonesia', jakarta: 'Indonesia', 'kuala lumpur': 'Malaysia', penang: 'Malaysia', hanoi: 'Vietnam', 'ho chi minh': 'Vietnam', saigon: 'Vietnam', 'da nang': 'Vietnam',
+    manila: 'Philippines', cebu: 'Philippines', 'siem reap': 'Cambodia', 'hong kong': 'Hong Kong SAR, China', taipei: 'Taiwan, China', sydney: 'Australia',
+    melbourne: 'Australia', brisbane: 'Australia', auckland: 'New Zealand', colombo: 'Sri Lanka', kathmandu: 'Nepal', dhaka: 'Bangladesh', male: 'Maldives',
+    delhi: 'India', mumbai: 'India', bengaluru: 'India', bangalore: 'India', kolkata: 'India', chennai: 'India', hyderabad: 'India', goa: 'India',
+    cairo: 'Egypt', nairobi: 'Kenya', johannesburg: 'South Africa', 'cape town': 'South Africa', mauritius: 'Mauritius', moscow: 'Russia'
+  };
+  const norm = v => v.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+
+  // Unique places for the current chart. `ok` says whether the programme prices it from the chosen origin.
+  const placeItems = originOnly => {
+    const map = new Map();
+    const origins = new Set(rows().map(r => r[0]));
+    const reach = originOnly ? null : reachable(originRegions());
+    places().forEach(([name, region, kind]) => {
+      if (originOnly && !origins.has(region)) return;
+      const it = map.get(name) || { name, kind, ok: false };
+      if (originOnly || reach.has(region)) it.ok = true;
+      map.set(name, it);
+    });
+    return Array.from(map.values());
+  };
+
+  const makeCombo = cfg => {
+    const { input, list } = cfg;
+    let shown = [];
+    let active = -1;
+    const close = () => { list.hidden = true; input.setAttribute('aria-expanded', 'false'); input.removeAttribute('aria-activedescendant'); active = -1; };
+    const setActive = i => {
+      active = i;
+      Array.from(list.querySelectorAll('[role="option"]')).forEach((li, k) => {
+        li.classList.toggle('is-active', k === i);
+        li.setAttribute('aria-selected', String(k === i));
+        if (k === i) { input.setAttribute('aria-activedescendant', li.id); li.scrollIntoView({ block: 'nearest' }); }
+      });
+    };
+    const choose = item => {
+      input.value = item.name;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      close();
+      if (cfg.after) setTimeout(cfg.after, 0);
+    };
+    const row = (item, sub) => {
+      const li = el('li', `calc-combo-opt${item.ok ? '' : ' is-unpriced'}`);
+      li.id = `${list.id}-${shown.length}`;
+      li.setAttribute('role', 'option');
+      li.setAttribute('aria-selected', 'false');
+      li.appendChild(el('strong', null, item.name));
+      li.appendChild(el('span', null, sub));
+      // mousedown, not click: the input would lose focus and close the list first.
+      li.addEventListener('mousedown', e => { e.preventDefault(); choose(item); });
+      list.appendChild(li);
+      shown.push(item);
+    };
+    const kindText = k => (k === 'y' ? 'City' : 'Country');
+    const build = fresh => {
+      const raw = input.value;
+      const q = fresh ? '' : norm(raw);
+      const all = cfg.items();
+      list.replaceChildren(); shown = []; active = -1;
+      if (!q) {
+        const byName = new Map(all.map(i => [i.name, i]));
+        let pop = cfg.popular.map(n => byName.get(n)).filter(i => i && i.ok).slice(0, 12);
+        if (!pop.length) pop = all.filter(i => i.ok).sort((a, b) => a.name.localeCompare(b.name)).slice(0, 12);
+        if (pop.length) {
+          list.appendChild(el('li', 'calc-combo-head', cfg.heading));
+          pop.forEach(i => row(i, kindText(i.kind)));
+        }
+        list.appendChild(el('li', 'calc-combo-foot', `Type to search all ${all.length} places`));
+      } else {
+        const rank = i => { const n = norm(i.name); return n === q ? 0 : n.startsWith(q) ? 1 : n.split(/[\s,()-]+/).some(w => w.startsWith(q)) ? 2 : n.includes(q) ? 3 : 9; };
+        const res = all.map(i => ({ i, r: rank(i) })).filter(x => x.r < 9);
+        // Everyday names (Dubai, London, USA) point at the country the programme prices.
+        const byName = new Map(all.map(i => [norm(i.name), i]));
+        const aliasHits = [];
+        if (q.length >= 2) {
+          Object.keys(ALIASES).forEach(key => {
+            if (byName.has(key) || !(key.startsWith(q) || key.split(' ').some(w => w.startsWith(q)))) return;
+            const target = byName.get(norm(ALIASES[key]));
+            if (target && !res.some(x => x.i === target) && !aliasHits.some(a => a.item === target)) aliasHits.push({ item: target, via: key.replace(/\b\w/g, c => c.toUpperCase()) });
+          });
+        }
+        res.sort((a, b) => a.r - b.r || (b.i.ok - a.i.ok) || a.i.name.localeCompare(b.i.name));
+        // Names that start with what was typed come first, then everyday-name suggestions, then looser matches.
+        const sub = x => (x.i.ok ? kindText(x.i.kind) : 'No price from here');
+        res.filter(x => x.r <= 1).forEach(x => row(x.i, sub(x)));
+        aliasHits.slice(0, 3).forEach(a => row(a.item, `Includes ${a.via}`));
+        res.filter(x => x.r > 1).slice(0, Math.max(0, 10 - shown.length)).forEach(x => row(x.i, sub(x)));
+        if (shown.length > 10) { shown.length = 10; Array.from(list.children).slice(10).forEach(n => n.remove()); }
+        if (!shown.length) list.appendChild(el('li', 'calc-combo-foot', `No place matches "${raw.trim()}"`));
+      }
+      list.hidden = false;
+      input.setAttribute('aria-expanded', 'true');
+    };
+    input.addEventListener('focus', () => { if (!input.disabled) build(true); });
+    input.addEventListener('click', () => { if (!input.disabled && list.hidden) build(true); });
+    input.addEventListener('input', () => { if (!input.disabled) build(false); });
+    input.addEventListener('keydown', e => {
+      if (list.hidden) { if (e.key === 'ArrowDown' && !input.disabled) { e.preventDefault(); build(true); setActive(0); } return; }
+      if (e.key === 'ArrowDown') { e.preventDefault(); if (shown.length) setActive((active + 1) % shown.length); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); if (shown.length) setActive((active - 1 + shown.length) % shown.length); }
+      else if (e.key === 'Enter') { if (active >= 0 && shown[active]) { e.preventDefault(); choose(shown[active]); } else if (shown.length === 1) { e.preventDefault(); choose(shown[0]); } }
+      else if (e.key === 'Escape' || e.key === 'Tab') { close(); }
+    });
+    document.addEventListener('mousedown', e => { if (!input.parentElement.contains(e.target)) close(); });
+    input.addEventListener('blur', () => setTimeout(close, 120));
+    return { close };
   };
 
   // ── Result helpers ──
@@ -138,7 +256,6 @@
   // ── Route UI for partners that have an award chart ──
   const clearRoute = () => {
     [els.origin, els.dest].forEach(i => { i.value = ''; i.disabled = false; });
-    els.originList.replaceChildren(); els.destList.replaceChildren();
     setOptions(els.cabin, 'Select cabin', [], true);
     els.zone.hidden = true;
     els.tripType.hidden = true;
@@ -153,8 +270,6 @@
     const O = originRegions();
     els.dest.disabled = !O.length;
     if (!O.length) els.dest.value = '';
-    const ok = reachable(O);
-    fillList(els.destList, places().filter(p => ok.has(p[1])));
     onDestChange();
   };
 
@@ -173,10 +288,14 @@
         els.zone.textContent = state.partner === 'krisflyer'
           ? `KrisFlyer does not publish a fixed price for ${pair}. Its award chart marks these routes "use the mileage calculator", so check the exact miles on singaporeair.com.`
           : `${partnerName(state.partner)} does not publish a price for ${pair} in the award chart we hold. Check the exact price on the airline's site.`;
+        els.zone.hidden = false;
+      } else if (document.activeElement === els.dest) {
+        // Still typing: the list below is the guide, so do not flash an error yet.
+        els.zone.hidden = true;
       } else {
         els.zone.textContent = `We could not find "${els.dest.value.trim()}". Pick a country or city from the list.`;
+        els.zone.hidden = false;
       }
-      els.zone.hidden = false;
     } else {
       els.zone.hidden = true;
     }
@@ -243,7 +362,6 @@
         els.flight.hidden = false; els.hotel.hidden = true;
         const origins = new Set(rows().map(r => r[0]));
         const originPlaces = places().filter(p => origins.has(p[1]));
-        fillList(els.originList, originPlaces);
         if (origins.size === 1) {
           // One departure zone only (Maharaja Club from India, Finnair from Helsinki): fixed.
           els.origin.value = originPlaces.length === 1 ? originPlaces[0][0] : regionName(Array.from(origins)[0]);
@@ -563,6 +681,9 @@
     if (open) els.points.focus();
   });
   form.addEventListener('submit', event => event.preventDefault());
+
+  makeCombo({ input: els.origin, list: els.originList, items: () => placeItems(true), popular: POPULAR_ORIGIN, heading: 'Popular departure places', after: () => els.dest.focus() });
+  makeCombo({ input: els.dest, list: els.destList, items: () => placeItems(false), popular: POPULAR_DEST, heading: 'Popular destinations', after: () => { if (!els.cabin.disabled) els.cabin.focus(); } });
 
   load();
 })();
