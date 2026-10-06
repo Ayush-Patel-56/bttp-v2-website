@@ -96,7 +96,6 @@
           <div class="nav-dropdown-menu">
             <a href="/credit-card-reward-points-calculator.html" aria-current="page">Points Calculator</a>
             <a href="/credit-card-recommendation-tool.html">Card Recommender</a>
-            <a href="/credit-card-points-redemption-tool.html">Redemption Planner</a>
           </div>
         </div>
         <a href="/privacy.html" class="nav-link-mobile-only">Privacy</a>
@@ -113,7 +112,7 @@
       <div class="container calc-hero-inner">
         <p class="eyebrow copper">FREE TOOL</p>
         <h1>Credit Card Reward <br class="calc-break">Points Calculator</h1>
-        <p class="calc-lede">Work out what your points are really worth in rupees before you redeem, and see whether a flight or hotel redemption beats cashback.</p>
+        <p class="calc-lede">Work out how many points a flight or hotel night costs after transfer, whether your balance covers it, and what each point is really worth in rupees.</p>
         <ul class="calc-benchmarks" aria-label="Rupee-per-point benchmarks">
           <li class="calc-benchmark calc-benchmark-high"><strong>₹4+</strong> per point <span>High value</span></li>
           <li class="calc-benchmark calc-benchmark-good"><strong>₹2–4</strong> per point <span>Good value</span></li>
@@ -126,7 +125,7 @@
       <div class="container">
         <div class="calc-head">
           <h2 id="calc-title">Calculate the real value of your points</h2>
-          <p>Pick your card and a transfer partner, then tell us the trip. We work out the points you need.</p>
+          <p>Pick your card and a transfer partner, then tell us the trip. We work out the points you need and whether your balance covers it.</p>
         </div>
 
         <div class="calc-grid">
@@ -153,6 +152,12 @@
               <select id="calc-card" class="calc-select" disabled>
                 <option value="">Select a bank first</option>
               </select>
+            </div>
+
+            <div class="calc-field" id="calc-balance-field">
+              <label class="calc-label" for="calc-balance">Your points balance (optional)</label>
+              <input id="calc-balance" class="calc-input" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 120,000" />
+              <p class="calc-hint calc-hint-tight">In the card's own reward points. We check whether it covers the trip.</p>
             </div>
 
             <div class="calc-field">
@@ -203,7 +208,7 @@
               </div>
             </div>
 
-            <div class="calc-field">
+            <div class="calc-field" id="calc-price-field">
               <label class="calc-label" for="calc-price" id="calc-price-label">Ticket price</label>
               <div class="calc-input-wrap">
                 <span class="calc-prefix" aria-hidden="true">₹</span>
@@ -260,15 +265,26 @@
               <p class="calc-verdict-caption" id="calc-caption">Estimated card points needed</p>
               <p class="calc-verdict-value" id="calc-value">--</p>
               <p class="calc-verdict-label" id="calc-label">Waiting for your inputs</p>
+              <p class="calc-balance" id="calc-balance-line" hidden></p>
               <p class="calc-verdict-detail" id="calc-detail">Choose your card, a transfer partner and the trip to see how many points you need.</p>
               <p class="calc-verdict-using" id="calc-using" hidden></p>
               <p class="calc-verdict-note" id="calc-note" hidden></p>
             </div>
 
             <div class="calc-options" id="calc-options" hidden></div>
+            <div class="calc-transfer" id="calc-transfer" hidden></div>
             <p class="calc-asof" id="calc-asof" hidden></p>
-            <a class="calc-xlink" id="calc-xlink" href="/credit-card-points-redemption-tool.html" hidden>See transfer limits and other ways to redeem in the Redemption Planner →</a>
           </div>
+        </div>
+
+        <div class="calc-other" id="calc-other" hidden>
+          <div class="calc-other-head">
+            <p class="calc-panel-eyebrow">OTHER WAYS TO REDEEM</p>
+            <h3 class="calc-other-title" id="calc-other-title">How your points compare</h3>
+            <p class="calc-other-sub" id="calc-other-sub"></p>
+          </div>
+          <ol class="calc-ways" id="calc-ways"></ol>
+          <p class="calc-other-note">Values are the bank's published redemption values, in rupees per point. "Up to" marks a published ceiling, so your actual value may be lower. Transfers to airline and hotel partners have no fixed rupee value: add a cash price above to see yours.</p>
         </div>
 
         <p class="calc-art-note">Card images belong to their respective issuers and are shown for identification only. Cards without an official image use a generic design.</p>
@@ -284,7 +300,7 @@
           <h2>What your points are actually worth</h2>
           <p>Vouchers and statement credit are convenient, but they are usually the weakest use of points. Transferring to an airline or hotel programme can be worth several times more, when the redemption is chosen well.</p>
           <ol class="calc-steps">
-            <li><strong>Price.</strong> For partners with an award chart we look up the miles your route and cabin cost. Otherwise you can enter the miles, or we give a rough estimate from your price.</li>
+            <li><strong>Price.</strong> For partners with an award chart we look up the miles your route and cabin cost. Otherwise you can enter the miles, or we estimate from your price.</li>
             <li><strong>Convert.</strong> Those partner points become credit card points through the bank's transfer ratio.</li>
             <li><strong>Divide.</strong> If you add a cash price, dividing it by the card points gives your rupee value per point.</li>
             <li><strong>Judge.</strong> Around ₹1 is low, ₹2–4 is good and ₹4 or more is excellent.</li>
@@ -330,7 +346,6 @@
         <a href="/about.html">About</a>
         <a href="/credit-card-reward-points-calculator.html">Points Calculator</a>
         <a href="/credit-card-recommendation-tool.html">Card Recommender</a>
-        <a href="/credit-card-points-redemption-tool.html">Redemption Planner</a>
         <a href="/privacy.html">Privacy</a>
         <a href="/terms.html">Terms</a>
         <a href="/ask-bttp.html#faq">FAQ</a>

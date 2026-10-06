@@ -4,8 +4,8 @@
 
   const $ = id => document.getElementById(id);
   const els = {
-    bank: $('calc-bank'), card: $('calc-card'), partner: $('calc-partner'), price: $('calc-price'), points: $('calc-points'),
-    error: $('calc-error'), partnerLabel: $('calc-partner-label'), priceLabel: $('calc-price-label'), priceHint: $('calc-price-hint'),
+    bank: $('calc-bank'), card: $('calc-card'), balance: $('calc-balance'), partner: $('calc-partner'), price: $('calc-price'), points: $('calc-points'),
+    error: $('calc-error'), partnerLabel: $('calc-partner-label'), priceLabel: $('calc-price-label'), priceHint: $('calc-price-hint'), priceField: $('calc-price-field'),
     route: $('calc-route'), flight: $('calc-flight'), hotel: $('calc-hotel'),
     origin: $('calc-origin'), dest: $('calc-dest'), originList: $('calc-origin-list'), destList: $('calc-dest-list'), zone: $('calc-zone'),
     cabin: $('calc-cabin'), pax: $('calc-pax'), tripType: $('calc-trip-type'), nights: $('calc-nights'),
@@ -14,20 +14,26 @@
     art: $('calc-art'), artImg: $('calc-art-img'), artName: $('calc-art-name'), artBank: $('calc-art-bank'),
     cardCurrency: $('calc-card-currency'), cardValue: $('calc-card-value'),
     verdict: $('calc-verdict'), badge: $('calc-badge'), caption: $('calc-caption'), value: $('calc-value'), label: $('calc-label'), detail: $('calc-detail'),
-    using: $('calc-using'), note: $('calc-note'), options: $('calc-options'), asof: $('calc-asof'), xlink: $('calc-xlink'), source: $('calc-source')
+    balanceLine: $('calc-balance-line'), using: $('calc-using'), note: $('calc-note'), options: $('calc-options'), transfer: $('calc-transfer'), asof: $('calc-asof'),
+    other: $('calc-other'), otherTitle: $('calc-other-title'), otherSub: $('calc-other-sub'), ways: $('calc-ways'), source: $('calc-source')
   };
   const toggles = Array.from(document.querySelectorAll('.calc-toggle-btn[data-mode]'));
   const tripButtons = Array.from(document.querySelectorAll('[data-trip]'));
 
   const COPY = {
-    airline: { partner: 'Select airline partner', price: 'Ticket price', none: 'Select a card first' },
-    hotel: { partner: 'Select hotel partner', price: 'Stay price', none: 'Select a card first' }
+    airline: { partner: 'Select airline partner', price: 'Ticket price' },
+    hotel: { partner: 'Select hotel partner', price: 'Stay price' }
   };
   const CABIN = { e: 'Economy', p: 'Premium economy', b: 'Business', f: 'First', r: 'Room' };
   const CABIN_ORDER = ['e', 'p', 'b', 'f'];
+  const WAY = {
+    s: 'Statement credit', v: 'Vouchers', f: 'Flight bookings (bank portal)', h: 'Hotel bookings (bank portal)',
+    m: 'Merchandise', p: 'Points + pay', b: 'Blended portal redemption'
+  };
+  const WINDOW = { month: 'per month', calendar_year: 'per calendar year', day: 'per day', year: 'per year' };
   // KrisFlyer's chart states a round trip costs twice the one-way miles. The other charts do not say so.
   const ROUND_TRIP_DOUBLES = new Set(['krisflyer']);
-  // Typical rupee value per point. Used only to give a rough range when a partner has no award chart.
+  // Typical rupee value per point. Used only to estimate when a partner has no award chart.
   const BENCH = { low: 1, mid: 2, high: 4 };
 
   // Rupee-per-point cut-offs, highest first. Same thresholds as the page's benchmark badges.
@@ -39,7 +45,7 @@
   ];
 
   const inr = new Intl.NumberFormat('en-IN');
-  const state = { data: null, red: null, art: {}, mode: 'airline', cardsById: new Map(), partner: '', chart: null, trip: 1 };
+  const state = { data: null, red: null, art: {}, banks: new Map(), mode: 'airline', cards: new Map(), partner: '', chart: null, trip: 1, plan: null };
 
   const digits = value => value.replace(/[^\d]/g, '');
   const parseNumber = value => Number(digits(value)) || 0;
@@ -60,11 +66,16 @@
     select.disabled = disabled;
   };
 
-  const selectedCard = () => state.cardsById.get(els.card.value) || null;
-  const routesFor = card => card.r.filter(r => state.data.partners[r[0]] && state.data.partners[r[0]].k === state.mode);
-  const cardsForMode = () => state.data.cards.filter(c => routesFor(c).length);
+  const selectedCard = () => state.cards.get(els.card.value) || null;
+  const routesIn = (card, mode) => card.r.filter(r => state.data.partners[r[0]] && state.data.partners[r[0]].k === mode);
+  const routesFor = card => routesIn(card, state.mode);
+  const hasModes = card => !!(state.red && state.red.modes && state.red.modes[card.id]);
+  // A card with no transfer partner at all still appears (in both modes) if we know how its points redeem elsewhere.
+  const cardsForMode = () => Array.from(state.cards.values()).filter(c => routesFor(c).length || (!c.r.length && hasModes(c)));
+  const noPartnerCard = card => !!card && !routesFor(card).length;
   const partnerName = id => (state.data.partners[id] ? state.data.partners[id].n.replace(/\s*\(.*?\)\s*/g, ' ').trim() : id);
   const unitWord = () => (state.mode === 'hotel' ? 'points' : 'miles');
+  const xferOf = (card, pid) => ((state.red && state.red.xfer && state.red.xfer[card.id]) || {})[pid] || [];
 
   // ── Award chart lookups: users type a country or city, the chart is keyed by pricing zone ──
   const rows = () => (state.chart ? state.chart.rows : []);
@@ -85,7 +96,8 @@
   };
 
   // ── Result helpers ──
-  const resetResult = (message) => {
+  const resetResult = message => {
+    state.plan = null;
     els.verdict.dataset.tier = 'none';
     els.cardVisual.dataset.state = els.card.value ? 'selected' : 'empty';
     els.badge.textContent = 'Waiting';
@@ -94,17 +106,18 @@
     els.label.textContent = 'Waiting for your inputs';
     els.detail.textContent = message || 'Choose your card, a transfer partner and the trip to see how many points you need.';
     els.cardValue.textContent = '—';
+    els.balanceLine.hidden = true;
     els.using.hidden = true;
     els.note.hidden = true;
     els.options.hidden = true; els.options.replaceChildren();
+    els.transfer.hidden = true; els.transfer.replaceChildren();
     els.asof.hidden = true;
-    els.xlink.hidden = !(selectedCard() && state.partner);
     els.error.hidden = true;
   };
 
   const updateCardVisual = () => {
     const card = selectedCard();
-    const bank = state.data && card ? state.data.banks.find(b => b.id === card.b) : null;
+    const bankName = card ? state.banks.get(card.b) : null;
     const art = card ? state.art[card.id] : null;
     if (art) {
       els.artImg.src = `/assets/cards/${art.f}`;
@@ -112,12 +125,12 @@
       els.artImg.alt = `${card.n} credit card`;
       els.art.classList.toggle('is-vertical', art.h > art.w);
       els.artName.textContent = card.n;
-      els.artBank.textContent = bank ? bank.name : '';
+      els.artBank.textContent = bankName || '';
     }
     els.art.hidden = !art;
     els.cardVisual.hidden = !!art;
     els.cardName.textContent = card ? card.n : 'Select a card';
-    els.cardBank.textContent = bank ? bank.name : 'Choose your bank and card';
+    els.cardBank.textContent = bankName || 'Choose your bank and card';
     els.cardCurrency.textContent = card && card.c ? card.c : '—';
     els.cardVisual.dataset.state = card ? 'selected' : 'empty';
   };
@@ -173,7 +186,7 @@
   // ── Selects ──
   const populateBanks = () => {
     const bankIds = new Set(cardsForMode().map(c => c.b));
-    const banks = state.data.banks.filter(b => bankIds.has(b.id)).map(b => ({ value: b.id, text: b.name }));
+    const banks = Array.from(bankIds).map(id => ({ value: id, text: state.banks.get(id) || id })).sort((a, b) => a.text.localeCompare(b.text));
     setOptions(els.bank, 'Select your bank', banks, false);
     setOptions(els.card, 'Select a bank first', [], true);
     onCardChange();
@@ -189,7 +202,9 @@
   const onCardChange = () => {
     const card = selectedCard();
     if (!card) {
-      setOptions(els.partner, COPY[state.mode].none, [], true);
+      setOptions(els.partner, 'Select a card first', [], true);
+    } else if (noPartnerCard(card)) {
+      setOptions(els.partner, 'No transfer partner recorded', [], true);
     } else {
       const partners = routesFor(card)
         .map(r => ({ value: r[0], text: `${state.data.partners[r[0]].n} (${ratioText(r[1], r[2])})` }))
@@ -201,17 +216,24 @@
   };
 
   const onPartnerChange = () => {
+    const card = selectedCard();
     state.partner = els.partner.value;
     const chart = state.partner && state.red && state.red.charts ? state.red.charts[state.partner] : null;
     state.chart = chart && chart.rows && chart.rows.length ? chart : null;
+    const noPartner = noPartnerCard(card);
 
     // The manual box starts closed whenever the partner changes.
     els.points.value = '';
     els.manual.hidden = true;
     els.manualToggle.setAttribute('aria-expanded', 'false');
     els.manualToggle.hidden = !state.partner;
+    els.priceField.hidden = noPartner;
 
-    if (state.chart) {
+    if (noPartner) {
+      els.route.hidden = true;
+      els.partnerNote.textContent = 'We have no airline or hotel transfer partner recorded for this card yet. See how its points compare across other ways to redeem below.';
+      els.partnerNote.hidden = false;
+    } else if (state.chart) {
       els.route.hidden = false;
       els.partnerNote.hidden = true;
       clearRoute();
@@ -236,7 +258,7 @@
     } else {
       els.route.hidden = true;
       if (state.partner) {
-        els.partnerNote.textContent = `We do not hold a published award chart for ${partnerName(state.partner)} yet, so we give a rough estimate from your price. If you know the exact points, add them below.`;
+        els.partnerNote.textContent = `We do not hold a published award chart for ${partnerName(state.partner)} yet, so we estimate from your price. If you know the exact points, add them below.`;
         els.partnerNote.hidden = false;
       } else {
         els.partnerNote.hidden = true;
@@ -292,72 +314,116 @@
     return { kind: list.length ? 'chart' : 'incomplete', list, mult: pax * trip, descr: `${pax} passenger${pax === 1 ? '' : 's'}${trip === 2 ? ', round trip' : ''}` };
   };
 
-  const showValue = (card, price, best) => {
-    const perPoint = price ? price / best.points : null;
-    if (perPoint == null) {
-      els.verdict.dataset.tier = 'none';
-      els.badge.textContent = 'Estimate';
-      els.label.textContent = 'Add your price to see your rupee value per point';
-      els.detail.textContent = `This is what the ${partnerName(state.partner)} award costs in ${card.c || 'your card'} points.`;
-      els.cardValue.textContent = '—';
-      els.cardVisual.dataset.state = 'selected';
-      return;
+  // ── Transfer rules block ──
+  const renderTransfer = (card, route, xf, items) => {
+    const [minTransfer, multiple, procText, procHours, cap, capWindow] = xf;
+    els.transfer.replaceChildren();
+    els.transfer.appendChild(el('h4', 'calc-transfer-title', 'Transfer rules'));
+    const line = (k, v) => { const d = el('div', 'calc-transfer-row'); d.appendChild(el('span', null, k)); d.appendChild(el('strong', null, v)); els.transfer.appendChild(d); };
+    line('Ratio', `${trim(route[1])} card points : ${trim(route[2])} ${partnerName(state.partner)} ${unitWord()}${route[3] ? ' (up to)' : ''}`);
+    if (minTransfer) line('Minimum transfer', `${inr.format(minTransfer)} points`);
+    if (multiple) line('In multiples of', `${inr.format(multiple)} points`);
+    if (procText) { const t = procText.replace(/^upto(?=\s)/i, 'Up to'); line('Processing time', t.charAt(0).toUpperCase() + t.slice(1)); }
+    else if (procHours) line('Processing time', `Up to ${Math.ceil(procHours / 24)} days`);
+    if (cap) line('Transfer limit', `${inr.format(cap)} points ${WINDOW[capWindow] || ''}`.trim());
+    if (!minTransfer && !multiple && !procText && !procHours && !cap) els.transfer.appendChild(el('p', 'calc-transfer-none', 'No minimums, limits or timings are recorded for this route yet. Check your bank before transferring.'));
+    const over = (items || []).filter(i => cap && i.points > cap);
+    if (over.length) {
+      els.transfer.appendChild(el('p', 'calc-transfer-warn', `${over.map(o => o.label).join(' and ')} ${over.length > 1 ? 'are' : 'is'} above the ${inr.format(cap)}-point transfer limit ${WINDOW[capWindow] || ''}, so ${over.length > 1 ? 'they' : 'it'} may need more than one transfer window.`.replace(/\s+,/g, ',')));
     }
-    const tier = TIERS.find(t => perPoint >= t.min);
-    els.verdict.dataset.tier = tier.tier;
-    els.badge.textContent = tier.badge;
-    els.label.textContent = `₹${perPoint.toFixed(2)} per point: ${tier.label}`;
-    els.detail.textContent = tier.detail;
-    els.cardValue.textContent = `₹${perPoint.toFixed(2)}`;
-    els.cardVisual.dataset.state = 'result';
+    els.transfer.hidden = false;
   };
 
   const compute = () => {
     const card = selectedCard();
-    const route = card && card.r.find(r => r[0] === state.partner);
-    if (!card || !route) { resetResult(); return; }
+    if (!card) { resetResult(); renderOther(); return; }
+    if (noPartnerCard(card)) {
+      resetResult('No airline or hotel transfer partner is recorded for this card yet. See how its points compare below.');
+      renderOther();
+      return;
+    }
+    const route = card.r.find(r => r[0] === state.partner);
+    if (!route) { resetResult(); renderOther(); return; }
     const price = parseNumber(els.price.value);
+    const balance = parseNumber(els.balance.value);
+    const xf = xferOf(card, state.partner);
+    const [minTransfer, multiple] = xf;
     const o = priceOptions();
     els.error.hidden = true;
-    els.xlink.hidden = false;
 
     if (o.kind === 'incomplete') {
       resetResult('Choose where you are flying to and your cabin, and the points needed will appear here.');
+      renderTransferOnly(card, route, xf);
+      renderOther();
       return;
     }
 
-    // No chart and no exact points: a rough range from typical rupee values.
+    // No chart and no exact points: an estimate from typical rupee values.
     if (o.kind === 'none') {
-      if (!price) { resetResult('Enter your price and we will estimate the points you need.'); return; }
+      state.plan = null;
+      if (!price) { resetResult('Enter your price and we will estimate the points you need.'); renderTransferOnly(card, route, xf); renderOther(); return; }
       const lo = roundEst(price / BENCH.high), mid = roundEst(price / BENCH.mid), hi = roundEst(price / BENCH.low);
       els.verdict.dataset.tier = 'none';
-      els.badge.textContent = 'Rough estimate';
-      els.caption.textContent = 'Rough card points estimate';
+      els.badge.textContent = 'Estimate';
+      els.caption.textContent = 'Estimated card points needed';
       els.value.textContent = `~${inr.format(mid)}`;
-      els.label.textContent = `Roughly ${inr.format(lo)} to ${inr.format(hi)} card points`;
-      els.detail.textContent = `Without an award chart we use typical values of ₹${BENCH.low} to ₹${BENCH.high} per point (₹${BENCH.mid} shown). Add the exact points below for a precise answer.`;
+      els.label.textContent = `Estimate: ${inr.format(lo)} to ${inr.format(hi)} card points`;
+      els.detail.textContent = `Without an award chart we estimate using typical values of ₹${BENCH.low} to ₹${BENCH.high} per point (₹${BENCH.mid} shown). Add the exact points below for a precise answer.`;
       els.cardValue.textContent = '—';
       els.cardVisual.dataset.state = 'selected';
+      els.balanceLine.hidden = true;
       els.using.textContent = `Card points shown in ${card.c || 'your card\'s points'}, at a ${ratioText(route[1], route[2])} transfer ratio to ${partnerName(state.partner)}.`;
       els.using.hidden = false;
       els.note.hidden = true; els.options.hidden = true; els.options.replaceChildren(); els.asof.hidden = true;
+      renderTransfer(card, route, xf, []);
+      renderOther();
       return;
     }
 
+    // Exact path: award chart or the user's own miles. Round to the bank's transfer rules.
     const items = o.list.map(m => {
       const partnerUnits = m.units * o.mult;
-      const points = Math.ceil(partnerUnits * route[1] / route[2]);
-      return { ...m, partnerUnits, points, perPoint: price ? price / points : null };
+      let points = Math.ceil(partnerUnits * route[1] / route[2]);
+      let adjusted = '';
+      if (multiple && points % multiple) { points = Math.ceil(points / multiple) * multiple; adjusted = `rounded up to a multiple of ${inr.format(multiple)}`; }
+      if (minTransfer && points < minTransfer) { points = minTransfer; adjusted = `raised to the ${inr.format(minTransfer)}-point transfer minimum`; }
+      return { ...m, partnerUnits, points, adjusted, perPoint: price ? price / points : null };
     });
     const best = items[0];
+    state.plan = { partner: state.partner, perPoint: best.perPoint };
 
     els.caption.textContent = o.kind === 'manual' ? 'Card points needed' : (items.length > 1 ? 'Estimated card points needed (cheapest award)' : 'Estimated card points needed');
     els.value.textContent = inr.format(best.points);
-    showValue(card, price, best);
+
+    // Headline: value tier when a price is given, otherwise whether the balance covers it.
+    const diff = balance ? balance - best.points : null;
+    if (best.perPoint != null) {
+      const tier = TIERS.find(t => best.perPoint >= t.min);
+      els.verdict.dataset.tier = tier.tier;
+      els.badge.textContent = tier.badge;
+      els.label.textContent = `₹${best.perPoint.toFixed(2)} per point: ${tier.label}`;
+      els.detail.textContent = tier.detail;
+      els.cardValue.textContent = `₹${best.perPoint.toFixed(2)}`;
+      els.cardVisual.dataset.state = 'result';
+    } else {
+      els.verdict.dataset.tier = diff == null ? 'none' : (diff >= 0 ? 'high' : 'low');
+      els.badge.textContent = diff == null ? (o.kind === 'manual' ? 'Your points' : 'Award chart') : (diff >= 0 ? 'Covered' : 'Short');
+      els.label.textContent = 'Add your price to see your rupee value per point';
+      els.detail.textContent = `This is what the ${partnerName(state.partner)} award costs in ${card.c || 'your card'} points.`;
+      els.cardValue.textContent = '—';
+      els.cardVisual.dataset.state = 'selected';
+    }
+    if (diff != null) {
+      els.balanceLine.textContent = diff >= 0 ? `Your balance covers it, with ${inr.format(diff)} points to spare.` : `You are ${inr.format(-diff)} points short.`;
+      els.balanceLine.dataset.ok = String(diff >= 0);
+      els.balanceLine.hidden = false;
+    } else {
+      els.balanceLine.hidden = true;
+    }
 
     const currency = card.c ? ` (${card.c})` : '';
     const forWhat = o.descr ? ` for ${o.descr}` : '';
-    els.using.textContent = `${inr.format(best.partnerUnits)} ${partnerName(state.partner)} ${unitWord()}${forWhat} at a ${ratioText(route[1], route[2])} ratio needs ${inr.format(best.points)} card points${currency}.`;
+    els.using.textContent = `${inr.format(best.partnerUnits)} ${partnerName(state.partner)} ${unitWord()}${forWhat} at a ${ratioText(route[1], route[2])} ratio needs ${inr.format(best.points)} card points${currency}.${best.adjusted ? ` ${best.adjusted.charAt(0).toUpperCase()}${best.adjusted.slice(1)}.` : ''}`;
     els.using.hidden = false;
 
     if (route[3]) {
@@ -377,6 +443,7 @@
         row.appendChild(left);
         const right = el('div', 'calc-opt-side');
         right.appendChild(el('strong', null, `${inr.format(i.points)} pts`));
+        if (balance) right.appendChild(el('span', `calc-chip ${balance >= i.points ? 'is-ok' : 'is-short'}`, balance >= i.points ? 'Covered' : `Short ${inr.format(i.points - balance)}`));
         if (i.perPoint != null) right.appendChild(el('span', 'calc-chip', `₹${i.perPoint.toFixed(2)} / pt`));
         row.appendChild(right);
         els.options.appendChild(row);
@@ -386,6 +453,8 @@
       els.options.hidden = true;
     }
 
+    renderTransfer(card, route, xf, items);
+
     if (o.kind === 'chart' && state.chart.asOf) {
       const when = new Date(state.chart.asOf);
       els.asof.textContent = `Award chart effective ${Number.isNaN(when.getTime()) ? 'date not recorded' : when.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}. Prices exclude taxes and fees, and seat availability is not guaranteed.`;
@@ -393,6 +462,43 @@
     } else {
       els.asof.hidden = true;
     }
+    renderOther();
+  };
+
+  // Transfer rules are useful even before the trip is complete.
+  const renderTransferOnly = (card, route, xf) => { if (xf.length) renderTransfer(card, route, xf, []); };
+
+  // ── Other ways to redeem ──
+  const renderOther = () => {
+    const card = selectedCard();
+    els.ways.replaceChildren();
+    if (!card) { els.other.hidden = true; return; }
+    const balance = parseNumber(els.balance.value);
+    const modes = (state.red && state.red.modes && state.red.modes[card.id]) || {};
+    const list = Object.entries(modes).map(([k, [value, ceil]]) => ({ label: WAY[k] || k, value, ceil: !!ceil }));
+    if (state.plan && state.plan.perPoint != null) list.push({ label: `Your planned transfer (${partnerName(state.plan.partner)})`, value: state.plan.perPoint, planned: true });
+    list.sort((a, b) => b.value - a.value);
+    els.other.hidden = false;
+    els.otherTitle.textContent = `How ${card.c || 'your points'} compare`;
+    if (!list.length) {
+      els.otherSub.textContent = 'We have no published redemption values for this card yet. Add a cash price above to see the value of a transfer.';
+      return;
+    }
+    els.otherSub.textContent = balance ? `Rupee value of ${inr.format(balance)} points, best first.` : 'Rupee value per point, best first. Add your balance to see totals.';
+    const max = list[0].value || 1;
+    list.forEach((w, i) => {
+      const li = el('li', `calc-way${i === 0 ? ' is-best' : ''}${w.planned ? ' is-planned' : ''}`);
+      const head = el('div', 'calc-way-head');
+      head.appendChild(el('strong', null, w.label));
+      if (i === 0) head.appendChild(el('span', 'calc-way-tag', 'Best value'));
+      li.appendChild(head);
+      const bar = el('div', 'calc-way-bar'); const fill = el('span'); fill.style.width = `${Math.max(4, (w.value / max) * 100)}%`; bar.appendChild(fill); li.appendChild(bar);
+      const meta = el('div', 'calc-way-meta');
+      meta.appendChild(el('span', null, `${w.ceil ? 'Up to ' : ''}₹${w.value.toFixed(2)} per point`));
+      if (balance) meta.appendChild(el('strong', null, `${w.ceil ? 'Up to ' : ''}₹${inr.format(Math.round(balance * w.value))}`));
+      li.appendChild(meta);
+      els.ways.appendChild(li);
+    });
   };
 
   const showLoadError = () => {
@@ -403,17 +509,25 @@
 
   const load = async () => {
     try {
-      // Card art and award charts are optional: without them every card uses the themed design and
-      // every partner falls back to the rough estimate.
+      // Everything except the transfer ratios is optional: without it the tool still works, with less detail.
       const optional = url => fetch(url).then(r => (r.ok ? r.json() : null)).catch(() => null);
       const artRequest = optional('/data/card-art.json');
       const redRequest = optional('/data/redemption-data.json');
+      const recRequest = optional('/data/recommender-data.json');
       const res = await fetch('/data/calculator-data.json');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       state.data = await res.json();
       state.art = (await artRequest) || {};
       state.red = await redRequest;
-      state.data.cards.forEach(c => state.cardsById.set(c.id, c));
+      const rec = (await recRequest) || { banks: [], cards: [] };
+
+      [...(rec.banks || []), ...state.data.banks].forEach(b => state.banks.set(b.id, b.name));
+      // Transfer ratios come from the calculator data; recommender data names the cards that have none.
+      const byId = new Map();
+      (rec.cards || []).forEach(c => byId.set(c.id, { id: c.id, n: c.n, b: c.b, c: c.c, r: [] }));
+      state.data.cards.forEach(c => byId.set(c.id, { ...(byId.get(c.id) || {}), id: c.id, n: c.n, b: c.b, c: c.c || (byId.get(c.id) || {}).c, r: c.r }));
+      byId.forEach(card => { if (card.r.length || hasModes(card)) state.cards.set(card.id, card); });
+
       if (state.data.generatedAt && els.source) {
         const when = new Date(state.data.generatedAt);
         if (!Number.isNaN(when.getTime())) {
@@ -439,7 +553,7 @@
   els.cabin.addEventListener('change', compute);
   els.pax.addEventListener('change', compute);
   tripButtons.forEach(b => b.addEventListener('click', () => { setTrip(Number(b.dataset.trip)); compute(); }));
-  [els.price, els.points, els.nights].forEach(input => {
+  [els.price, els.points, els.nights, els.balance].forEach(input => {
     input.addEventListener('input', () => { formatInput(input); compute(); });
   });
   els.manualToggle.addEventListener('click', () => {

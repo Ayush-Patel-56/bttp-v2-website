@@ -68,5 +68,17 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/credit-card-points-redemption-tool",
+      "destination": "/credit-card-reward-points-calculator",
+      "permanent": true
+    },
+    {
+      "source": "/credit-card-points-redemption-tool.html",
+      "destination": "/credit-card-reward-points-calculator",
+      "permanent": true
+    }
   ]
 }
