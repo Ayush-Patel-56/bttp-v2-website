@@ -105,69 +105,50 @@
   </header>
 
   <main id="top">
-    <section class="calc-hero section-dark">
-      <div class="container calc-hero-inner">
-        <p class="eyebrow copper">FREE TOOL</p>
-        <h1>Credit Card <br class="calc-break">Recommendation Tool</h1>
-        <p class="calc-lede">Tell us how you spend and what you value. We estimate what each card would earn you every month and rank the ones that fit best.</p>
+    <section class="rec-hero">
+      <div class="container">
+        <p class="rec-eyebrow">CARD RECOMMENDATION TOOL</p>
+        <h1 id="rec-title">Find the card that fits how you spend</h1>
+        <p class="rec-lede">Four quick steps. Nothing is stored or sent anywhere.</p>
       </div>
     </section>
 
-    <section class="calc-section light-section rec-section" id="rec-app" aria-labelledby="rec-title">
+    <section class="rec-section" id="rec-app" aria-labelledby="rec-title">
       <div class="container">
-        <div class="calc-head">
-          <h2 id="rec-title">Find the card that fits how you spend</h2>
-          <p>Four quick steps. Nothing is stored or sent anywhere.</p>
-        </div>
-
         <!-- Wizard -->
-        <div class="rec-grid" id="rec-wizard">
-          <div class="calc-panel rec-intro">
-            <p class="calc-panel-eyebrow">CARD RECOMMENDATION TOOL</p>
-            <h3 class="rec-intro-title" id="rec-intro-title">Map your monthly spending</h3>
-            <p class="rec-intro-text" id="rec-intro-text">We start with your spending so the estimates reflect your real volume, not generic assumptions.</p>
-            <div class="rec-profile" aria-label="Your profile so far">
-              <p class="rec-profile-title">CURRENT PROFILE</p>
-              <dl class="rec-profile-list">
-                <div><dt>Monthly spend</dt><dd id="rec-p-spend">Not set</dd></div>
-                <div><dt>Categories</dt><dd id="rec-p-cats">Not set</dd></div>
-                <div><dt>Partners</dt><dd id="rec-p-partners">Open</dd></div>
-                <div><dt>Annual fee</dt><dd id="rec-p-fee">No limit</dd></div>
-                <div><dt>Goals</dt><dd id="rec-p-goals">Not set</dd></div>
-              </dl>
-            </div>
-          </div>
+        <div class="rec-shell" id="rec-wizard">
+          <ol class="rec-steps" aria-label="Progress">
+            <li><button type="button" class="rec-step is-active" data-step-btn="1" aria-current="step"><span class="rec-step-num">1</span><span class="rec-step-text"><strong>Your spend</strong><span>Tell us about your monthly spending</span></span></button></li>
+            <li><button type="button" class="rec-step" data-step-btn="2" disabled><span class="rec-step-num">2</span><span class="rec-step-text"><strong>Categories</strong><span>Your top spending areas</span></span></button></li>
+            <li><button type="button" class="rec-step" data-step-btn="3" disabled><span class="rec-step-num">3</span><span class="rec-step-text"><strong>Partners</strong><span>Choose preferred brands / airlines</span></span></button></li>
+            <li><button type="button" class="rec-step" data-step-btn="4" disabled><span class="rec-step-num">4</span><span class="rec-step-text"><strong>Goals</strong><span>Help us personalize results</span></span></button></li>
+          </ol>
 
-          <div class="calc-panel rec-steps-panel">
-            <ol class="rec-stepper" aria-label="Progress">
-              <li><button type="button" class="rec-step is-active" data-step-btn="1" aria-current="step"><span class="rec-step-bar"></span><span class="rec-step-meta"><span>Spend</span><span>01</span></span></button></li>
-              <li><button type="button" class="rec-step" data-step-btn="2" disabled><span class="rec-step-bar"></span><span class="rec-step-meta"><span>Categories</span><span>02</span></span></button></li>
-              <li><button type="button" class="rec-step" data-step-btn="3" disabled><span class="rec-step-bar"></span><span class="rec-step-meta"><span>Partners</span><span>03</span></span></button></li>
-              <li><button type="button" class="rec-step" data-step-btn="4" disabled><span class="rec-step-bar"></span><span class="rec-step-meta"><span>Goals</span><span>04</span></span></button></li>
-            </ol>
+          <div class="rec-panel">
+            <p class="rec-stepno" id="rec-stepno">Step 1 of 4</p>
 
             <div class="rec-pane" data-step="1">
-              <h3 class="rec-q">How much do you spend monthly?</h3>
-              <p class="rec-qsub">We use this to estimate the rewards you would earn each month.</p>
-              <div class="rec-box">
+              <h2 class="rec-q">How much do you spend monthly?</h2>
+              <p class="rec-qsub">We use this to estimate the rewards you could earn each month.</p>
+              <div class="rec-spend-field">
                 <label class="calc-label" for="rec-spend">Monthly spend</label>
-                <div class="calc-input-wrap">
-                  <span class="calc-prefix" aria-hidden="true">₹</span>
-                  <input id="rec-spend" class="calc-input calc-input-prefixed" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 50,000" />
+                <div class="rec-money">
+                  <span class="rec-money-sign" aria-hidden="true">₹</span>
+                  <input id="rec-spend" class="calc-input" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 50,000" />
                 </div>
-                <p class="calc-hint rec-hint">Leave blank to skip. We will rank on earn rate alone.</p>
+                <p class="calc-hint rec-hint">You can leave this blank and skip. We will rank cards on earn rate alone.</p>
               </div>
             </div>
 
             <div class="rec-pane" data-step="2" hidden>
-              <h3 class="rec-q">Where do you spend the most?</h3>
+              <h2 class="rec-q">Where do you spend the most?</h2>
               <p class="rec-qsub">Select every category that applies. Your spend is split evenly across them.</p>
               <p class="rec-count" id="rec-cat-count" aria-live="polite">None selected</p>
               <div class="rec-tiles" id="rec-cats" role="group" aria-label="Spending categories"></div>
             </div>
 
             <div class="rec-pane" data-step="3" hidden>
-              <h3 class="rec-q">Preferred transfer partners?</h3>
+              <h2 class="rec-q">Preferred transfer partners?</h2>
               <p class="rec-qsub">Pick the airlines or hotels you would like to transfer to. Skip if you are open.</p>
               <p class="rec-count" id="rec-partner-count" aria-live="polite">None selected</p>
               <div class="rec-chips" id="rec-partners" role="group" aria-label="Transfer partners"></div>
@@ -176,23 +157,47 @@
                 <button type="button" class="rec-link" id="rec-partner-clear" hidden>Clear selection</button>
               </div>
               <div class="rec-box rec-fee-box">
-                <h4 class="rec-fee-title" id="rec-fee-label">Maximum annual fee you are comfortable with?</h4>
+                <h3 class="rec-fee-title" id="rec-fee-label">Maximum annual fee you are comfortable with?</h3>
                 <div class="rec-opts" id="rec-fees" role="group" aria-labelledby="rec-fee-label"></div>
               </div>
             </div>
 
             <div class="rec-pane" data-step="4" hidden>
-              <h3 class="rec-q">What are your goals?</h3>
+              <h2 class="rec-q">What are your goals?</h2>
               <p class="rec-qsub">Select everything that matters to you.</p>
               <p class="rec-count" id="rec-goal-count" aria-live="polite">None selected</p>
               <div class="rec-goals" id="rec-goals" role="group" aria-label="Goals"></div>
             </div>
 
             <div class="rec-nav">
-              <button type="button" class="rec-btn rec-btn-ghost" id="rec-back" hidden>Back</button>
+              <div class="rec-nav-left">
+                <button type="button" class="rec-btn rec-btn-ghost" id="rec-back" hidden>Back</button>
+                <button type="button" class="rec-skip" id="rec-skip">Skip for now</button>
+              </div>
               <button type="button" class="rec-btn rec-btn-solid" id="rec-next">Next <span aria-hidden="true">→</span></button>
             </div>
           </div>
+
+          <aside class="rec-side" aria-label="Your profile">
+            <section class="rec-profile" aria-label="Your profile so far">
+              <h2 class="rec-side-title">YOUR CURRENT PROFILE</h2>
+              <dl class="rec-profile-list">
+                <div><dt><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V12M12 20V5M19 20v-9"/></svg>Monthly spend</dt><dd id="rec-p-spend">Not set</dd></div>
+                <div><dt><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8L3 12z"/><circle cx="7.5" cy="8.5" r="1.2"/></svg>Categories</dt><dd id="rec-p-cats">Not set</dd></div>
+                <div><dt><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 10h18M7 15h3"/></svg>Partners</dt><dd id="rec-p-partners">Open</dd></div>
+                <div><dt><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v4h4M9 12h6M9 16h6"/></svg>Annual fee</dt><dd id="rec-p-fee">No limit</dd></div>
+                <div><dt><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4M5 4h12l-2.5 4L17 12H5"/></svg>Goals</dt><dd id="rec-p-goals">Not set</dd></div>
+              </dl>
+            </section>
+            <section class="rec-get" aria-label="What you will get">
+              <h2 class="rec-side-title">WHAT YOU&rsquo;LL GET</h2>
+              <ul>
+                <li><span class="rec-get-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></svg></span><span><strong>Personalized card recommendations</strong>Based on your actual spending</span></li>
+                <li><span class="rec-get-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v8h14v-8M8 8a2.5 2.5 0 110-5c2 0 4 2 4 5 0-3 2-5 4-5a2.5 2.5 0 110 5"/></svg></span><span><strong>Estimated rewards value</strong>See how much you could earn</span></li>
+                <li><span class="rec-get-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h15M15 4l4 4-4 4M20 16H5M9 12l-4 4 4 4"/></svg></span><span><strong>Compare multiple cards</strong>Find the best fit for your lifestyle</span></li>
+              </ul>
+            </section>
+          </aside>
         </div>
 
         <p class="rec-error" id="rec-error" role="alert" hidden></p>

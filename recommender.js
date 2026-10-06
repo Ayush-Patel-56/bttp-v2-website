@@ -52,13 +52,6 @@
     { value: Infinity, label: 'No limit', short: 'No limit' }
   ];
 
-  const STEP_COPY = {
-    1: ['Map your monthly spending', 'We start with your spending so the estimates reflect your real volume, not generic assumptions.'],
-    2: ['Highlight where the money goes', 'Category mix matters more than headline marketing. Pick the areas that deserve the strongest earn rate.'],
-    3: ['Set transfer and fee boundaries', 'This narrows the field to cards that fit your redemption preferences and your comfort with annual fees.'],
-    4: ['Tell us what value means to you', 'The last step weights the shortlist towards points, travel, lounge access, premium perks or lower fees.']
-  };
-
   const PARTNER_NAME = {
     cathay: 'Cathay Asia Miles',
     ba_executive_club: 'British Airways Executive Club',
@@ -108,8 +101,8 @@
     spend: $('rec-spend'),
     next: $('rec-next'),
     back: $('rec-back'),
-    introTitle: $('rec-intro-title'),
-    introText: $('rec-intro-text'),
+    skip: $('rec-skip'),
+    stepNo: $('rec-stepno'),
     cats: $('rec-cats'),
     partners: $('rec-partners'),
     fees: $('rec-fees'),
@@ -241,9 +234,9 @@
       b.disabled = i > n;
       if (i === n) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
     });
-    els.introTitle.textContent = STEP_COPY[n][0];
-    els.introText.textContent = STEP_COPY[n][1];
+    els.stepNo.textContent = `Step ${n} of 4`;
     els.back.hidden = n === 1;
+    els.skip.hidden = n === 4;
     els.next.innerHTML = n === 4 ? 'Find my card <span aria-hidden="true">→</span>' : 'Next <span aria-hidden="true">→</span>';
     els.error.hidden = true;
   };
@@ -536,6 +529,14 @@
     if (state.step < 4) goToStep(state.step + 1); else showResults();
   });
   els.back.addEventListener('click', () => goToStep(Math.max(1, state.step - 1)));
+  // Skipping a step leaves its answers empty, so the ranking ignores them.
+  els.skip.addEventListener('click', () => {
+    if (state.step === 1) { state.spend = 0; els.spend.value = ''; }
+    else if (state.step === 2) { state.cats.clear(); buildCategories(); }
+    else if (state.step === 3) { state.partners.clear(); state.fee = Infinity; buildPartners(); buildFees(); }
+    syncProfile();
+    goToStep(state.step + 1);
+  });
   stepBtns.forEach(b => b.addEventListener('click', () => { if (!b.disabled) goToStep(Number(b.dataset.stepBtn)); }));
   els.partnerClear.addEventListener('click', () => { state.partners.clear(); buildPartners(); syncProfile(); });
   els.partnerMore.addEventListener('click', () => { state.showAllPartners = !state.showAllPartners; buildPartners(); });
@@ -548,7 +549,7 @@
     els.results.hidden = true;
     els.wizard.hidden = false;
     goToStep(1);
-    $('rec-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    els.wizard.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
   // ── Load data ──

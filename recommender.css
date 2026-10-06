@@ -1,138 +1,151 @@
 /* Card recommendation tool. Builds on calculator.css (hero, panels, inputs, FAQ) and the site palette:
    dark #0b0b0a, cream #f6f1ea, copper #b86d3c, ink #181512, border #ded4c6. */
 
-.rec-section {
-    padding-bottom: 80px
+/* ── Header ── */
+.rec-hero {
+    padding: 150px 0 30px;
+    background: #f6f1ea;
+    text-align: center;
+    color: #181512
 }
 
-.rec-grid {
+.rec-eyebrow {
+    margin: 0 0 16px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .22em;
+    color: #b86d3c
+}
+
+.rec-hero h1 {
+    margin: 0 auto 14px;
+    font-family: "Playfair Display", serif;
+    font-weight: 600;
+    font-size: clamp(30px, 3.9vw, 54px);
+    line-height: 1.1;
+    letter-spacing: -.01em;
+    text-wrap: balance
+}
+
+.rec-lede {
+    margin: 0;
+    font-size: 19px;
+    color: #6b6255
+}
+
+.rec-section {
+    padding: 34px 0 90px;
+    background: #f6f1ea;
+    color: #181512
+}
+
+.rec-shell {
     display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: 28px;
+    grid-template-columns: 230px minmax(0, 1fr) 360px;
+    gap: 36px;
     align-items: start
 }
 
-.rec-grid[hidden],
+.rec-shell[hidden],
 .rec-results[hidden],
 .rec-pane[hidden],
 .rec-error[hidden] {
     display: none
 }
 
-/* ── Intro panel ── */
-.rec-intro-title {
-    margin: 0 0 12px;
-    font-family: "Playfair Display", serif;
-    font-weight: 600;
-    font-size: clamp(26px, 3vw, 34px);
-    line-height: 1.15
-}
-
-.rec-intro-text {
-    margin: 0 0 24px;
-    color: #77706a;
-    font-size: 16px;
-    line-height: 1.6
-}
-
-.rec-profile {
-    padding: 18px;
-    border-radius: 20px;
-    border: 1px solid #ded4c6;
-    background: #fbf8f3
-}
-
-.rec-profile-title {
-    margin: 0 0 12px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .14em;
-    color: #8a8176
-}
-
-.rec-profile-list {
-    margin: 0;
-    display: grid;
-    gap: 8px
-}
-
-.rec-profile-list div {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 11px 14px;
-    border-radius: 12px;
-    border: 1px solid #ebe3d6;
-    background: #fff;
-    font-size: 14px
-}
-
-.rec-profile-list dt {
-    color: #6b6255
-}
-
-.rec-profile-list dd {
-    margin: 0;
-    font-weight: 700;
-    text-align: right;
-    color: #181512
-}
-
-/* ── Stepper ── */
-.rec-stepper {
+/* ── Vertical stepper ── */
+.rec-steps {
     list-style: none;
-    margin: 0 0 28px;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 10px
+    margin: 0;
+    padding: 22px 0 0;
+    display: grid
+}
+
+.rec-steps li {
+    position: relative;
+    padding-bottom: 46px
+}
+
+.rec-steps li:last-child {
+    padding-bottom: 0
+}
+
+.rec-steps li:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    left: 22px;
+    top: 48px;
+    bottom: 2px;
+    width: 1px;
+    background: #ded4c6
 }
 
 .rec-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
     width: 100%;
-    padding: 12px 12px 10px;
-    border: 1px solid #ebe3d6;
-    border-radius: 14px;
-    background: #fbf8f3;
+    padding: 0;
+    border: 0;
+    background: none;
     font: inherit;
     text-align: left;
-    cursor: pointer
+    cursor: pointer;
+    color: #181512
 }
 
 .rec-step:disabled {
     cursor: default
 }
 
-.rec-step-bar {
-    display: block;
-    height: 5px;
-    margin-bottom: 10px;
-    border-radius: 999px;
-    background: #e8dfd0
+.rec-step-num {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1px solid #ded4c6;
+    background: #fff;
+    font-size: 17px;
+    color: #b86d3c
 }
 
-.rec-step.is-active .rec-step-bar,
-.rec-step.is-done .rec-step-bar {
-    background: linear-gradient(90deg, #b86d3c, #d18652)
-}
-
-.rec-step-meta {
+.rec-step-text {
     display: flex;
-    justify-content: space-between;
-    gap: 6px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: #9a9186
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 2px
 }
 
-.rec-step.is-active .rec-step-meta,
-.rec-step.is-done .rec-step-meta {
-    color: #181512
+.rec-step-text strong {
+    font-size: 17px;
+    font-weight: 500
+}
+
+.rec-step-text span {
+    font-size: 14px;
+    line-height: 1.4;
+    color: #77706a
+}
+
+.rec-step.is-active .rec-step-num {
+    background: #c8693a;
+    border-color: #c8693a;
+    color: #fff;
+    box-shadow: 0 0 0 5px rgba(200, 105, 58, .14)
+}
+
+.rec-step.is-done .rec-step-num {
+    border-color: #b86d3c
+}
+
+.rec-step:disabled .rec-step-text {
+    opacity: .65
 }
 
 .rec-step:focus-visible,
+.rec-skip:focus-visible,
 .rec-tile:focus-visible,
 .rec-chip:focus-visible,
 .rec-opt:focus-visible,
@@ -140,21 +153,227 @@
 .rec-btn:focus-visible,
 .rec-link:focus-visible {
     outline: 2px solid #b86d3c;
-    outline-offset: 2px
+    outline-offset: 3px;
+    border-radius: 12px
+}
+
+/* ── Centre card ── */
+.rec-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 620px;
+    padding: 56px 46px 40px;
+    border-radius: 24px;
+    background: #fff;
+    border: 1px solid #f0e9dd;
+    box-shadow: 0 24px 60px rgba(24, 21, 18, .07)
+}
+
+.rec-stepno {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 0 0 22px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: #c8693a
+}
+
+.rec-stepno::before {
+    content: "";
+    width: 38px;
+    height: 3px;
+    border-radius: 3px;
+    background: #c8693a
+}
+
+.rec-spend-field {
+    margin-top: 44px
+}
+
+.rec-spend-field .calc-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0)
+}
+
+.rec-money {
+    display: flex;
+    border: 1px solid #ded4c6;
+    border-radius: 14px;
+    background: #fff;
+    overflow: hidden;
+    transition: border-color .18s ease, box-shadow .18s ease
+}
+
+.rec-money:focus-within {
+    border-color: #b86d3c;
+    box-shadow: 0 0 0 3px rgba(184, 109, 60, .16)
+}
+
+.rec-money-sign {
+    display: grid;
+    place-items: center;
+    width: 66px;
+    border-right: 1px solid #ebe3d6;
+    background: #fdfbf8;
+    font-size: 20px;
+    color: #181512
+}
+
+.rec-money .calc-input {
+    flex: 1;
+    min-width: 0;
+    min-height: 72px;
+    padding: 0 22px;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    font-size: 20px
+}
+
+.rec-money .calc-input:focus {
+    box-shadow: none
+}
+
+.rec-spend-field .rec-hint {
+    margin: 18px 0 0;
+    font-size: 15px;
+    line-height: 1.5
+}
+
+/* ── Right panel ── */
+.rec-side {
+    padding: 32px 32px 36px;
+    border-radius: 24px;
+    border: 1px solid #ebe1d3;
+    background: linear-gradient(180deg, #f8f1e8, #f3eadf)
+}
+
+.rec-side-title {
+    margin: 0 0 18px;
+    font-family: "DM Sans", system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    color: #6b6255
+}
+
+.rec-profile-list {
+    margin: 0;
+    padding-bottom: 28px;
+    border-bottom: 1px solid #e3d8c8
+}
+
+.rec-profile-list div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 0;
+    border-bottom: 1px solid #e9dfd1;
+    font-size: 16px
+}
+
+.rec-profile-list div:last-child {
+    border-bottom: 0
+}
+
+.rec-profile-list dt {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: #181512
+}
+
+.rec-profile-list dt svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    fill: none;
+    stroke: #b4693c;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round
+}
+
+.rec-profile-list dd {
+    margin: 0;
+    max-width: 48%;
+    text-align: right;
+    font-weight: 400;
+    color: #181512;
+    overflow-wrap: anywhere
+}
+
+.rec-get {
+    padding-top: 28px
+}
+
+.rec-get ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 20px
+}
+
+.rec-get li {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: #77706a
+}
+
+.rec-get li strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+    color: #181512
+}
+
+.rec-get-ic {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #fbf7f1;
+    box-shadow: 0 2px 8px rgba(24, 21, 18, .05)
+}
+
+.rec-get-ic svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: #c8693a;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round
 }
 
 /* ── Panes ── */
 .rec-q {
-    margin: 0 0 6px;
-    font-size: 22px;
-    font-weight: 700;
+    margin: 0 0 14px;
+    font-family: "Playfair Display", serif;
+    font-size: clamp(26px, 2.6vw, 34px);
+    font-weight: 600;
+    line-height: 1.2;
     color: #181512
 }
 
 .rec-qsub {
-    margin: 0 0 18px;
-    color: #77706a;
-    font-size: 15px;
+    margin: 0 0 22px;
+    color: #6b6255;
+    font-size: 18px;
     line-height: 1.5
 }
 
@@ -344,10 +563,41 @@
 .rec-nav {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     gap: 12px;
-    margin-top: 28px;
+    margin-top: auto;
     padding-top: 22px;
     border-top: 1px solid #ebe3d6
+}
+
+.rec-pane {
+    padding-bottom: 28px
+}
+
+.rec-nav-left {
+    display: flex;
+    align-items: center;
+    gap: 22px
+}
+
+.rec-nav-left [hidden] {
+    display: none
+}
+
+.rec-skip {
+    padding: 0 0 2px;
+    border: 0;
+    border-bottom: 1px solid #77706a;
+    background: none;
+    font: inherit;
+    font-size: 17px;
+    color: #181512;
+    cursor: pointer
+}
+
+.rec-skip:hover {
+    color: #b86d3c;
+    border-color: #b86d3c
 }
 
 .rec-btn {
@@ -371,7 +621,22 @@
 }
 
 .rec-nav .rec-btn-solid {
-    margin-left: auto
+    margin-left: auto;
+    min-width: 200px;
+    min-height: 66px;
+    border-radius: 16px;
+    font-size: 19px;
+    background: linear-gradient(135deg, #d9743f, #c8613a);
+    box-shadow: 0 12px 26px rgba(200, 105, 58, .28)
+}
+
+.rec-nav .rec-btn-solid:hover {
+    background: linear-gradient(135deg, #c8693a, #b4562c)
+}
+
+.rec-nav .rec-btn-solid:disabled {
+    background: #d8cdbd;
+    box-shadow: none
 }
 
 .rec-btn-solid {
@@ -580,7 +845,7 @@
 .rec-art-img {
     display: block;
     max-width: 100%;
-    max-height: 100%;
+    max-height: 164px;
     width: auto;
     height: auto;
     border-radius: 10px;
@@ -836,6 +1101,28 @@
 }
 
 /* ── Responsive ── */
+@media(max-width:1200px) {
+    .rec-shell {
+        grid-template-columns: 200px minmax(0, 1fr)
+    }
+
+    .rec-side {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 36px
+    }
+
+    .rec-profile-list {
+        padding-bottom: 0;
+        border-bottom: 0
+    }
+
+    .rec-get {
+        padding-top: 0
+    }
+}
+
 @media(max-width:1100px) {
     .rec-cards {
         grid-template-columns: repeat(2, minmax(0, 1fr))
@@ -843,20 +1130,98 @@
 }
 
 @media(max-width:900px) {
-    .rec-grid {
-        grid-template-columns: minmax(0, 1fr)
+    .rec-hero {
+        padding-top: 120px
     }
 
-    .rec-profile {
+    .rec-shell {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 24px
+    }
+
+    .rec-steps {
+        padding-top: 0;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px
+    }
+
+    .rec-steps li {
+        padding-bottom: 0
+    }
+
+    .rec-steps li::before {
         display: none
     }
 
-    .rec-intro-text {
-        margin-bottom: 0
+    .rec-step {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        text-align: center
+    }
+
+    .rec-step-text span {
+        display: none
+    }
+
+    .rec-step-text strong {
+        font-size: 13px
+    }
+
+    .rec-step-num {
+        width: 40px;
+        height: 40px
+    }
+
+    .rec-panel {
+        min-height: 0;
+        padding: 36px 24px 28px
+    }
+
+    .rec-side {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 28px;
+        padding: 26px 22px
+    }
+
+    .rec-spend-field {
+        margin-top: 24px
     }
 }
 
 @media(max-width:640px) {
+    .rec-lede {
+        font-size: 16px
+    }
+
+    .rec-qsub {
+        font-size: 16px
+    }
+
+    .rec-nav .rec-btn-solid {
+        min-width: 0;
+        min-height: 56px;
+        padding: 0 22px;
+        font-size: 17px
+    }
+
+    .rec-skip {
+        font-size: 15px
+    }
+
+    .rec-nav-left {
+        gap: 14px
+    }
+
+    .rec-money-sign {
+        width: 52px
+    }
+
+    .rec-money .calc-input {
+        min-height: 60px;
+        font-size: 18px
+    }
+
     .rec-results {
         padding: 22px 16px;
         border-radius: 22px
@@ -864,23 +1229,6 @@
 
     .rec-cards {
         grid-template-columns: minmax(0, 1fr)
-    }
-
-    .rec-stepper {
-        gap: 6px
-    }
-
-    .rec-step {
-        padding: 10px 8px 8px
-    }
-
-    .rec-step-meta span:last-child {
-        display: none
-    }
-
-    .rec-step-meta {
-        font-size: 10px;
-        letter-spacing: .06em
     }
 
     .rec-opts {
