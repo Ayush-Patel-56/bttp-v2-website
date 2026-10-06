@@ -1934,9 +1934,9 @@
 
 .rt-selected {
     display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-    gap: 22px;
-    align-items: center
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    align-items: start
 }
 
 .rt-selected-art {
@@ -1948,22 +1948,22 @@
 .rt-art-img {
     display: block;
     width: 100%;
-    max-width: 290px;
+    max-width: 380px;
     height: auto;
-    border-radius: 14px;
+    border-radius: 16px;
     filter: drop-shadow(0 14px 18px rgba(24, 21, 18, .3))
 }
 
 .rt-art-img.is-vertical {
     width: auto;
     max-width: 100%;
-    max-height: 190px
+    max-height: 280px
 }
 
 .rt-fallback {
-    width: min(100%, 280px);
+    width: min(100%, 380px);
     aspect-ratio: 1.586 / 1;
-    padding: 16px 18px;
+    padding: 20px 24px;
     border-radius: 16px;
     display: flex;
     flex-direction: column;
@@ -1983,7 +1983,7 @@
 
 .rt-fallback-name {
     font-family: "Playfair Display", serif;
-    font-size: 19px;
+    font-size: 24px;
     font-weight: 600;
     line-height: 1.2;
     overflow-wrap: anywhere
@@ -1992,8 +1992,10 @@
 .rt-selected-info {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 6px;
-    min-width: 0
+    min-width: 0;
+    text-align: center
 }
 
 .rt-selected-info strong {
@@ -2011,6 +2013,7 @@
 .rt-chips {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 8px;
     margin-top: 8px
 }
@@ -2027,8 +2030,8 @@
 .rt-banner {
     position: relative;
     margin: 0;
-    min-height: 232px;
-    border-radius: 22px;
+    min-height: 150px;
+    border-radius: 18px;
     overflow: hidden;
     background: #17130f;
     color: #fff
@@ -2057,28 +2060,28 @@
     flex-direction: column;
     justify-content: center;
     gap: 4px;
-    max-width: 62%;
-    min-height: 232px;
-    padding: 26px 28px
+    max-width: 70%;
+    min-height: 150px;
+    padding: 18px 24px
 }
 
 .rt-banner figcaption span {
-    font-size: 19px;
+    font-size: 15px;
     font-weight: 400;
     color: rgba(255, 255, 255, .92)
 }
 
 .rt-banner figcaption strong {
-    font-size: clamp(28px, 3.4vw, 38px);
+    font-size: clamp(22px, 2.4vw, 28px);
     font-weight: 700;
     line-height: 1.1;
     overflow-wrap: break-word
 }
 
 .rt-banner figcaption p {
-    margin: 10px 0 0;
-    font-size: 15px;
-    line-height: 1.5;
+    margin: 6px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
     color: rgba(255, 255, 255, .88)
 }
 
