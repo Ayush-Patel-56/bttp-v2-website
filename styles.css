@@ -3054,7 +3054,8 @@ footer {
     }
 
     .how-progress-dots {
-        display: none
+        display: flex;
+        margin-bottom: 18px
     }
 
     .how-grid {
