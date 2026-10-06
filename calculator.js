@@ -51,7 +51,8 @@
   const inr = new Intl.NumberFormat('en-IN');
   const state = {
     data: null, red: null, art: {}, banks: new Map(), rec: new Map(), cards: new Map(),
-    mode: 'airline', step: 1, maxStep: 1, trip: 1, partner: '', exact: false, plan: null
+    mode: 'airline', step: 1, maxStep: 1, trip: 1, partner: '', exact: false, plan: null,
+    air: null, airByLabel: new Map(), airByCode: new Map(), airCities: new Set()
   };
 
   const digits = value => value.replace(/[^\d]/g, '');
@@ -96,9 +97,26 @@
   const chartOf = pid => { const c = state.red && state.red.charts && state.red.charts[pid]; return c && c.rows && c.rows.length ? c : null; };
   const isHotelChart = chart => !!chart && chart.rows.length > 0 && chart.rows[0][6] === 2;
   const regionName = (chart, i) => chart.regions[i];
+  const placeRegions = (chart, v) => {
+    if (!chart.idx) {
+      chart.idx = new Map();
+      (chart.places || []).forEach(([n, region]) => { const k = norm(n); const a = chart.idx.get(k) || []; if (!a.includes(region)) a.push(region); chart.idx.set(k, a); });
+    }
+    return chart.idx.get(v) || [];
+  };
+  // An airport such as "Mumbai (BOM)" is priced by its city when the chart lists it, otherwise by its country.
+  const airportOf = v => state.airByLabel.get(v) || (v.length === 3 ? state.airByCode.get(v) : null) || null;
+  // Guards against a city sharing its name with one abroad (London, Canada is not London, UK).
+  const cityFits = ap => { const c = ALIASES[ap.cityKey]; return !c || norm(c) === ap.countryKey; };
   const zonesOf = (chart, name) => {
     const v = norm(name || '');
-    return v ? Array.from(new Set((chart.places || []).filter(p => norm(p[0]) === v).map(p => p[1]))) : [];
+    if (!v) return [];
+    const direct = placeRegions(chart, v);
+    if (direct.length) return direct;
+    const ap = airportOf(v);
+    if (!ap) return [];
+    const byCity = cityFits(ap) ? placeRegions(chart, ap.cityKey) : [];
+    return byCity.length ? byCity : placeRegions(chart, ap.countryKey);
   };
   const originZones = (chart, name) => zonesOf(chart, name).filter(z => chart.rows.some(r => r[0] === z));
   const reachableFrom = (chart, O) => new Set(chart.rows.filter(r => O.includes(r[0])).map(r => r[1]));
@@ -128,10 +146,11 @@
   };
 
   // ── Search box for places: popular choices first, type to search everything ──
-  const POPULAR_DEST = ['Singapore', 'United Arab Emirates', 'Thailand', 'United Kingdom', 'United States', 'Japan', 'Australia', 'Malaysia', 'Indonesia',
-    'Hong Kong SAR, China', 'Hong Kong', 'Maldives', 'Sri Lanka', 'Nepal', 'Vietnam', 'France', 'Germany', 'Italy', 'Switzerland', 'Canada', 'Turkey',
-    'Spain', 'Netherlands', 'Dubai', 'London', 'Paris', 'Bangkok', 'Tokyo', 'New York'];
-  const POPULAR_ORIGIN = ['India', 'Singapore', 'United Arab Emirates', 'United Kingdom', 'United States', 'Australia', 'Thailand', 'Malaysia', 'Canada', 'Germany', 'France', 'Dubai', 'London'];
+  const POPULAR_DEST = ['Singapore (SIN)', 'Dubai (DXB)', 'Bangkok (BKK)', 'London (LHR)', 'Paris (CDG)', 'Tokyo (HND)', 'New York (JFK)', 'Kuala Lumpur (KUL)',
+    'Hong Kong (HKG)', 'Singapore', 'United Arab Emirates', 'Thailand', 'United Kingdom', 'United States', 'Japan', 'Australia', 'Malaysia', 'Indonesia',
+    'Maldives', 'Sri Lanka', 'Vietnam', 'France', 'Germany', 'Italy', 'Switzerland', 'Canada', 'Turkey', 'Spain'];
+  const POPULAR_ORIGIN = ['Delhi (DEL)', 'Mumbai (BOM)', 'Bengaluru (BLR)', 'Chennai (MAA)', 'Hyderabad (HYD)', 'Kolkata (CCU)', 'Singapore (SIN)', 'Dubai (DXB)',
+    'London (LHR)', 'India', 'Singapore', 'United Arab Emirates', 'United Kingdom', 'United States', 'Australia', 'Thailand', 'Malaysia', 'Canada', 'Germany', 'France'];
   // Everyday names people type, mapped to the country a programme actually prices. Only used when the programme has that country.
   const ALIASES = {
     dubai: 'United Arab Emirates', 'abu dhabi': 'United Arab Emirates', uae: 'United Arab Emirates', doha: 'Qatar', muscat: 'Oman',
@@ -154,17 +173,31 @@
     const from = els.origin.value;
     const judged = charts.some(c => originZones(c, from).length); // if no chart knows the origin, we cannot judge pricing
     const map = new Map();
-    charts.forEach(chart => {
-      const origins = new Set(chart.rows.map(r => r[0]));
-      const reach = originOnly ? null : reachableFrom(chart, originZones(chart, from));
+    const air = state.air || [];
+    const airCity = new Set(air.filter(cityFits).map(a => a.cityKey));
+    const info = charts.map(chart => ({ chart, origins: new Set(chart.rows.map(r => r[0])), reach: originOnly ? null : reachableFrom(chart, originZones(chart, from)) }));
+    info.forEach(({ chart, origins, reach }) => {
       chart.places.forEach(([name, region, kind]) => {
+        if (kind === 'y' && airCity.has(norm(name))) return; // the airports under that city replace it
         if (originOnly && !origins.has(region)) return;
         const it = map.get(name) || { name, kind, ok: false };
         if (originOnly || !judged || reach.has(region)) it.ok = true;
         map.set(name, it);
       });
     });
-    return Array.from(map.values());
+    const items = Array.from(map.values());
+    air.forEach(ap => {
+      let known = false, ok = false;
+      info.forEach(({ chart, origins, reach }) => {
+        const zones = zonesOf(chart, ap.label);
+        if (!zones.length) return;
+        known = true;
+        if (originOnly ? zones.some(z => origins.has(z)) : (!judged || zones.some(z => reach.has(z)))) ok = true;
+      });
+      if (originOnly && !ok) return;
+      items.push({ name: ap.label, kind: 'a', ok, known, ap });
+    });
+    return items;
   };
 
   const makeCombo = cfg => {
@@ -193,12 +226,13 @@
       li.setAttribute('aria-selected', 'false');
       li.appendChild(el('strong', null, item.name));
       li.appendChild(el('span', null, sub));
+      if (item.ap) li.appendChild(el('small', null, item.ap.name));
       // mousedown, not click: the input would lose focus and close the list first.
       li.addEventListener('mousedown', e => { e.preventDefault(); choose(item); });
       list.appendChild(li);
       shown.push(item);
     };
-    const kindText = k => (k === 'y' ? 'City' : 'Country');
+    const kindText = k => (k === 'y' ? 'City' : k === 'a' ? 'Airport' : 'Country');
     const build = fresh => {
       const raw = input.value;
       const q = fresh ? '' : norm(raw);
@@ -206,15 +240,25 @@
       list.replaceChildren(); shown = []; active = -1;
       if (!q) {
         const byName = new Map(all.map(i => [i.name, i]));
-        let pop = cfg.popular.map(n => byName.get(n)).filter(i => i && i.ok).slice(0, 12);
+        let pop = cfg.popular.map(n => byName.get(n)).filter(i => i && i.ok).slice(0, 14);
         if (!pop.length) pop = all.filter(i => i.ok).sort((a, b) => a.name.localeCompare(b.name)).slice(0, 12);
         if (pop.length) {
           list.appendChild(el('li', 'calc-combo-head', cfg.heading));
-          pop.forEach(i => row(i, kindText(i.kind)));
+          pop.forEach(i => row(i, i.ap ? i.ap.country : kindText(i.kind)));
         }
         list.appendChild(el('li', 'calc-combo-foot', `Type to search all ${all.length} places`));
       } else {
-        const rank = i => { const n = norm(i.name); return n === q ? 0 : n.startsWith(q) ? 1 : n.split(/[\s,()-]+/).some(w => w.startsWith(q)) ? 2 : n.includes(q) ? 3 : 9; };
+        const rank = i => {
+          const n = norm(i.name);
+          if (i.ap) {
+            // Airports match on code, city, then the airport's own name ("heathrow", "changi").
+            if (i.ap.codeKey === q) return 0;
+            if (n.startsWith(q)) return 1;
+            if (n.split(/[\s,()-]+/).some(w => w.startsWith(q))) return 2;
+            return i.ap.nameKey.includes(q) ? 3 : 9;
+          }
+          return n === q ? 0 : n.startsWith(q) ? 1 : n.split(/[\s,()-]+/).some(w => w.startsWith(q)) ? 2 : n.includes(q) ? 3 : 9;
+        };
         const res = all.map(i => ({ i, r: rank(i) })).filter(x => x.r < 9);
         // Everyday names (Dubai, London, USA) point at the country the programme prices.
         const byName = new Map(all.map(i => [norm(i.name), i]));
@@ -228,7 +272,7 @@
         }
         res.sort((a, b) => a.r - b.r || (b.i.ok - a.i.ok) || a.i.name.localeCompare(b.i.name));
         // Names that start with what was typed come first, then everyday-name suggestions, then looser matches.
-        const sub = x => (x.i.ok ? kindText(x.i.kind) : 'No price from here');
+        const sub = x => (x.i.ap ? (x.i.ok ? x.i.ap.country : x.i.known ? 'No price from here' : 'Estimate only') : x.i.ok ? kindText(x.i.kind) : 'No price from here');
         res.filter(x => x.r <= 1).forEach(x => row(x.i, sub(x)));
         aliasHits.slice(0, 3).forEach(a => row(a.item, `Includes ${a.via}`));
         res.filter(x => x.r > 1).slice(0, Math.max(0, 10 - shown.length)).forEach(x => row(x.i, sub(x)));
@@ -312,6 +356,8 @@
   const prettyPlace = name => {
     const v = norm(name || '');
     if (!v) return '';
+    const ap = airportOf(v);
+    if (ap) return ap.city;
     for (const chart of flightCharts().map(chartOf)) { const hit = (chart.places || []).find(p => norm(p[0]) === v); if (hit) return hit[0]; }
     return name.trim().replace(/\b\w/g, c => c.toUpperCase());
   };
@@ -773,12 +819,21 @@
       const artRequest = optional('/data/card-art.json');
       const redRequest = optional('/data/redemption-data.json');
       const recRequest = optional('/data/recommender-data.json');
+      const airRequest = optional('/data/airports.json');
       const res = await fetch('/data/calculator-data.json');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       state.data = await res.json();
       state.art = (await artRequest) || {};
       state.red = await redRequest;
       const rec = (await recRequest) || { banks: [], cards: [] };
+      const airData = await airRequest;
+      if (airData && airData.airports) {
+        state.air = airData.airports.map(([code, name, city, ci]) => {
+          const country = airData.countries[ci];
+          return { code, name, city, country, label: `${city} (${code})`, cityKey: norm(city), countryKey: norm(country), codeKey: code.toLowerCase(), nameKey: norm(`${name} ${city}`) };
+        });
+        state.air.forEach(ap => { state.airByLabel.set(norm(ap.label), ap); state.airByCode.set(ap.codeKey, ap); });
+      }
 
       [...(rec.banks || []), ...state.data.banks].forEach(b => state.banks.set(b.id, b.name));
       (rec.cards || []).forEach(c => state.rec.set(c.id, c));

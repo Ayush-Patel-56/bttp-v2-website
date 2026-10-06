@@ -1162,6 +1162,27 @@
     box-shadow: 0 18px 40px rgba(24, 21, 18, .18)
 }
 
+.rt-card .calc-combo-list {
+    min-width: min(340px, calc(100vw - 48px));
+    right: auto
+}
+
+.rt-card #calc-dest-list {
+    left: auto;
+    right: 0
+}
+
+@media (max-width: 640px) {
+    .rt-card .calc-combo-list {
+        min-width: 0;
+        right: 0
+    }
+
+    .rt-card #calc-dest-list {
+        left: 0
+    }
+}
+
 .calc-combo-list[hidden] {
     display: none
 }
@@ -1209,6 +1230,13 @@
     text-align: right
 }
 
+.calc-combo-opt small {
+    flex-basis: 100%;
+    font-size: 12px;
+    line-height: 1.35;
+    color: #8a8176
+}
+
 .calc-combo-opt:hover,
 .calc-combo-opt.is-active {
     background: #f6f1ea
@@ -1240,7 +1268,7 @@
 .rt-hero-inner {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: center;
     gap: 48px
 }
 
