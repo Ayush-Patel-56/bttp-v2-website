@@ -22,6 +22,7 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/dmsans/v17/rP2Yp2ywxg089UriI5-g4vlH9VoD8Cmcqbu0-K6z9mXg.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/playfairdisplay/v40/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKebunDXbtPK_l2q.woff2">
   <link rel="preload" as="fetch" type="application/json" crossorigin href="/data/calculator-data.json">
+  <link rel="preload" as="fetch" type="application/json" crossorigin href="/data/redemption-data.json">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap">
   <link rel="stylesheet" href="/styles.css" />
   <link rel="stylesheet" href="/calculator.css" />
@@ -108,177 +109,215 @@
   </header>
 
   <main id="top">
-    <section class="calc-hero section-dark">
-      <div class="container calc-hero-inner">
-        <p class="eyebrow copper">FREE TOOL</p>
-        <h1>Credit Card Reward <br class="calc-break">Points Calculator</h1>
-        <p class="calc-lede">Work out how many points a flight or hotel night costs after transfer, whether your balance covers it, and what each point is really worth in rupees.</p>
-        <ul class="calc-benchmarks" aria-label="Rupee-per-point benchmarks">
-          <li class="calc-benchmark calc-benchmark-high"><strong>₹4+</strong> per point <span>High value</span></li>
-          <li class="calc-benchmark calc-benchmark-good"><strong>₹2–4</strong> per point <span>Good value</span></li>
-          <li class="calc-benchmark calc-benchmark-low"><strong>About ₹1</strong> per point <span>Low value</span></li>
+    <section class="rt-hero">
+      <div class="container rt-hero-inner">
+        <div class="rt-hero-copy">
+          <p class="rt-eyebrow">REWARD TRIP CALCULATOR</p>
+          <h1>Turn your points <br class="rt-break">into <span>real journeys.</span></h1>
+          <p class="rt-lede">Enter a few details to see how many credit card points you need and the real value you get per point for your next flight or hotel stay.</p>
+        </div>
+        <ul class="rt-badges" aria-label="What this calculator gives you">
+          <li><span class="rt-badge-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></span><span>Real partner<br>conversions</span></li>
+          <li><span class="rt-badge-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></span><span>Up-to-date<br>reward rates</span></li>
+          <li><span class="rt-badge-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span><span>Compare multiple<br>redemption options</span></li>
         </ul>
       </div>
     </section>
 
-    <section class="calc-section light-section" aria-labelledby="calc-title">
-      <div class="container">
-        <div class="calc-head">
-          <h2 id="calc-title">Calculate the real value of your points</h2>
-          <p>Pick your card and a transfer partner, then tell us the trip. We work out the points you need and whether your balance covers it.</p>
-        </div>
+    <section class="rt-section" aria-label="Reward trip calculator">
+      <div class="container rt-shell">
+        <ol class="rt-steps" aria-label="Progress">
+          <li><button type="button" class="rt-step is-active" data-step="1" aria-current="step"><span class="rt-step-num">1</span><span class="rt-step-text"><strong>Trip</strong><span>Where are you going?</span></span></button></li>
+          <li><button type="button" class="rt-step" data-step="2" disabled><span class="rt-step-num">2</span><span class="rt-step-text"><strong>Card</strong><span>Select your card &amp; partner</span></span></button></li>
+          <li><button type="button" class="rt-step" data-step="3" disabled><span class="rt-step-num">3</span><span class="rt-step-text"><strong>Details</strong><span>Add travellers &amp; class</span></span></button></li>
+          <li><button type="button" class="rt-step" data-step="4" disabled><span class="rt-step-num">4</span><span class="rt-step-text"><strong>Calculate</strong><span>See your results</span></span></button></li>
+        </ol>
 
-        <div class="calc-grid">
-          <form class="calc-panel" id="calc-form" novalidate>
-            <p class="calc-panel-eyebrow">CALCULATOR</p>
+        <div class="rt-card">
+          <form class="rt-main" id="calc-form" novalidate>
 
-            <fieldset class="calc-field calc-field-plain">
-              <legend class="calc-label">Redemption type</legend>
-              <div class="calc-toggle" role="group" aria-label="Redemption type">
-                <button type="button" class="calc-toggle-btn is-active" data-mode="airline" aria-pressed="true">Airlines</button>
-                <button type="button" class="calc-toggle-btn" data-mode="hotel" aria-pressed="false">Hotels</button>
+            <!-- Step 1: trip -->
+            <div class="rt-pane" data-pane="1">
+              <h2 class="rt-q">What are you planning to redeem?</h2>
+              <div class="rt-types" role="group" aria-label="Redemption type">
+                <button type="button" class="rt-type is-active" data-mode="airline" aria-pressed="true">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+                  <span>Flights</span>
+                </button>
+                <button type="button" class="rt-type" data-mode="hotel" aria-pressed="false">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
+                  <span>Hotels</span>
+                </button>
               </div>
-            </fieldset>
 
-            <div class="calc-field">
-              <label class="calc-label" for="calc-bank">Select bank</label>
-              <select id="calc-bank" class="calc-select" disabled>
-                <option value="">Loading banks…</option>
-              </select>
-            </div>
-
-            <div class="calc-field">
-              <label class="calc-label" for="calc-card">Select credit card</label>
-              <select id="calc-card" class="calc-select" disabled>
-                <option value="">Select a bank first</option>
-              </select>
-            </div>
-
-            <div class="calc-field" id="calc-balance-field">
-              <label class="calc-label" for="calc-balance">Your points balance (optional)</label>
-              <input id="calc-balance" class="calc-input" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 120,000" />
-              <p class="calc-hint calc-hint-tight">In the card's own reward points. We check whether it covers the trip.</p>
-            </div>
-
-            <div class="calc-field">
-              <label class="calc-label" for="calc-partner" id="calc-partner-label">Select airline partner</label>
-              <select id="calc-partner" class="calc-select" disabled>
-                <option value="">Select a card first</option>
-              </select>
-            </div>
-
-            <div id="calc-route" hidden>
-              <div id="calc-flight">
-                <div class="calc-row">
-                  <div class="calc-field">
-                    <label class="calc-label" for="calc-origin">From (country or city)</label>
-                    <div class="calc-combo">
-                      <input id="calc-origin" class="calc-input" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="calc-origin-list" autocomplete="off" spellcheck="false" placeholder="e.g. India" />
+              <div id="calc-flight-fields">
+                <div class="rt-route">
+                  <div class="rt-field">
+                    <label class="rt-label" for="calc-origin">From</label>
+                    <div class="calc-combo rt-icon-field">
+                      <svg class="rt-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                      <input id="calc-origin" class="calc-input" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="calc-origin-list" autocomplete="off" spellcheck="false" placeholder="e.g. India" value="India" />
                       <ul class="calc-combo-list" id="calc-origin-list" role="listbox" aria-label="Departure places" hidden></ul>
                     </div>
                   </div>
-                  <div class="calc-field">
-                    <label class="calc-label" for="calc-dest">To (country or city)</label>
-                    <div class="calc-combo">
-                      <input id="calc-dest" class="calc-input" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="calc-dest-list" autocomplete="off" spellcheck="false" placeholder="Search a country or city" />
+                  <button type="button" class="rt-swap" id="calc-swap" aria-label="Swap from and to">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+                  </button>
+                  <div class="rt-field">
+                    <label class="rt-label" for="calc-dest">To</label>
+                    <div class="calc-combo rt-icon-field">
+                      <svg class="rt-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                      <input id="calc-dest" class="calc-input" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="calc-dest-list" autocomplete="off" spellcheck="false" placeholder="e.g. Singapore" />
                       <ul class="calc-combo-list" id="calc-dest-list" role="listbox" aria-label="Destinations" hidden></ul>
                     </div>
                   </div>
                 </div>
-                <p class="calc-zone" id="calc-zone" hidden></p>
-                <div class="calc-row">
-                  <div class="calc-field">
-                    <label class="calc-label" for="calc-cabin">Cabin</label>
-                    <select id="calc-cabin" class="calc-select" disabled><option value="">Select cabin</option></select>
+                <p class="rt-hint" id="calc-route-hint" hidden></p>
+              </div>
+              <p class="rt-hint rt-hint-box" id="calc-hotel-note" hidden>Hotel redemptions are priced per night. You will add the number of nights and your price in step 3.</p>
+
+              <p class="rt-error" id="calc-error-1" role="alert" hidden></p>
+              <button type="button" class="rt-cta" id="calc-next-1"><span>Next: Select Card &amp; Partner</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+            </div>
+
+            <!-- Step 2: card and partner -->
+            <div class="rt-pane" data-pane="2" hidden>
+              <h2 class="rt-q">Which card and partner?</h2>
+              <div class="rt-field">
+                <label class="rt-label" for="calc-bank">Bank</label>
+                <select id="calc-bank" class="calc-select" disabled><option value="">Loading banks…</option></select>
+              </div>
+              <div class="rt-field">
+                <label class="rt-label" for="calc-card">Credit card</label>
+                <select id="calc-card" class="calc-select" disabled><option value="">Select a bank first</option></select>
+              </div>
+              <div class="rt-field">
+                <label class="rt-label" for="calc-partner" id="calc-partner-label">Airline partner</label>
+                <select id="calc-partner" class="calc-select" disabled><option value="">Select a card first</option></select>
+                <p class="rt-hint" id="calc-partner-note" hidden></p>
+              </div>
+              <div class="rt-field" id="calc-balance-field">
+                <label class="rt-label" for="calc-balance">Your points balance (optional)</label>
+                <input id="calc-balance" class="calc-input" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 120,000" />
+                <p class="rt-hint">In the card's own reward points. We check whether it covers the trip.</p>
+              </div>
+              <p class="rt-error" id="calc-error-2" role="alert" hidden></p>
+              <div class="rt-nav">
+                <button type="button" class="rt-back" data-back="1">Back</button>
+                <button type="button" class="rt-cta" id="calc-next-2"><span>Next: Add details</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+              </div>
+            </div>
+
+            <!-- Step 3: details -->
+            <div class="rt-pane" data-pane="3" hidden>
+              <h2 class="rt-q">A few more details</h2>
+              <div id="calc-detail-flight">
+                <div class="rt-two">
+                  <div class="rt-field">
+                    <label class="rt-label" for="calc-cabin">Cabin class</label>
+                    <div class="rt-icon-field">
+                      <svg class="rt-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/><path d="M5 18v2"/><path d="M19 18v2"/></svg>
+                      <select id="calc-cabin" class="calc-select" disabled><option value="">Select cabin</option></select>
+                    </div>
                   </div>
-                  <div class="calc-field">
-                    <label class="calc-label" for="calc-pax">Passengers</label>
-                    <select id="calc-pax" class="calc-select"></select>
+                  <div class="rt-field">
+                    <label class="rt-label" for="calc-pax">Passengers</label>
+                    <div class="rt-icon-field">
+                      <svg class="rt-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                      <select id="calc-pax" class="calc-select"></select>
+                    </div>
                   </div>
                 </div>
-                <fieldset class="calc-field calc-field-plain" id="calc-trip-type" hidden>
-                  <legend class="calc-label">Trip</legend>
-                  <div class="calc-toggle" role="group" aria-label="Trip type">
-                    <button type="button" class="calc-toggle-btn is-active" data-trip="1" aria-pressed="true">One way</button>
-                    <button type="button" class="calc-toggle-btn" data-trip="2" aria-pressed="false">Round trip</button>
+                <fieldset class="rt-field rt-fieldset" id="calc-trip-type" hidden>
+                  <legend class="rt-label">Trip</legend>
+                  <div class="rt-toggle" role="group" aria-label="Trip type">
+                    <button type="button" class="is-active" data-trip="1" aria-pressed="true">One way</button>
+                    <button type="button" data-trip="2" aria-pressed="false">Round trip</button>
                   </div>
                 </fieldset>
               </div>
-              <div id="calc-hotel" hidden>
-                <div class="calc-field">
-                  <label class="calc-label" for="calc-nights">Nights</label>
+              <div id="calc-detail-hotel" hidden>
+                <div class="rt-field">
+                  <label class="rt-label" for="calc-nights">Nights</label>
                   <input id="calc-nights" class="calc-input" type="text" inputmode="numeric" autocomplete="off" value="1" />
                 </div>
               </div>
-            </div>
 
-            <div class="calc-field" id="calc-price-field">
-              <label class="calc-label" for="calc-price" id="calc-price-label">Ticket price</label>
-              <div class="calc-input-wrap">
-                <span class="calc-prefix" aria-hidden="true">₹</span>
-                <input id="calc-price" class="calc-input calc-input-prefixed" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 45,000" aria-describedby="calc-price-hint" />
+              <p class="rt-hint rt-hint-box" id="calc-zone" hidden></p>
+
+              <div class="rt-field" id="calc-price-field">
+                <label class="rt-label" for="calc-price" id="calc-price-label">Ticket price</label>
+                <div class="calc-input-wrap">
+                  <span class="calc-prefix" aria-hidden="true">₹</span>
+                  <input id="calc-price" class="calc-input calc-input-prefixed" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 45,000" aria-describedby="calc-price-hint" />
+                </div>
+                <p class="rt-hint" id="calc-price-hint">Use the price excluding taxes and fees.</p>
               </div>
-              <p class="calc-hint calc-hint-tight" id="calc-price-hint">Use the price excluding taxes and fees.</p>
+
+              <button type="button" class="rt-link" id="calc-manual-toggle" aria-expanded="false" aria-controls="calc-manual" hidden>I know the exact partner points</button>
+              <div class="rt-field" id="calc-manual" hidden>
+                <label class="rt-label" for="calc-points" id="calc-points-label">Partner points required</label>
+                <input id="calc-points" class="calc-input" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 15,000" aria-describedby="calc-points-hint" />
+                <p class="rt-hint" id="calc-points-hint">In the partner's own currency (miles or hotel points). This overrides our estimate.</p>
+              </div>
+
+              <p class="rt-error" id="calc-error-3" role="alert" hidden></p>
+              <div class="rt-nav">
+                <button type="button" class="rt-back" data-back="2">Back</button>
+                <button type="button" class="rt-cta" id="calc-next-3"><span>Calculate points</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+              </div>
             </div>
 
-            <p class="calc-partner-note" id="calc-partner-note" hidden></p>
-
-            <button type="button" class="calc-link" id="calc-manual-toggle" aria-expanded="false" aria-controls="calc-manual" hidden>I know the exact partner points</button>
-            <div class="calc-field calc-manual" id="calc-manual" hidden>
-              <label class="calc-label" for="calc-points" id="calc-points-label">Partner points required</label>
-              <input id="calc-points" class="calc-input" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 15,000" aria-describedby="calc-points-hint" />
-              <p class="calc-hint calc-hint-tight" id="calc-points-hint">In the partner's own currency (miles or hotel points). This overrides our estimate.</p>
+            <!-- Step 4: results -->
+            <div class="rt-pane" data-pane="4" hidden aria-live="polite">
+              <h2 class="rt-q">Your points</h2>
+              <div class="calc-verdict" id="calc-verdict" data-tier="none">
+                <p class="calc-verdict-badge" id="calc-badge">Waiting</p>
+                <p class="calc-verdict-caption" id="calc-caption">Estimated card points needed</p>
+                <p class="calc-verdict-value" id="calc-value">--</p>
+                <p class="calc-verdict-label" id="calc-label">Waiting for your inputs</p>
+                <p class="calc-balance" id="calc-balance-line" hidden></p>
+                <p class="calc-verdict-detail" id="calc-detail">Choose your card, a transfer partner and the trip to see how many points you need.</p>
+                <p class="calc-verdict-using" id="calc-using" hidden></p>
+                <p class="calc-verdict-note" id="calc-note" hidden></p>
+              </div>
+              <div class="calc-options" id="calc-options" hidden></div>
+              <div class="rt-compare" id="calc-compare" hidden></div>
+              <div class="calc-transfer" id="calc-transfer" hidden></div>
+              <p class="calc-asof" id="calc-asof" hidden></p>
+              <div class="rt-nav">
+                <button type="button" class="rt-back" data-back="3">Edit details</button>
+                <button type="button" class="rt-cta rt-cta-ghost" id="calc-restart"><span>Start over</span></button>
+              </div>
             </div>
-
-            <p class="calc-error" id="calc-error" role="alert" hidden></p>
           </form>
 
-          <div class="calc-result" aria-live="polite">
-            <div class="calc-card-stage">
-              <figure class="calc-art" id="calc-art" hidden>
-                <img class="calc-art-img" id="calc-art-img" alt="" decoding="async">
-                <figcaption class="calc-art-caption"><strong id="calc-art-name"></strong><span id="calc-art-bank"></span></figcaption>
-              </figure>
-              <div class="calc-card" id="calc-card-visual" data-state="empty">
-                <div class="calc-card-face">
-                <div class="calc-card-top">
-                  <span class="calc-card-chip" aria-hidden="true"></span>
-                  <svg class="calc-card-nfc" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8.5 8.5a5 5 0 0 1 0 7"/><path d="M12 6a8.5 8.5 0 0 1 0 12"/><path d="M15.5 3.5a12 12 0 0 1 0 17"/></svg>
-                  <span class="calc-card-brand">BTTP</span>
-                </div>
-                <div class="calc-card-body">
-                  <p class="calc-card-name" id="calc-card-name">Select a card</p>
-                  <p class="calc-card-bank" id="calc-card-bank">Choose your bank and card</p>
-                </div>
-                <div class="calc-card-bottom">
-                  <div>
-                    <span class="calc-card-meta-label">Points currency</span>
-                    <span class="calc-card-meta" id="calc-card-currency">—</span>
-                  </div>
-                  <div class="calc-card-value">
-                    <span class="calc-card-meta-label">Est. value</span>
-                    <span class="calc-card-meta" id="calc-card-value">₹0.00</span>
-                  </div>
-                </div>
-                </div>
+          <aside class="rt-aside" aria-label="Your selection">
+            <div class="rt-aside-head"><h3>Your selected card</h3><button type="button" class="rt-change" id="calc-change" hidden>Change</button></div>
+            <div class="rt-selected">
+              <div class="rt-selected-art" id="calc-aside-art"></div>
+              <div class="rt-selected-info">
+                <strong id="calc-aside-name">Select a card</strong>
+                <span id="calc-aside-bank">Choose your bank and card in step 2</span>
+                <div class="rt-chips" id="calc-aside-chips"></div>
               </div>
             </div>
 
-            <div class="calc-verdict" id="calc-verdict" data-tier="none">
-              <p class="calc-verdict-badge" id="calc-badge">Waiting</p>
-              <p class="calc-verdict-caption" id="calc-caption">Estimated card points needed</p>
-              <p class="calc-verdict-value" id="calc-value">--</p>
-              <p class="calc-verdict-label" id="calc-label">Waiting for your inputs</p>
-              <p class="calc-balance" id="calc-balance-line" hidden></p>
-              <p class="calc-verdict-detail" id="calc-detail">Choose your card, a transfer partner and the trip to see how many points you need.</p>
-              <p class="calc-verdict-using" id="calc-using" hidden></p>
-              <p class="calc-verdict-note" id="calc-note" hidden></p>
-            </div>
+            <figure class="rt-banner" id="calc-banner">
+              <img id="calc-banner-img" src="/assets/destinations/flight.jpg" alt="" width="600" height="900" decoding="async">
+              <figcaption>
+                <span id="calc-banner-kicker">Your trip to</span>
+                <strong id="calc-banner-title">Anywhere</strong>
+                <p id="calc-banner-text">Fill in your details to see how many points you need and the value you'll get.</p>
+              </figcaption>
+            </figure>
 
-            <div class="calc-options" id="calc-options" hidden></div>
-            <div class="calc-transfer" id="calc-transfer" hidden></div>
-            <p class="calc-asof" id="calc-asof" hidden></p>
-          </div>
+            <dl class="rt-stats">
+              <div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg><dt>Conversion ratio</dt><dd id="calc-stat-ratio">—</dd></div>
+              <div><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg><dt>Minimum transfer unit</dt><dd id="calc-stat-min">—</dd></div>
+              <div><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><dt>Processing time</dt><dd id="calc-stat-time">—</dd></div>
+            </dl>
+          </aside>
         </div>
 
         <div class="calc-other" id="calc-other" hidden>
@@ -288,10 +327,10 @@
             <p class="calc-other-sub" id="calc-other-sub"></p>
           </div>
           <ol class="calc-ways" id="calc-ways"></ol>
-          <p class="calc-other-note">Values are the bank's published redemption values, in rupees per point. "Up to" marks a published ceiling, so your actual value may be lower. Transfers to airline and hotel partners have no fixed rupee value: add a cash price above to see yours.</p>
+          <p class="calc-other-note">Values are the bank's published redemption values, in rupees per point. "Up to" marks a published ceiling, so your actual value may be lower. Transfers to airline and hotel partners have no fixed rupee value: add a cash price to see yours.</p>
         </div>
 
-        <p class="calc-art-note">Card images belong to their respective issuers and are shown for identification only. Cards without an official image use a generic design.</p>
+        <p class="calc-art-note">Card images belong to their respective issuers and are shown for identification only. Cards without an official image use a generic design. Destination photos are illustrative.</p>
 
         <noscript><p class="calc-noscript">This calculator needs JavaScript. The formula is: credit card points = partner miles from the award chart × (card points ÷ partner points in the transfer ratio); value per point = price ÷ credit card points.</p></noscript>
       </div>

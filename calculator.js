@@ -5,24 +5,28 @@
   const $ = id => document.getElementById(id);
   const els = {
     bank: $('calc-bank'), card: $('calc-card'), balance: $('calc-balance'), partner: $('calc-partner'), price: $('calc-price'), points: $('calc-points'),
-    error: $('calc-error'), partnerLabel: $('calc-partner-label'), priceLabel: $('calc-price-label'), priceHint: $('calc-price-hint'), priceField: $('calc-price-field'),
-    route: $('calc-route'), flight: $('calc-flight'), hotel: $('calc-hotel'),
-    origin: $('calc-origin'), dest: $('calc-dest'), originList: $('calc-origin-list'), destList: $('calc-dest-list'), zone: $('calc-zone'),
-    cabin: $('calc-cabin'), pax: $('calc-pax'), tripType: $('calc-trip-type'), nights: $('calc-nights'),
-    partnerNote: $('calc-partner-note'), manualToggle: $('calc-manual-toggle'), manual: $('calc-manual'),
-    cardVisual: $('calc-card-visual'), cardName: $('calc-card-name'), cardBank: $('calc-card-bank'),
-    art: $('calc-art'), artImg: $('calc-art-img'), artName: $('calc-art-name'), artBank: $('calc-art-bank'),
-    cardCurrency: $('calc-card-currency'), cardValue: $('calc-card-value'),
+    partnerLabel: $('calc-partner-label'), partnerNote: $('calc-partner-note'), priceLabel: $('calc-price-label'), priceHint: $('calc-price-hint'), priceField: $('calc-price-field'),
+    flightFields: $('calc-flight-fields'), hotelNote: $('calc-hotel-note'), routeHint: $('calc-route-hint'),
+    origin: $('calc-origin'), dest: $('calc-dest'), originList: $('calc-origin-list'), destList: $('calc-dest-list'), swap: $('calc-swap'),
+    detailFlight: $('calc-detail-flight'), detailHotel: $('calc-detail-hotel'), cabin: $('calc-cabin'), pax: $('calc-pax'), tripType: $('calc-trip-type'),
+    nights: $('calc-nights'), zone: $('calc-zone'), manualToggle: $('calc-manual-toggle'), manual: $('calc-manual'),
     verdict: $('calc-verdict'), badge: $('calc-badge'), caption: $('calc-caption'), value: $('calc-value'), label: $('calc-label'), detail: $('calc-detail'),
-    balanceLine: $('calc-balance-line'), using: $('calc-using'), note: $('calc-note'), options: $('calc-options'), transfer: $('calc-transfer'), asof: $('calc-asof'),
-    other: $('calc-other'), otherTitle: $('calc-other-title'), otherSub: $('calc-other-sub'), ways: $('calc-ways'), source: $('calc-source')
+    balanceLine: $('calc-balance-line'), using: $('calc-using'), note: $('calc-note'), options: $('calc-options'), compare: $('calc-compare'),
+    transfer: $('calc-transfer'), asof: $('calc-asof'), restart: $('calc-restart'),
+    asideArt: $('calc-aside-art'), asideName: $('calc-aside-name'), asideBank: $('calc-aside-bank'), asideChips: $('calc-aside-chips'), change: $('calc-change'),
+    banner: $('calc-banner'), bannerImg: $('calc-banner-img'), bannerKicker: $('calc-banner-kicker'), bannerTitle: $('calc-banner-title'), bannerText: $('calc-banner-text'),
+    statRatio: $('calc-stat-ratio'), statMin: $('calc-stat-min'), statTime: $('calc-stat-time'),
+    other: $('calc-other'), otherTitle: $('calc-other-title'), otherSub: $('calc-other-sub'), ways: $('calc-ways'), source: $('calc-source'),
+    next1: $('calc-next-1'), next2: $('calc-next-2'), next3: $('calc-next-3')
   };
-  const toggles = Array.from(document.querySelectorAll('.calc-toggle-btn[data-mode]'));
+  const panes = Array.from(document.querySelectorAll('.rt-pane'));
+  const stepBtns = Array.from(document.querySelectorAll('.rt-step'));
+  const typeBtns = Array.from(document.querySelectorAll('.rt-type'));
   const tripButtons = Array.from(document.querySelectorAll('[data-trip]'));
 
   const COPY = {
-    airline: { partner: 'Select airline partner', price: 'Ticket price' },
-    hotel: { partner: 'Select hotel partner', price: 'Stay price' }
+    airline: { partner: 'Airline partner', price: 'Ticket price', kicker: 'Your trip to' },
+    hotel: { partner: 'Hotel partner', price: 'Stay price', kicker: 'Your stay with' }
   };
   const CABIN = { e: 'Economy', p: 'Premium economy', b: 'Business', f: 'First', r: 'Room' };
   const CABIN_ORDER = ['e', 'p', 'b', 'f'];
@@ -33,7 +37,7 @@
   const WINDOW = { month: 'per month', calendar_year: 'per calendar year', day: 'per day', year: 'per year' };
   // KrisFlyer's chart states a round trip costs twice the one-way miles. The other charts do not say so.
   const ROUND_TRIP_DOUBLES = new Set(['krisflyer']);
-  // Typical rupee value per point. Used only to estimate when a partner has no award chart.
+  // Typical rupee value per point. Used only to estimate when a partner has no usable award chart.
   const BENCH = { low: 1, mid: 2, high: 4 };
 
   // Rupee-per-point cut-offs, highest first. Same thresholds as the page's benchmark badges.
@@ -45,7 +49,10 @@
   ];
 
   const inr = new Intl.NumberFormat('en-IN');
-  const state = { data: null, red: null, art: {}, banks: new Map(), mode: 'airline', cards: new Map(), partner: '', chart: null, trip: 1, plan: null };
+  const state = {
+    data: null, red: null, art: {}, banks: new Map(), rec: new Map(), cards: new Map(),
+    mode: 'airline', step: 1, maxStep: 1, trip: 1, partner: '', exact: false, plan: null
+  };
 
   const digits = value => value.replace(/[^\d]/g, '');
   const parseNumber = value => Number(digits(value)) || 0;
@@ -53,6 +60,7 @@
   const trim = (n, d = 2) => String(Number(n.toFixed(d)));
   const ratioText = (from, to) => `${inr.format(from)} : ${inr.format(to)}`;
   const roundEst = n => Math.max(500, Math.round(n / 500) * 500);
+  const norm = v => v.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 
   const setOptions = (select, placeholder, items, disabled, keep) => {
@@ -65,7 +73,13 @@
     if (prev && items.some(i => String(i.value) === prev)) select.value = prev;
     select.disabled = disabled;
   };
+  const showError = (n, msg) => {
+    for (let i = 1; i <= 3; i++) { const e = $(`calc-error-${i}`); if (e) e.hidden = true; }
+    const e = $(`calc-error-${n}`);
+    if (e && msg) { e.textContent = msg; e.hidden = false; }
+  };
 
+  // ── Cards and partners ──
   const selectedCard = () => state.cards.get(els.card.value) || null;
   const routesIn = (card, mode) => card.r.filter(r => state.data.partners[r[0]] && state.data.partners[r[0]].k === mode);
   const routesFor = card => routesIn(card, state.mode);
@@ -76,20 +90,42 @@
   const partnerName = id => (state.data.partners[id] ? state.data.partners[id].n.replace(/\s*\(.*?\)\s*/g, ' ').trim() : id);
   const unitWord = () => (state.mode === 'hotel' ? 'points' : 'miles');
   const xferOf = (card, pid) => ((state.red && state.red.xfer && state.red.xfer[card.id]) || {})[pid] || [];
+  const routeOf = (card, pid) => card.r.find(r => r[0] === pid);
 
-  // ── Award chart lookups: users type a country or city, the chart is keyed by pricing zone ──
-  const rows = () => (state.chart ? state.chart.rows : []);
-  const isHotelChart = () => rows().length > 0 && rows()[0][6] === 2;
-  const regionName = i => state.chart.regions[i];
-  const places = () => (state.chart && state.chart.places) || [];
-  const regionsOf = input => {
-    const v = input.value.trim().toLowerCase();
-    return v ? Array.from(new Set(places().filter(p => p[0].toLowerCase() === v).map(p => p[1]))) : [];
+  // ── Award charts: a place maps to the programme's own pricing zone ──
+  const chartOf = pid => { const c = state.red && state.red.charts && state.red.charts[pid]; return c && c.rows && c.rows.length ? c : null; };
+  const isHotelChart = chart => !!chart && chart.rows.length > 0 && chart.rows[0][6] === 2;
+  const regionName = (chart, i) => chart.regions[i];
+  const zonesOf = (chart, name) => {
+    const v = norm(name || '');
+    return v ? Array.from(new Set((chart.places || []).filter(p => norm(p[0]) === v).map(p => p[1]))) : [];
   };
-  const originRegions = () => (els.origin.disabled && state.chart ? Array.from(new Set(rows().map(r => r[0]))) : regionsOf(els.origin));
-  const reachable = O => new Set(rows().filter(r => O.includes(r[0])).map(r => r[1]));
-  const destRegions = () => { const ok = reachable(originRegions()); return regionsOf(els.dest).filter(i => ok.has(i)); };
-  const zoneText = regions => regions.map(regionName).join(' / ');
+  const originZones = (chart, name) => zonesOf(chart, name).filter(z => chart.rows.some(r => r[0] === z));
+  const reachableFrom = (chart, O) => new Set(chart.rows.filter(r => O.includes(r[0])).map(r => r[1]));
+  const destZones = (chart, O, name) => { const ok = reachableFrom(chart, O); return zonesOf(chart, name).filter(z => ok.has(z)); };
+  const zoneText = (chart, regions) => regions.map(i => regionName(chart, i)).join(' / ');
+  const flightCharts = () => Object.keys((state.red && state.red.charts) || {}).filter(pid => { const c = chartOf(pid); return c && !isHotelChart(c) && c.places; });
+
+  // Does this partner publish a price for the typed route (any cabin)? Returns the cabins it has, or [].
+  const cabinsFor = (pid, from, to) => {
+    const chart = chartOf(pid);
+    if (!chart || isHotelChart(chart)) return [];
+    const O = originZones(chart, from), D = destZones(chart, O, to);
+    return Array.from(new Set(chart.rows.filter(r => O.includes(r[0]) && D.includes(r[1])).map(r => r[2]))).sort((a, b) => CABIN_ORDER.indexOf(a) - CABIN_ORDER.indexOf(b));
+  };
+
+  // Why a chart partner cannot price this trip, in plain words.
+  const unpricedText = (pid, from, to) => {
+    const chart = chartOf(pid);
+    const O = originZones(chart, from);
+    if (!O.length) return `${partnerName(pid)} does not price flights from "${from.trim()}" in the award chart we hold.`;
+    const known = zonesOf(chart, to);
+    if (!known.length) return `${partnerName(pid)} has no price for "${to.trim()}" in its award chart.`;
+    const pair = `${zoneText(chart, O)} to ${zoneText(chart, known)}`;
+    return pid === 'krisflyer'
+      ? `KrisFlyer does not publish a fixed price for ${pair}. Its award chart marks these routes "use the mileage calculator", so check the exact miles on singaporeair.com.`
+      : `${partnerName(pid)} does not publish a price for ${pair} in the award chart we hold. Check the exact price on the airline's site.`;
+  };
 
   // ── Search box for places: popular choices first, type to search everything ──
   const POPULAR_DEST = ['Singapore', 'United Arab Emirates', 'Thailand', 'United Kingdom', 'United States', 'Japan', 'Australia', 'Malaysia', 'Indonesia',
@@ -111,18 +147,22 @@
     delhi: 'India', mumbai: 'India', bengaluru: 'India', bangalore: 'India', kolkata: 'India', chennai: 'India', hyderabad: 'India', goa: 'India',
     cairo: 'Egypt', nairobi: 'Kenya', johannesburg: 'South Africa', 'cape town': 'South Africa', mauritius: 'Mauritius', moscow: 'Russia'
   };
-  const norm = v => v.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
 
-  // Unique places for the current chart. `ok` says whether the programme prices it from the chosen origin.
+  // Places across every flight chart. For the To box, `ok` means at least one programme prices it from the chosen origin.
   const placeItems = originOnly => {
+    const charts = flightCharts().map(chartOf);
+    const from = els.origin.value;
+    const judged = charts.some(c => originZones(c, from).length); // if no chart knows the origin, we cannot judge pricing
     const map = new Map();
-    const origins = new Set(rows().map(r => r[0]));
-    const reach = originOnly ? null : reachable(originRegions());
-    places().forEach(([name, region, kind]) => {
-      if (originOnly && !origins.has(region)) return;
-      const it = map.get(name) || { name, kind, ok: false };
-      if (originOnly || reach.has(region)) it.ok = true;
-      map.set(name, it);
+    charts.forEach(chart => {
+      const origins = new Set(chart.rows.map(r => r[0]));
+      const reach = originOnly ? null : reachableFrom(chart, originZones(chart, from));
+      chart.places.forEach(([name, region, kind]) => {
+        if (originOnly && !origins.has(region)) return;
+        const it = map.get(name) || { name, kind, ok: false };
+        if (originOnly || !judged || reach.has(region)) it.ok = true;
+        map.set(name, it);
+      });
     });
     return Array.from(map.values());
   };
@@ -213,96 +253,167 @@
     return { close };
   };
 
-  // ── Result helpers ──
-  const resetResult = message => {
-    state.plan = null;
-    els.verdict.dataset.tier = 'none';
-    els.cardVisual.dataset.state = els.card.value ? 'selected' : 'empty';
-    els.badge.textContent = 'Waiting';
-    els.caption.textContent = 'Estimated card points needed';
-    els.value.textContent = '--';
-    els.label.textContent = 'Waiting for your inputs';
-    els.detail.textContent = message || 'Choose your card, a transfer partner and the trip to see how many points you need.';
-    els.cardValue.textContent = '—';
-    els.balanceLine.hidden = true;
-    els.using.hidden = true;
-    els.note.hidden = true;
-    els.options.hidden = true; els.options.replaceChildren();
-    els.transfer.hidden = true; els.transfer.replaceChildren();
-    els.asof.hidden = true;
-    els.error.hidden = true;
+  // ── Right-hand panel: selected card, destination banner, transfer facts ──
+  const fallbackCard = name => {
+    const f = el('div', 'rt-fallback');
+    f.appendChild(el('span', 'rt-fallback-brand', 'BTTP'));
+    f.appendChild(el('span', 'rt-fallback-name', name));
+    return f;
   };
 
-  const updateCardVisual = () => {
+  const renderAside = () => {
     const card = selectedCard();
-    const bankName = card ? state.banks.get(card.b) : null;
-    const art = card ? state.art[card.id] : null;
-    if (art) {
-      els.artImg.src = `/assets/cards/${art.f}`;
-      els.artImg.width = art.w; els.artImg.height = art.h;
-      els.artImg.alt = `${card.n} credit card`;
-      els.art.classList.toggle('is-vertical', art.h > art.w);
-      els.artName.textContent = card.n;
-      els.artBank.textContent = bankName || '';
-    }
-    els.art.hidden = !art;
-    els.cardVisual.hidden = !!art;
-    els.cardName.textContent = card ? card.n : 'Select a card';
-    els.cardBank.textContent = bankName || 'Choose your bank and card';
-    els.cardCurrency.textContent = card && card.c ? card.c : '—';
-    els.cardVisual.dataset.state = card ? 'selected' : 'empty';
-  };
-
-  // ── Route UI for partners that have an award chart ──
-  const clearRoute = () => {
-    [els.origin, els.dest].forEach(i => { i.value = ''; i.disabled = false; });
-    setOptions(els.cabin, 'Select cabin', [], true);
-    els.zone.hidden = true;
-    els.tripType.hidden = true;
-  };
-
-  const setTrip = n => {
-    state.trip = n;
-    tripButtons.forEach(b => { const on = Number(b.dataset.trip) === n; b.classList.toggle('is-active', on); b.setAttribute('aria-pressed', String(on)); });
-  };
-
-  const onOriginChange = () => {
-    const O = originRegions();
-    els.dest.disabled = !O.length;
-    if (!O.length) els.dest.value = '';
-    onDestChange();
-  };
-
-  const onDestChange = () => {
-    const O = originRegions(), D = destRegions();
-    const cabins = Array.from(new Set(rows().filter(r => O.includes(r[0]) && D.includes(r[1])).map(r => r[2])))
-      .sort((a, b) => CABIN_ORDER.indexOf(a) - CABIN_ORDER.indexOf(b));
-    setOptions(els.cabin, 'Select cabin', cabins.map(c => ({ value: c, text: CABIN[c] })), !D.length, true);
-    if (O.length && D.length) {
-      els.zone.textContent = `${partnerName(state.partner)} prices this as ${zoneText(O)} to ${zoneText(D)}.`;
-      els.zone.hidden = false;
-    } else if (els.dest.value.trim() && O.length) {
-      const known = regionsOf(els.dest);
-      if (known.length) {
-        const pair = `${zoneText(O)} to ${zoneText(known)}`;
-        els.zone.textContent = state.partner === 'krisflyer'
-          ? `KrisFlyer does not publish a fixed price for ${pair}. Its award chart marks these routes "use the mileage calculator", so check the exact miles on singaporeair.com.`
-          : `${partnerName(state.partner)} does not publish a price for ${pair} in the award chart we hold. Check the exact price on the airline's site.`;
-        els.zone.hidden = false;
-      } else if (document.activeElement === els.dest) {
-        // Still typing: the list below is the guide, so do not flash an error yet.
-        els.zone.hidden = true;
-      } else {
-        els.zone.textContent = `We could not find "${els.dest.value.trim()}". Pick a country or city from the list.`;
-        els.zone.hidden = false;
-      }
+    els.asideArt.replaceChildren();
+    els.asideChips.replaceChildren();
+    els.change.hidden = !card;
+    if (!card) {
+      els.asideArt.appendChild(fallbackCard('Select a card'));
+      els.asideName.textContent = 'Select a card';
+      els.asideBank.textContent = 'Choose your bank and card in step 2';
     } else {
-      els.zone.hidden = true;
+      const art = state.art[card.id];
+      if (art) {
+        const img = el('img', 'rt-art-img');
+        img.src = `/assets/cards/${art.f}`; img.width = art.w; img.height = art.h; img.alt = `${card.n} credit card`; img.decoding = 'async';
+        if (art.h > art.w) img.classList.add('is-vertical');
+        els.asideArt.appendChild(img);
+      } else {
+        els.asideArt.appendChild(fallbackCard(card.n));
+      }
+      els.asideName.textContent = card.n;
+      els.asideBank.textContent = state.banks.get(card.b) || '';
+      const rec = state.rec.get(card.id) || {};
+      const chips = [];
+      if (card.c) chips.push(card.c);
+      const partners = routesFor(card).length || card.r.length;
+      if (partners) chips.push(`${partners} transfer partner${partners === 1 ? '' : 's'}`);
+      if (rec.f != null) chips.push(rec.f === 0 ? 'Lifetime free' : `Annual fee ₹${inr.format(rec.f)}`);
+      if (rec.l) chips.push('Lounge access');
+      chips.slice(0, 4).forEach(t => els.asideChips.appendChild(el('span', 'rt-chip', t)));
     }
-    compute();
+
+    // Transfer facts for the chosen partner.
+    const route = card && state.partner ? routeOf(card, state.partner) : null;
+    const xf = card && state.partner ? xferOf(card, state.partner) : [];
+    els.statRatio.textContent = route ? `${trim(route[1])} : ${trim(route[2])}${route[3] ? ' (up to)' : ''}` : '—';
+    els.statMin.textContent = xf[0] ? `${inr.format(xf[0])} points` : '—';
+    const t = xf[2] ? xf[2].replace(/^upto(?=\s)/i, 'Up to') : (xf[3] ? `Up to ${Math.ceil(xf[3] / 24)} days` : '');
+    els.statTime.textContent = t ? t.charAt(0).toUpperCase() + t.slice(1) : '—';
   };
 
-  // ── Selects ──
+  // The photo is only specific when we truly have a picture of that place; otherwise it is a neutral travel image.
+  const bannerPhoto = dest => {
+    const d = norm(dest || '');
+    if (/\b(paris|france)\b/.test(d)) return '/assets/destinations/paris.jpg';
+    if (/\bmaldives\b/.test(d)) return '/assets/destinations/hotel.jpg';
+    if (/\bindia\b/.test(d) && state.mode === 'hotel') return '/assets/udaipur.jpg';
+    return state.mode === 'hotel' ? '/assets/destinations/trip.jpg' : '/assets/destinations/flight.jpg';
+  };
+  const prettyPlace = name => {
+    const v = norm(name || '');
+    if (!v) return '';
+    for (const chart of flightCharts().map(chartOf)) { const hit = (chart.places || []).find(p => norm(p[0]) === v); if (hit) return hit[0]; }
+    return name.trim().replace(/\b\w/g, c => c.toUpperCase());
+  };
+  const renderBanner = text => {
+    const dest = state.mode === 'airline' ? prettyPlace(els.dest.value) : '';
+    els.bannerKicker.textContent = COPY[state.mode].kicker;
+    if (state.mode === 'airline') els.bannerTitle.textContent = dest || 'Anywhere';
+    else els.bannerTitle.textContent = state.partner ? partnerName(state.partner) : 'Any hotel';
+    els.bannerText.textContent = text || "Fill in your details to see how many points you need and the value you'll get.";
+    const src = bannerPhoto(dest);
+    if (!els.bannerImg.src.endsWith(src)) els.bannerImg.src = src;
+  };
+
+  // ── Wizard steps ──
+  const goTo = n => {
+    state.step = n;
+    state.maxStep = Math.max(state.maxStep, n);
+    panes.forEach(p => { p.hidden = Number(p.dataset.pane) !== n; });
+    stepBtns.forEach(b => {
+      const i = Number(b.dataset.step);
+      b.classList.toggle('is-active', i === n);
+      b.classList.toggle('is-done', i < n);
+      b.disabled = i > state.maxStep;
+      if (i === n) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+    });
+    showError(0);
+    const top = form.closest('.rt-card').getBoundingClientRect().top;
+    if (top < 0) window.scrollBy({ top: top - 110, behavior: 'smooth' });
+  };
+
+  const validate = n => {
+    if (n === 1 && state.mode === 'airline') {
+      if (!els.origin.value.trim()) return 'Tell us where you are flying from.';
+      if (!els.dest.value.trim()) return 'Tell us where you are flying to.';
+    }
+    if (n === 2) {
+      const card = selectedCard();
+      if (!card) return 'Choose your bank and credit card.';
+      if (!noPartnerCard(card) && !state.partner) return `Choose ${state.mode === 'hotel' ? 'a hotel' : 'an airline'} partner.`;
+    }
+    if (n === 3) {
+      const card = selectedCard();
+      if (!card || noPartnerCard(card)) return '';
+      if (state.exact && state.mode === 'airline' && !els.cabin.value && parseNumber(els.points.value) === 0) return 'Choose a cabin class.';
+      if (!state.exact && !parseNumber(els.price.value) && !parseNumber(els.points.value)) return 'Enter your price so we can estimate the points you need.';
+    }
+    return '';
+  };
+
+  // Moves forward only through steps that pass validation; otherwise stops at the first one that does not.
+  const advance = target => {
+    for (let n = 1; n < target; n++) {
+      if (n === 3 && noPartnerCard(selectedCard())) continue;
+      if (n === 3 && state.step !== 3) prepareStep3(false);
+      const msg = validate(n);
+      if (msg) { if (n === 3) prepareStep3(); else goTo(n); showError(n, msg); return; }
+    }
+    if (target === 3 && noPartnerCard(selectedCard())) target = 4;
+    if (target === 3) prepareStep3(); else if (target === 4) showResults(); else goTo(target);
+  };
+
+  // ── Step 1: trip ──
+  const updateRouteHint = () => {
+    const from = els.origin.value, to = els.dest.value;
+    if (state.mode !== 'airline' || !from.trim() || !to.trim() || !state.red) { els.routeHint.hidden = true; return; }
+    const priced = flightCharts().filter(pid => cabinsFor(pid, from, to).length);
+    if (priced.length) {
+      const names = priced.map(partnerName);
+      els.routeHint.textContent = `${names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0]} publish${names.length > 1 ? '' : 'es'} award prices for ${prettyPlace(from)} to ${prettyPlace(to)}.`;
+      els.routeHint.hidden = false;
+    } else if (document.activeElement !== els.dest) {
+      const known = flightCharts().some(pid => zonesOf(chartOf(pid), to).length);
+      els.routeHint.textContent = known
+        ? 'No award chart we hold publishes a fixed price for this route. We can still estimate from your ticket price.'
+        : `We do not have "${to.trim()}" in our award charts, so we will estimate from your ticket price. Pick a place from the list for exact award prices.`;
+      els.routeHint.hidden = false;
+    } else {
+      els.routeHint.hidden = true;
+    }
+  };
+
+  const setMode = mode => {
+    state.mode = mode;
+    typeBtns.forEach(b => { const on = b.dataset.mode === mode; b.classList.toggle('is-active', on); b.setAttribute('aria-pressed', String(on)); });
+    els.flightFields.hidden = mode !== 'airline';
+    els.hotelNote.hidden = mode !== 'hotel';
+    els.partnerLabel.textContent = COPY[mode].partner;
+    els.priceLabel.textContent = COPY[mode].price;
+    els.routeHint.hidden = true;
+    if (state.data) populateBanks();
+    renderBanner();
+  };
+
+  // ── Step 2: card and partner ──
+  const partnerStatus = (card, pid) => {
+    const chart = chartOf(pid);
+    if (!chart) return 'estimate';
+    if (isHotelChart(chart)) return 'priced';
+    return cabinsFor(pid, els.origin.value, els.dest.value).length ? 'priced' : 'unpriced';
+  };
+  const STATUS_TEXT = { priced: 'award price available', unpriced: 'no price for this route', estimate: 'estimate only' };
+
   const populateBanks = () => {
     const bankIds = new Set(cardsForMode().map(c => c.b));
     const banks = Array.from(bankIds).map(id => ({ value: id, text: state.banks.get(id) || id })).sort((a, b) => a.text.localeCompare(b.text));
@@ -325,192 +436,226 @@
     } else if (noPartnerCard(card)) {
       setOptions(els.partner, 'No transfer partner recorded', [], true);
     } else {
-      const partners = routesFor(card)
-        .map(r => ({ value: r[0], text: `${state.data.partners[r[0]].n} (${ratioText(r[1], r[2])})` }))
-        .sort((a, b) => a.text.localeCompare(b.text));
+      const order = { priced: 0, unpriced: 1, estimate: 2 };
+      const partners = routesFor(card).map(r => ({ r, st: partnerStatus(card, r[0]) }))
+        .sort((a, b) => order[a.st] - order[b.st] || partnerName(a.r[0]).localeCompare(partnerName(b.r[0])))
+        .map(({ r, st }) => ({ value: r[0], text: `${state.data.partners[r[0]].n} (${ratioText(r[1], r[2])}) · ${STATUS_TEXT[st]}` }));
       setOptions(els.partner, 'Select a partner', partners, false);
+      const priced = routesFor(card).filter(r => partnerStatus(card, r[0]) === 'priced');
+      if (priced.length === 1) els.partner.value = priced[0][0]; // only one can price this trip: pick it for them
     }
-    updateCardVisual();
     onPartnerChange();
   };
 
   const onPartnerChange = () => {
     const card = selectedCard();
     state.partner = els.partner.value;
-    const chart = state.partner && state.red && state.red.charts ? state.red.charts[state.partner] : null;
-    state.chart = chart && chart.rows && chart.rows.length ? chart : null;
-    const noPartner = noPartnerCard(card);
-
-    // The manual box starts closed whenever the partner changes.
     els.points.value = '';
     els.manual.hidden = true;
     els.manualToggle.setAttribute('aria-expanded', 'false');
     els.manualToggle.hidden = !state.partner;
-    els.priceField.hidden = noPartner;
-
-    if (noPartner) {
-      els.route.hidden = true;
-      els.partnerNote.textContent = 'We have no airline or hotel transfer partner recorded for this card yet. See how its points compare across other ways to redeem below.';
+    els.priceField.hidden = noPartnerCard(card);
+    if (noPartnerCard(card)) {
+      els.partnerNote.textContent = 'We have no airline or hotel transfer partner recorded for this card yet. You can still see how its points compare across other ways to redeem.';
       els.partnerNote.hidden = false;
-    } else if (state.chart) {
-      els.route.hidden = false;
+    } else if (state.partner) {
+      const st = partnerStatus(card, state.partner);
+      els.partnerNote.textContent = st === 'priced' ? `${partnerName(state.partner)} publishes an award price for this trip, so we will work out the exact points.`
+        : st === 'unpriced' ? `${unpricedText(state.partner, els.origin.value, els.dest.value)} We will estimate from your price instead.`
+        : `We do not hold a published award chart for ${partnerName(state.partner)} yet, so we will estimate from your price. If you know the exact points, you can add them in step 3.`;
+      els.partnerNote.hidden = false;
+    } else {
       els.partnerNote.hidden = true;
-      clearRoute();
-      if (isHotelChart()) {
-        els.flight.hidden = true; els.hotel.hidden = false;
-      } else {
-        els.flight.hidden = false; els.hotel.hidden = true;
-        const origins = new Set(rows().map(r => r[0]));
-        const originPlaces = places().filter(p => origins.has(p[1]));
-        if (origins.size === 1) {
-          // One departure zone only (Maharaja Club from India, Finnair from Helsinki): fixed.
-          els.origin.value = originPlaces.length === 1 ? originPlaces[0][0] : regionName(Array.from(origins)[0]);
-          els.origin.disabled = true;
-        } else if (originPlaces.some(p => p[0] === 'India')) {
-          els.origin.value = 'India';
-        }
+    }
+    renderAside();
+    renderBanner();
+  };
+
+  // ── Step 3: details ──
+  const setTrip = n => {
+    state.trip = n;
+    tripButtons.forEach(b => { const on = Number(b.dataset.trip) === n; b.classList.toggle('is-active', on); b.setAttribute('aria-pressed', String(on)); });
+  };
+
+  const prepareStep3 = (show = true) => {
+    const chart = state.partner ? chartOf(state.partner) : null;
+    state.exact = false;
+    els.detailFlight.hidden = true; els.detailHotel.hidden = true; els.tripType.hidden = true; els.zone.hidden = true;
+    if (chart && isHotelChart(chart)) {
+      state.exact = true;
+      els.detailHotel.hidden = false;
+    } else if (chart && state.mode === 'airline') {
+      const cabins = cabinsFor(state.partner, els.origin.value, els.dest.value);
+      if (cabins.length) {
+        state.exact = true;
+        els.detailFlight.hidden = false;
+        const prev = els.cabin.value;
+        setOptions(els.cabin, 'Select cabin', cabins.map(c => ({ value: c, text: CABIN[c] })), false);
+        els.cabin.value = cabins.includes(prev) ? prev : (cabins.includes('e') ? 'e' : cabins[0]);
         els.tripType.hidden = !ROUND_TRIP_DOUBLES.has(state.partner);
         if (els.tripType.hidden) setTrip(1);
-        onOriginChange();
-      }
-    } else {
-      els.route.hidden = true;
-      if (state.partner) {
-        els.partnerNote.textContent = `We do not hold a published award chart for ${partnerName(state.partner)} yet, so we estimate from your price. If you know the exact points, add them below.`;
-        els.partnerNote.hidden = false;
+        const O = originZones(chart, els.origin.value), D = destZones(chart, O, els.dest.value);
+        els.zone.textContent = `${partnerName(state.partner)} prices this as ${zoneText(chart, O)} to ${zoneText(chart, D)}.`;
+        els.zone.hidden = false;
       } else {
-        els.partnerNote.hidden = true;
+        els.zone.textContent = `${unpricedText(state.partner, els.origin.value, els.dest.value)} We estimate from your price instead.`;
+        els.zone.hidden = false;
       }
     }
-
-    // Labels depend on whether a chart can fill in the points for us.
-    const base = COPY[state.mode].price;
-    els.priceLabel.textContent = state.chart ? `${base} (optional)` : base;
-    els.priceHint.textContent = state.chart
+    els.priceLabel.textContent = state.exact ? `${COPY[state.mode].price} (optional)` : COPY[state.mode].price;
+    els.priceHint.textContent = state.exact
       ? 'Add it to see your rupee value per point. Use the price excluding taxes and fees.'
       : 'We use it to estimate the points you need. Use the price excluding taxes and fees.';
-    resetResult();
-    compute();
+    els.next3.querySelector('span').textContent = state.exact ? 'Calculate points' : 'Estimate points';
+    if (show) goTo(3);
   };
 
-  const setMode = mode => {
-    state.mode = mode;
-    toggles.forEach(btn => {
-      const active = btn.dataset.mode === mode;
-      btn.classList.toggle('is-active', active);
-      btn.setAttribute('aria-pressed', String(active));
-    });
-    els.partnerLabel.textContent = COPY[mode].partner;
-    els.priceLabel.textContent = COPY[mode].price;
-    if (state.data) populateBanks();
-  };
+  // ── Working out the points ──
+  const context = () => ({
+    from: els.origin.value, to: els.dest.value, cabin: els.cabin.value, pax: Number(els.pax.value) || 1, trip: state.trip,
+    nights: Math.max(1, parseNumber(els.nights.value)), price: parseNumber(els.price.value), balance: parseNumber(els.balance.value), manual: parseNumber(els.points.value)
+  });
 
-  // ── Work out which partner-point prices apply ──
-  const priceOptions = () => {
-    const manual = parseNumber(els.points.value);
-    if (manual > 0) return { kind: 'manual', list: [{ label: 'Your partner points', units: manual }], mult: 1, descr: '' };
-    if (!state.chart) return { kind: 'none' };
-
-    if (isHotelChart()) {
-      const nights = Math.max(1, parseNumber(els.nights.value));
-      const sorted = rows().slice().sort((a, b) => a[3] - b[3]);
-      return {
-        kind: 'chart', mult: nights, descr: `${nights} night${nights === 1 ? '' : 's'}`,
-        list: sorted.map((r, i) => ({ label: `Tier ${i + 1} of ${sorted.length}${i === 0 ? ' (lowest)' : i === sorted.length - 1 ? ' (highest)' : ''}`, units: r[3] }))
-      };
+  // Prices one partner for the trip. kind: 'manual' | 'chart' | 'none' (no exact price: estimate instead).
+  const buildPlan = (card, route, c) => {
+    const pid = route[0];
+    const chart = chartOf(pid);
+    const xf = xferOf(card, pid);
+    const [minTransfer, multiple] = xf;
+    let kind = 'none', list = [], mult = 1, descr = '';
+    if (c.manual > 0) {
+      kind = 'manual'; list = [{ label: 'Your partner points', units: c.manual }];
+    } else if (chart && isHotelChart(chart)) {
+      const sorted = chart.rows.slice().sort((a, b) => a[3] - b[3]);
+      kind = 'chart'; mult = c.nights; descr = `${c.nights} night${c.nights === 1 ? '' : 's'}`;
+      list = sorted.map((r, i) => ({ label: `Tier ${i + 1} of ${sorted.length}${i === 0 ? ' (lowest)' : i === sorted.length - 1 ? ' (highest)' : ''}`, units: r[3] }));
+    } else if (chart && state.mode === 'airline') {
+      const O = originZones(chart, c.from), D = destZones(chart, O, c.to);
+      const multiZone = O.length > 1 || D.length > 1; // e.g. the United States is priced as East and West Coast
+      list = chart.rows.filter(r => O.includes(r[0]) && D.includes(r[1]) && r[2] === c.cabin).sort((a, b) => a[3] - b[3]).map(r => {
+        const tier = r[7] >= 0 ? chart.labels[r[7]] : '';
+        const label = tier ? (/^(Saver|Advantage)$/.test(tier) ? `${tier} award` : tier) : `${CABIN[c.cabin]} award`;
+        return { label: multiZone ? `${regionName(chart, r[0])} to ${regionName(chart, r[1])}: ${label}` : label, units: r[3], starting: r[4] === 1 };
+      });
+      if (list.length) {
+        kind = 'chart';
+        mult = c.pax * (ROUND_TRIP_DOUBLES.has(pid) ? c.trip : 1);
+        descr = `${c.pax} passenger${c.pax === 1 ? '' : 's'}${ROUND_TRIP_DOUBLES.has(pid) && c.trip === 2 ? ', round trip' : ''}`;
+      }
     }
-    const O = originRegions(), D = destRegions(), c = els.cabin.value;
-    if (!O.length || !D.length || !c) return { kind: 'incomplete' };
-    const multiZone = O.length > 1 || D.length > 1; // e.g. the United States is priced as East and West Coast
-    const list = rows().filter(r => O.includes(r[0]) && D.includes(r[1]) && r[2] === c).sort((a, b) => a[3] - b[3]).map(r => {
-      const tier = r[7] >= 0 ? state.chart.labels[r[7]] : '';
-      const kind = tier ? (/^(Saver|Advantage)$/.test(tier) ? `${tier} award` : tier) : `${CABIN[c]} award`;
-      return { label: multiZone ? `${regionName(r[0])} to ${regionName(r[1])}: ${kind}` : kind, units: r[3], starting: r[4] === 1 };
+    const items = list.map(m => {
+      const partnerUnits = m.units * mult;
+      let points = Math.ceil(partnerUnits * route[1] / route[2]);
+      let adjusted = '';
+      if (multiple && points % multiple) { points = Math.ceil(points / multiple) * multiple; adjusted = `rounded up to a multiple of ${inr.format(multiple)}`; }
+      if (minTransfer && points < minTransfer) { points = minTransfer; adjusted = `raised to the ${inr.format(minTransfer)}-point transfer minimum`; }
+      return { ...m, partnerUnits, points, adjusted, perPoint: c.price ? c.price / points : null };
     });
-    const pax = Number(els.pax.value) || 1;
-    const trip = ROUND_TRIP_DOUBLES.has(state.partner) ? state.trip : 1;
-    return { kind: list.length ? 'chart' : 'incomplete', list, mult: pax * trip, descr: `${pax} passenger${pax === 1 ? '' : 's'}${trip === 2 ? ', round trip' : ''}` };
+    return { kind, items, descr, chart, xf, route };
   };
 
-  // ── Transfer rules block ──
-  const renderTransfer = (card, route, xf, items) => {
-    const [minTransfer, multiple, procText, procHours, cap, capWindow] = xf;
+  const renderTransfer = (card, plan) => {
+    const [, multiple, , , cap, capWindow] = plan.xf;
     els.transfer.replaceChildren();
     els.transfer.appendChild(el('h4', 'calc-transfer-title', 'Transfer rules'));
     const line = (k, v) => { const d = el('div', 'calc-transfer-row'); d.appendChild(el('span', null, k)); d.appendChild(el('strong', null, v)); els.transfer.appendChild(d); };
-    line('Ratio', `${trim(route[1])} card points : ${trim(route[2])} ${partnerName(state.partner)} ${unitWord()}${route[3] ? ' (up to)' : ''}`);
-    if (minTransfer) line('Minimum transfer', `${inr.format(minTransfer)} points`);
+    line('Ratio', `${trim(plan.route[1])} card points : ${trim(plan.route[2])} ${partnerName(plan.route[0])} ${unitWord()}${plan.route[3] ? ' (up to)' : ''}`);
+    if (plan.xf[0]) line('Minimum transfer', `${inr.format(plan.xf[0])} points`);
     if (multiple) line('In multiples of', `${inr.format(multiple)} points`);
-    if (procText) { const t = procText.replace(/^upto(?=\s)/i, 'Up to'); line('Processing time', t.charAt(0).toUpperCase() + t.slice(1)); }
-    else if (procHours) line('Processing time', `Up to ${Math.ceil(procHours / 24)} days`);
+    const t = plan.xf[2] ? plan.xf[2].replace(/^upto(?=\s)/i, 'Up to') : (plan.xf[3] ? `Up to ${Math.ceil(plan.xf[3] / 24)} days` : '');
+    if (t) line('Processing time', t.charAt(0).toUpperCase() + t.slice(1));
     if (cap) line('Transfer limit', `${inr.format(cap)} points ${WINDOW[capWindow] || ''}`.trim());
-    if (!minTransfer && !multiple && !procText && !procHours && !cap) els.transfer.appendChild(el('p', 'calc-transfer-none', 'No minimums, limits or timings are recorded for this route yet. Check your bank before transferring.'));
-    const over = (items || []).filter(i => cap && i.points > cap);
+    if (!plan.xf.some(v => v != null)) els.transfer.appendChild(el('p', 'calc-transfer-none', 'No minimums, limits or timings are recorded for this route yet. Check your bank before transferring.'));
+    const over = plan.items.filter(i => cap && i.points > cap);
     if (over.length) {
       els.transfer.appendChild(el('p', 'calc-transfer-warn', `${over.map(o => o.label).join(' and ')} ${over.length > 1 ? 'are' : 'is'} above the ${inr.format(cap)}-point transfer limit ${WINDOW[capWindow] || ''}, so ${over.length > 1 ? 'they' : 'it'} may need more than one transfer window.`.replace(/\s+,/g, ',')));
     }
     els.transfer.hidden = false;
   };
 
-  const compute = () => {
+  const clearResult = () => {
+    state.plan = null;
+    els.verdict.dataset.tier = 'none';
+    els.badge.textContent = 'Waiting';
+    els.caption.textContent = 'Estimated card points needed';
+    els.value.textContent = '--';
+    els.label.textContent = 'Waiting for your inputs';
+    els.detail.textContent = 'Choose your card, a transfer partner and the trip to see how many points you need.';
+    els.balanceLine.hidden = true; els.using.hidden = true; els.note.hidden = true;
+    els.options.hidden = true; els.options.replaceChildren();
+    els.compare.hidden = true; els.compare.replaceChildren();
+    els.transfer.hidden = true; els.transfer.replaceChildren();
+    els.asof.hidden = true;
+  };
+
+  // Other partners that can price the same trip, cheapest first. Click one to switch.
+  const renderCompare = (card, c, current) => {
+    els.compare.replaceChildren();
+    els.compare.hidden = true;
+    if (state.mode !== 'airline') return;
+    const quotes = routesFor(card).map(r => ({ r, p: buildPlan(card, r, { ...c, manual: 0 }) })).filter(q => q.p.kind === 'chart' && q.p.items.length)
+      .map(q => ({ pid: q.r[0], plan: q.p, best: q.p.items[0] })).sort((a, b) => a.best.points - b.best.points);
+    if (quotes.length < 2) return;
+    els.compare.appendChild(el('h4', 'rt-compare-title', 'Compare partners for this trip'));
+    quotes.forEach((q, i) => {
+      const b = el('button', `rt-compare-row${q.pid === current ? ' is-current' : ''}`);
+      b.type = 'button';
+      const left = el('span', 'rt-compare-name');
+      left.appendChild(el('strong', null, partnerName(q.pid)));
+      left.appendChild(el('span', null, `${q.best.label}${q.best.starting ? ', starting price' : ''} · ${ratioText(q.plan.route[1], q.plan.route[2])}`));
+      const right = el('span', 'rt-compare-pts');
+      right.appendChild(el('strong', null, `${q.best.starting ? 'from ' : ''}${inr.format(q.best.points)} pts`));
+      if (i === 0) right.appendChild(el('span', 'calc-chip is-ok', q.best.starting ? 'Lowest starting price' : 'Fewest points'));
+      if (q.pid === current) right.appendChild(el('span', 'calc-chip', 'Selected'));
+      b.appendChild(left); b.appendChild(right);
+      b.addEventListener('click', () => { if (q.pid === current) return; els.partner.value = q.pid; onPartnerChange(); showResults(); });
+      els.compare.appendChild(b);
+    });
+    if (quotes.some(q => q.best.starting)) els.compare.appendChild(el('p', 'rt-compare-note', 'A "starting" price is the lowest published for that zone. The exact award can cost more.'));
+    els.compare.hidden = false;
+  };
+
+  const showResults = () => {
     const card = selectedCard();
-    if (!card) { resetResult(); renderOther(); return; }
+    goTo(4);
+    clearResult();
+    if (!card) { renderOther(); return; }
     if (noPartnerCard(card)) {
-      resetResult('No airline or hotel transfer partner is recorded for this card yet. See how its points compare below.');
+      els.badge.textContent = 'Other ways';
+      els.caption.textContent = 'No transfer partner recorded';
+      els.label.textContent = "See how this card's points compare";
+      els.detail.textContent = 'We have no airline or hotel transfer partner recorded for this card yet. The comparison below shows what its points are worth in other ways.';
+      renderAside(); renderBanner('We have no transfer partner for this card yet. See the other ways to redeem below.');
       renderOther();
       return;
     }
-    const route = card.r.find(r => r[0] === state.partner);
-    if (!route) { resetResult(); renderOther(); return; }
-    const price = parseNumber(els.price.value);
-    const balance = parseNumber(els.balance.value);
-    const xf = xferOf(card, state.partner);
-    const [minTransfer, multiple] = xf;
-    const o = priceOptions();
-    els.error.hidden = true;
+    const route = routeOf(card, state.partner);
+    if (!route) { renderOther(); return; }
+    const c = context();
+    const plan = buildPlan(card, route, c);
+    renderAside();
 
-    if (o.kind === 'incomplete') {
-      resetResult('Choose where you are flying to and your cabin, and the points needed will appear here.');
-      renderTransferOnly(card, route, xf);
-      renderOther();
-      return;
-    }
-
-    // No chart and no exact points: an estimate from typical rupee values.
-    if (o.kind === 'none') {
-      state.plan = null;
-      if (!price) { resetResult('Enter your price and we will estimate the points you need.'); renderTransferOnly(card, route, xf); renderOther(); return; }
-      const lo = roundEst(price / BENCH.high), mid = roundEst(price / BENCH.mid), hi = roundEst(price / BENCH.low);
+    // No exact price: estimate from typical rupee values.
+    if (plan.kind === 'none') {
+      const lo = roundEst(c.price / BENCH.high), mid = roundEst(c.price / BENCH.mid), hi = roundEst(c.price / BENCH.low);
       els.verdict.dataset.tier = 'none';
       els.badge.textContent = 'Estimate';
       els.caption.textContent = 'Estimated card points needed';
       els.value.textContent = `~${inr.format(mid)}`;
       els.label.textContent = `Estimate: ${inr.format(lo)} to ${inr.format(hi)} card points`;
-      els.detail.textContent = `Without an award chart we estimate using typical values of ₹${BENCH.low} to ₹${BENCH.high} per point (₹${BENCH.mid} shown). Add the exact points below for a precise answer.`;
-      els.cardValue.textContent = '—';
-      els.cardVisual.dataset.state = 'selected';
-      els.balanceLine.hidden = true;
-      els.using.textContent = `Card points shown in ${card.c || 'your card\'s points'}, at a ${ratioText(route[1], route[2])} transfer ratio to ${partnerName(state.partner)}.`;
+      els.detail.textContent = `Without an exact award price we estimate using typical values of ₹${BENCH.low} to ₹${BENCH.high} per point (₹${BENCH.mid} shown). Add the exact partner points in step 3 for a precise answer.`;
+      els.using.textContent = `Card points shown in ${card.c || "your card's points"}, at a ${ratioText(route[1], route[2])} transfer ratio to ${partnerName(state.partner)}.`;
       els.using.hidden = false;
-      els.note.hidden = true; els.options.hidden = true; els.options.replaceChildren(); els.asof.hidden = true;
-      renderTransfer(card, route, xf, []);
+      renderTransfer(card, plan);
+      renderBanner(`About ${inr.format(mid)} card points (estimate). Add exact partner points for a precise answer.`);
       renderOther();
       return;
     }
 
-    // Exact path: award chart or the user's own miles. Round to the bank's transfer rules.
-    const items = o.list.map(m => {
-      const partnerUnits = m.units * o.mult;
-      let points = Math.ceil(partnerUnits * route[1] / route[2]);
-      let adjusted = '';
-      if (multiple && points % multiple) { points = Math.ceil(points / multiple) * multiple; adjusted = `rounded up to a multiple of ${inr.format(multiple)}`; }
-      if (minTransfer && points < minTransfer) { points = minTransfer; adjusted = `raised to the ${inr.format(minTransfer)}-point transfer minimum`; }
-      return { ...m, partnerUnits, points, adjusted, perPoint: price ? price / points : null };
-    });
-    const best = items[0];
+    const best = plan.items[0];
+    const balance = c.balance;
     state.plan = { partner: state.partner, perPoint: best.perPoint };
-
-    els.caption.textContent = o.kind === 'manual' ? 'Card points needed' : (items.length > 1 ? 'Estimated card points needed (cheapest award)' : 'Estimated card points needed');
+    els.caption.textContent = plan.kind === 'manual' ? 'Card points needed' : (plan.items.length > 1 ? 'Estimated card points needed (cheapest award)' : 'Estimated card points needed');
     els.value.textContent = inr.format(best.points);
 
     // Headline: value tier when a price is given, otherwise whether the balance covers it.
@@ -521,39 +666,28 @@
       els.badge.textContent = tier.badge;
       els.label.textContent = `₹${best.perPoint.toFixed(2)} per point: ${tier.label}`;
       els.detail.textContent = tier.detail;
-      els.cardValue.textContent = `₹${best.perPoint.toFixed(2)}`;
-      els.cardVisual.dataset.state = 'result';
     } else {
       els.verdict.dataset.tier = diff == null ? 'none' : (diff >= 0 ? 'high' : 'low');
-      els.badge.textContent = diff == null ? (o.kind === 'manual' ? 'Your points' : 'Award chart') : (diff >= 0 ? 'Covered' : 'Short');
+      els.badge.textContent = diff == null ? (plan.kind === 'manual' ? 'Your points' : 'Award chart') : (diff >= 0 ? 'Covered' : 'Short');
       els.label.textContent = 'Add your price to see your rupee value per point';
       els.detail.textContent = `This is what the ${partnerName(state.partner)} award costs in ${card.c || 'your card'} points.`;
-      els.cardValue.textContent = '—';
-      els.cardVisual.dataset.state = 'selected';
     }
     if (diff != null) {
       els.balanceLine.textContent = diff >= 0 ? `Your balance covers it, with ${inr.format(diff)} points to spare.` : `You are ${inr.format(-diff)} points short.`;
       els.balanceLine.dataset.ok = String(diff >= 0);
       els.balanceLine.hidden = false;
-    } else {
-      els.balanceLine.hidden = true;
     }
 
     const currency = card.c ? ` (${card.c})` : '';
-    const forWhat = o.descr ? ` for ${o.descr}` : '';
-    els.using.textContent = `${inr.format(best.partnerUnits)} ${partnerName(state.partner)} ${unitWord()}${forWhat} at a ${ratioText(route[1], route[2])} ratio needs ${inr.format(best.points)} card points${currency}.${best.adjusted ? ` ${best.adjusted.charAt(0).toUpperCase()}${best.adjusted.slice(1)}.` : ''}`;
+    els.using.textContent = `${inr.format(best.partnerUnits)} ${partnerName(state.partner)} ${unitWord()}${plan.descr ? ` for ${plan.descr}` : ''} at a ${ratioText(route[1], route[2])} ratio needs ${inr.format(best.points)} card points${currency}.${best.adjusted ? ` ${best.adjusted.charAt(0).toUpperCase()}${best.adjusted.slice(1)}.` : ''}`;
     els.using.hidden = false;
-
     if (route[3]) {
       els.note.textContent = 'The bank publishes this ratio as "up to", so your actual ratio may be lower and you may need more card points.';
       els.note.hidden = false;
-    } else {
-      els.note.hidden = true;
     }
 
-    els.options.replaceChildren();
-    if (items.length > 1) {
-      items.forEach(i => {
+    if (plan.items.length > 1) {
+      plan.items.forEach(i => {
         const row = el('div', 'calc-opt');
         const left = el('div', 'calc-opt-main');
         left.appendChild(el('strong', null, i.label));
@@ -567,30 +701,24 @@
         els.options.appendChild(row);
       });
       els.options.hidden = false;
-    } else {
-      els.options.hidden = true;
     }
+    renderTransfer(card, plan);
+    if (plan.kind !== 'manual') renderCompare(card, c, state.partner);
 
-    renderTransfer(card, route, xf, items);
-
-    if (o.kind === 'chart' && state.chart.asOf) {
-      const when = new Date(state.chart.asOf);
+    if (plan.kind === 'chart' && plan.chart.asOf) {
+      const when = new Date(plan.chart.asOf);
       els.asof.textContent = `Award chart effective ${Number.isNaN(when.getTime()) ? 'date not recorded' : when.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}. Prices exclude taxes and fees, and seat availability is not guaranteed.`;
       els.asof.hidden = false;
-    } else {
-      els.asof.hidden = true;
     }
+    renderBanner(`You need about ${inr.format(best.points)} card points${best.perPoint != null ? `, a value of ₹${best.perPoint.toFixed(2)} per point` : '. Add your price to see the value you get'}.`);
     renderOther();
   };
-
-  // Transfer rules are useful even before the trip is complete.
-  const renderTransferOnly = (card, route, xf) => { if (xf.length) renderTransfer(card, route, xf, []); };
 
   // ── Other ways to redeem ──
   const renderOther = () => {
     const card = selectedCard();
     els.ways.replaceChildren();
-    if (!card) { els.other.hidden = true; return; }
+    if (!card || state.step < 4) { els.other.hidden = true; return; }
     const balance = parseNumber(els.balance.value);
     const modes = (state.red && state.red.modes && state.red.modes[card.id]) || {};
     const list = Object.entries(modes).map(([k, [value, ceil]]) => ({ label: WAY[k] || k, value, ceil: !!ceil }));
@@ -599,7 +727,7 @@
     els.other.hidden = false;
     els.otherTitle.textContent = `How ${card.c || 'your points'} compare`;
     if (!list.length) {
-      els.otherSub.textContent = 'We have no published redemption values for this card yet. Add a cash price above to see the value of a transfer.';
+      els.otherSub.textContent = 'We have no published redemption values for this card yet. Add a cash price to see the value of a transfer.';
       return;
     }
     els.otherSub.textContent = balance ? `Rupee value of ${inr.format(balance)} points, best first.` : 'Rupee value per point, best first. Add your balance to see totals.';
@@ -619,10 +747,23 @@
     });
   };
 
+  const restart = () => {
+    els.origin.value = 'India'; els.dest.value = '';
+    els.balance.value = ''; els.price.value = ''; els.points.value = ''; els.nights.value = '1';
+    setTrip(1);
+    state.maxStep = 1; state.partner = ''; state.exact = false; state.plan = null;
+    setMode('airline');
+    els.bank.value = ''; populateCards();
+    els.routeHint.hidden = true;
+    showError(0);
+    state.step = 1;
+    renderOther();
+    goTo(1);
+  };
+
   const showLoadError = () => {
     setOptions(els.bank, 'Could not load banks', [], true);
-    els.error.textContent = 'We could not load card data. Please refresh the page and try again.';
-    els.error.hidden = false;
+    showError(2, 'We could not load card data. Please refresh the page and try again.');
   };
 
   const load = async () => {
@@ -640,6 +781,7 @@
       const rec = (await recRequest) || { banks: [], cards: [] };
 
       [...(rec.banks || []), ...state.data.banks].forEach(b => state.banks.set(b.id, b.name));
+      (rec.cards || []).forEach(c => state.rec.set(c.id, c));
       // Transfer ratios come from the calculator data; recommender data names the cards that have none.
       const byId = new Map();
       (rec.cards || []).forEach(c => byId.set(c.id, { id: c.id, n: c.n, b: c.b, c: c.c, r: [] }));
@@ -655,25 +797,47 @@
       els.pax.replaceChildren();
       for (let i = 1; i <= 9; i++) { const o = el('option', null, String(i)); o.value = String(i); els.pax.appendChild(o); }
       populateBanks();
+      updateRouteHint();
     } catch (err) {
       showLoadError();
     }
   };
 
-  toggles.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
+  // ── Events ──
+  typeBtns.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
+  ['input', 'change'].forEach(ev => {
+    els.origin.addEventListener(ev, updateRouteHint);
+    els.dest.addEventListener(ev, updateRouteHint);
+  });
+  els.dest.addEventListener('blur', () => setTimeout(updateRouteHint, 150));
+  els.dest.addEventListener('input', () => renderBanner());
+  els.swap.addEventListener('click', () => {
+    const a = els.origin.value;
+    els.origin.value = els.dest.value;
+    els.dest.value = a;
+    updateRouteHint();
+    renderBanner();
+  });
+  els.next1.addEventListener('click', () => advance(2));
+  els.next2.addEventListener('click', () => advance(3));
+  els.next3.addEventListener('click', () => advance(4));
+  els.restart.addEventListener('click', restart);
+  els.change.addEventListener('click', () => goTo(2));
+  document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => {
+    let n = Number(b.dataset.back);
+    if (n === 3 && noPartnerCard(selectedCard())) n = 2;
+    if (n === 3) prepareStep3(); else goTo(n);
+  }));
+  stepBtns.forEach(b => b.addEventListener('click', () => {
+    if (b.disabled) return;
+    const n = Number(b.dataset.step);
+    if (n < state.step) { if (n === 3) prepareStep3(); else goTo(n); } else if (n > state.step) advance(n);
+  }));
   els.bank.addEventListener('change', populateCards);
   els.card.addEventListener('change', onCardChange);
   els.partner.addEventListener('change', onPartnerChange);
-  ['input', 'change'].forEach(ev => {
-    els.origin.addEventListener(ev, onOriginChange);
-    els.dest.addEventListener(ev, onDestChange);
-  });
-  els.cabin.addEventListener('change', compute);
-  els.pax.addEventListener('change', compute);
-  tripButtons.forEach(b => b.addEventListener('click', () => { setTrip(Number(b.dataset.trip)); compute(); }));
-  [els.price, els.points, els.nights, els.balance].forEach(input => {
-    input.addEventListener('input', () => { formatInput(input); compute(); });
-  });
+  tripButtons.forEach(b => b.addEventListener('click', () => setTrip(Number(b.dataset.trip))));
+  [els.price, els.points, els.nights, els.balance].forEach(input => input.addEventListener('input', () => formatInput(input)));
   els.manualToggle.addEventListener('click', () => {
     const open = els.manual.hidden;
     els.manual.hidden = !open;
@@ -683,7 +847,9 @@
   form.addEventListener('submit', event => event.preventDefault());
 
   makeCombo({ input: els.origin, list: els.originList, items: () => placeItems(true), popular: POPULAR_ORIGIN, heading: 'Popular departure places', after: () => els.dest.focus() });
-  makeCombo({ input: els.dest, list: els.destList, items: () => placeItems(false), popular: POPULAR_DEST, heading: 'Popular destinations', after: () => { if (!els.cabin.disabled) els.cabin.focus(); } });
+  makeCombo({ input: els.dest, list: els.destList, items: () => placeItems(false), popular: POPULAR_DEST, heading: 'Popular destinations', after: () => els.next1.focus() });
 
+  renderAside();
+  renderBanner();
   load();
 })();
