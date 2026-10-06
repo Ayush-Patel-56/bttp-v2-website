@@ -174,7 +174,26 @@
                 </div>
                 <p class="rt-hint" id="calc-route-hint" hidden></p>
               </div>
-              <p class="rt-hint rt-hint-box" id="calc-hotel-note" hidden>Hotel redemptions are priced per night. You will add the number of nights and your price in step 3.</p>
+              <div id="calc-hotel-fields" hidden>
+                <div class="rt-two rt-hotel-grid">
+                  <div class="rt-field">
+                    <label class="rt-label" for="calc-hotel-dest">Where are you staying?</label>
+                    <div class="calc-combo rt-icon-field">
+                      <svg class="rt-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                      <input id="calc-hotel-dest" class="calc-input" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="calc-hotel-dest-list" autocomplete="off" spellcheck="false" placeholder="e.g. Goa, Dubai or Thailand" />
+                      <ul class="calc-combo-list" id="calc-hotel-dest-list" role="listbox" aria-label="Hotel destinations" hidden></ul>
+                    </div>
+                  </div>
+                  <div class="rt-field">
+                    <label class="rt-label" for="calc-nights">Nights</label>
+                    <div class="rt-icon-field">
+                      <svg class="rt-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+                      <input id="calc-nights" class="calc-input" type="text" inputmode="numeric" autocomplete="off" value="1" />
+                    </div>
+                  </div>
+                </div>
+                <p class="rt-hint rt-hint-box" id="calc-hotel-note">Hotel programmes price a stay by the hotel's own category, not by city, so the destination does not change the points. It is shown in your trip summary.</p>
+              </div>
 
               <p class="rt-error" id="calc-error-1" role="alert" hidden></p>
               <button type="button" class="rt-cta" id="calc-next-1"><span>Next: Select Card &amp; Partner</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
@@ -235,12 +254,6 @@
                     <button type="button" data-trip="2" aria-pressed="false">Round trip</button>
                   </div>
                 </fieldset>
-              </div>
-              <div id="calc-detail-hotel" hidden>
-                <div class="rt-field">
-                  <label class="rt-label" for="calc-nights">Nights</label>
-                  <input id="calc-nights" class="calc-input" type="text" inputmode="numeric" autocomplete="off" value="1" />
-                </div>
               </div>
 
               <p class="rt-hint rt-hint-box" id="calc-zone" hidden></p>

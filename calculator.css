@@ -2282,3 +2282,24 @@
     line-height: 1.5;
     color: #8a8176
 }
+
+/* Tool pages open on a cream header, so the phone menu button needs dark bars.
+   The cream backing keeps it visible if the header slides back in over the dark sections. */
+@media (max-width: 900px) {
+    .menu-button {
+        border-radius: 50%;
+        background: rgba(246, 241, 234, .94)
+    }
+
+    .menu-button span {
+        background: #181512
+    }
+}
+
+.rt-hotel-grid {
+    margin-bottom: 14px
+}
+
+#calc-hotel-fields[hidden] {
+    display: none
+}

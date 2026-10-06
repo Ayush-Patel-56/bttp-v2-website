@@ -6,9 +6,9 @@
   const els = {
     bank: $('calc-bank'), card: $('calc-card'), balance: $('calc-balance'), partner: $('calc-partner'), price: $('calc-price'), points: $('calc-points'),
     partnerLabel: $('calc-partner-label'), partnerNote: $('calc-partner-note'), priceLabel: $('calc-price-label'), priceHint: $('calc-price-hint'), priceField: $('calc-price-field'),
-    flightFields: $('calc-flight-fields'), hotelNote: $('calc-hotel-note'), routeHint: $('calc-route-hint'),
+    flightFields: $('calc-flight-fields'), hotelFields: $('calc-hotel-fields'), hotelDest: $('calc-hotel-dest'), hotelDestList: $('calc-hotel-dest-list'), routeHint: $('calc-route-hint'),
     origin: $('calc-origin'), dest: $('calc-dest'), originList: $('calc-origin-list'), destList: $('calc-dest-list'), swap: $('calc-swap'),
-    detailFlight: $('calc-detail-flight'), detailHotel: $('calc-detail-hotel'), cabin: $('calc-cabin'), pax: $('calc-pax'), tripType: $('calc-trip-type'),
+    detailFlight: $('calc-detail-flight'), cabin: $('calc-cabin'), pax: $('calc-pax'), tripType: $('calc-trip-type'),
     nights: $('calc-nights'), zone: $('calc-zone'), manualToggle: $('calc-manual-toggle'), manual: $('calc-manual'),
     verdict: $('calc-verdict'), badge: $('calc-badge'), caption: $('calc-caption'), value: $('calc-value'), label: $('calc-label'), detail: $('calc-detail'),
     balanceLine: $('calc-balance-line'), using: $('calc-using'), note: $('calc-note'), options: $('calc-options'), compare: $('calc-compare'),
@@ -26,7 +26,7 @@
 
   const COPY = {
     airline: { partner: 'Airline partner', price: 'Ticket price', kicker: 'Your trip to' },
-    hotel: { partner: 'Hotel partner', price: 'Stay price', kicker: 'Your stay with' }
+    hotel: { partner: 'Hotel partner', price: 'Stay price', kicker: 'Your stay in' }
   };
   const CABIN = { e: 'Economy', p: 'Premium economy', b: 'Business', f: 'First', r: 'Room' };
   const CABIN_ORDER = ['e', 'p', 'b', 'f'];
@@ -105,7 +105,8 @@
     return chart.idx.get(v) || [];
   };
   // An airport such as "Mumbai (BOM)" is priced by its city when the chart lists it, otherwise by its country.
-  const airportOf = v => state.airByLabel.get(v) || (v.length === 3 ? state.airByCode.get(v) : null) || null;
+  // A bare three-letter code only counts as an airport when it is not also a place name ("Goa" is a city, GOA is Genoa).
+  const airportOf = v => state.airByLabel.get(v) || (v.length === 3 && !state.airCities.has(v) ? state.airByCode.get(v) : null) || null;
   // Guards against a city sharing its name with one abroad (London, Canada is not London, UK).
   const cityFits = ap => { const c = ALIASES[ap.cityKey]; return !c || norm(c) === ap.countryKey; };
   const zonesOf = (chart, name) => {
@@ -200,6 +201,15 @@
     return items;
   };
 
+  const POPULAR_STAY = ['Goa', 'Dubai', 'Singapore', 'Bangkok', 'Phuket', 'Bali', 'Maldives', 'London', 'Paris', 'Tokyo', 'New York', 'Thailand', 'United Arab Emirates', 'United Kingdom', 'France', 'Japan', 'Sri Lanka'];
+  // Hotel destinations: every country and city we know, plus the cities that have an airport. The charts price hotels by category, so nothing is flagged.
+  const stayItems = () => {
+    const map = new Map();
+    flightCharts().map(chartOf).forEach(chart => chart.places.forEach(([name, , kind]) => { if (!map.has(name)) map.set(name, { name, kind, ok: true }); }));
+    (state.air || []).forEach(ap => { if (!map.has(ap.city)) map.set(ap.city, { name: ap.city, kind: 'y', ok: true, country: ap.country }); });
+    return Array.from(map.values());
+  };
+
   const makeCombo = cfg => {
     const { input, list } = cfg;
     let shown = [];
@@ -233,6 +243,7 @@
       shown.push(item);
     };
     const kindText = k => (k === 'y' ? 'City' : k === 'a' ? 'Airport' : 'Country');
+    const subOf = i => (i.ap ? i.ap.country : i.country ? `City · ${i.country}` : kindText(i.kind));
     const build = fresh => {
       const raw = input.value;
       const q = fresh ? '' : norm(raw);
@@ -244,7 +255,7 @@
         if (!pop.length) pop = all.filter(i => i.ok).sort((a, b) => a.name.localeCompare(b.name)).slice(0, 12);
         if (pop.length) {
           list.appendChild(el('li', 'calc-combo-head', cfg.heading));
-          pop.forEach(i => row(i, i.ap ? i.ap.country : kindText(i.kind)));
+          pop.forEach(i => row(i, subOf(i)));
         }
         list.appendChild(el('li', 'calc-combo-foot', `Type to search all ${all.length} places`));
       } else {
@@ -272,7 +283,7 @@
         }
         res.sort((a, b) => a.r - b.r || (b.i.ok - a.i.ok) || a.i.name.localeCompare(b.i.name));
         // Names that start with what was typed come first, then everyday-name suggestions, then looser matches.
-        const sub = x => (x.i.ap ? (x.i.ok ? x.i.ap.country : x.i.known ? 'No price from here' : 'Estimate only') : x.i.ok ? kindText(x.i.kind) : 'No price from here');
+        const sub = x => (x.i.ap ? (x.i.ok ? x.i.ap.country : x.i.known ? 'No price from here' : 'Estimate only') : x.i.ok ? subOf(x.i) : 'No price from here');
         res.filter(x => x.r <= 1).forEach(x => row(x.i, sub(x)));
         aliasHits.slice(0, 3).forEach(a => row(a.item, `Includes ${a.via}`));
         res.filter(x => x.r > 1).slice(0, Math.max(0, 10 - shown.length)).forEach(x => row(x.i, sub(x)));
@@ -361,15 +372,18 @@
     for (const chart of flightCharts().map(chartOf)) { const hit = (chart.places || []).find(p => norm(p[0]) === v); if (hit) return hit[0]; }
     return name.trim().replace(/\b\w/g, c => c.toUpperCase());
   };
+  const stayPlace = () => prettyPlace(els.hotelDest.value);
   const renderBanner = text => {
-    const dest = state.mode === 'airline' ? prettyPlace(els.dest.value) : '';
-    els.bannerKicker.textContent = COPY[state.mode].kicker;
-    if (state.mode === 'airline') els.bannerTitle.textContent = dest || 'Anywhere';
-    else els.bannerTitle.textContent = state.partner ? partnerName(state.partner) : 'Any hotel';
-    els.bannerText.textContent = text || "Fill in your details to see how many points you need and the value you'll get.";
+    const hotel = state.mode === 'hotel';
+    const dest = hotel ? stayPlace() : prettyPlace(els.dest.value);
+    els.bannerKicker.textContent = hotel && !dest ? 'Your stay with' : COPY[state.mode].kicker;
+    if (hotel) els.bannerTitle.textContent = dest || (state.partner ? partnerName(state.partner) : 'Any hotel');
+    else els.bannerTitle.textContent = dest || 'Anywhere';
+    els.bannerText.textContent = text || (hotel && dest && state.partner ? `Staying with ${partnerName(state.partner)}. Fill in your details to see how many points you need.` : "Fill in your details to see how many points you need and the value you'll get.");
     const src = bannerPhoto(dest);
     if (!els.bannerImg.src.endsWith(src)) els.bannerImg.src = src;
   };
+
 
   // ── Wizard steps ──
   const goTo = n => {
@@ -443,7 +457,7 @@
     state.mode = mode;
     typeBtns.forEach(b => { const on = b.dataset.mode === mode; b.classList.toggle('is-active', on); b.setAttribute('aria-pressed', String(on)); });
     els.flightFields.hidden = mode !== 'airline';
-    els.hotelNote.hidden = mode !== 'hotel';
+    els.hotelFields.hidden = mode !== 'hotel';
     els.partnerLabel.textContent = COPY[mode].partner;
     els.priceLabel.textContent = COPY[mode].price;
     els.routeHint.hidden = true;
@@ -526,10 +540,9 @@
   const prepareStep3 = (show = true) => {
     const chart = state.partner ? chartOf(state.partner) : null;
     state.exact = false;
-    els.detailFlight.hidden = true; els.detailHotel.hidden = true; els.tripType.hidden = true; els.zone.hidden = true;
+    els.detailFlight.hidden = true; els.tripType.hidden = true; els.zone.hidden = true;
     if (chart && isHotelChart(chart)) {
       state.exact = true;
-      els.detailHotel.hidden = false;
     } else if (chart && state.mode === 'airline') {
       const cabins = cabinsFor(state.partner, els.origin.value, els.dest.value);
       if (cabins.length) {
@@ -794,7 +807,7 @@
   };
 
   const restart = () => {
-    els.origin.value = 'India'; els.dest.value = '';
+    els.origin.value = 'India'; els.dest.value = ''; els.hotelDest.value = '';
     els.balance.value = ''; els.price.value = ''; els.points.value = ''; els.nights.value = '1';
     setTrip(1);
     state.maxStep = 1; state.partner = ''; state.exact = false; state.plan = null;
@@ -832,7 +845,7 @@
           const country = airData.countries[ci];
           return { code, name, city, country, label: `${city} (${code})`, cityKey: norm(city), countryKey: norm(country), codeKey: code.toLowerCase(), nameKey: norm(`${name} ${city}`) };
         });
-        state.air.forEach(ap => { state.airByLabel.set(norm(ap.label), ap); state.airByCode.set(ap.codeKey, ap); });
+        state.air.forEach(ap => { state.airByLabel.set(norm(ap.label), ap); state.airByCode.set(ap.codeKey, ap); state.airCities.add(ap.cityKey); });
       }
 
       [...(rec.banks || []), ...state.data.banks].forEach(b => state.banks.set(b.id, b.name));
@@ -866,6 +879,7 @@
   });
   els.dest.addEventListener('blur', () => setTimeout(updateRouteHint, 150));
   els.dest.addEventListener('input', () => renderBanner());
+  els.hotelDest.addEventListener('input', () => renderBanner());
   els.swap.addEventListener('click', () => {
     const a = els.origin.value;
     els.origin.value = els.dest.value;
@@ -903,6 +917,8 @@
 
   makeCombo({ input: els.origin, list: els.originList, items: () => placeItems(true), popular: POPULAR_ORIGIN, heading: 'Popular departure places', after: () => els.dest.focus() });
   makeCombo({ input: els.dest, list: els.destList, items: () => placeItems(false), popular: POPULAR_DEST, heading: 'Popular destinations', after: () => els.next1.focus() });
+
+  makeCombo({ input: els.hotelDest, list: els.hotelDestList, items: () => stayItems(), popular: POPULAR_STAY, heading: 'Popular places to stay', after: () => els.nights.focus() });
 
   renderAside();
   renderBanner();
