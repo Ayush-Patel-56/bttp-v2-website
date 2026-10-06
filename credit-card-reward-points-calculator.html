@@ -177,22 +177,30 @@
               <div id="calc-hotel-fields" hidden>
                 <div class="rt-two rt-hotel-grid">
                   <div class="rt-field">
-                    <label class="rt-label" for="calc-hotel-dest">Where are you staying?</label>
+                    <label class="rt-label" for="calc-hotel-from">Travelling from</label>
                     <div class="calc-combo rt-icon-field">
                       <svg class="rt-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                      <input id="calc-hotel-dest" class="calc-input" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="calc-hotel-dest-list" autocomplete="off" spellcheck="false" placeholder="e.g. Goa, Dubai or Thailand" />
-                      <ul class="calc-combo-list" id="calc-hotel-dest-list" role="listbox" aria-label="Hotel destinations" hidden></ul>
+                      <input id="calc-hotel-from" class="calc-input" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="calc-hotel-from-list" autocomplete="off" spellcheck="false" placeholder="e.g. Delhi" value="India" />
+                      <ul class="calc-combo-list" id="calc-hotel-from-list" role="listbox" aria-label="Departure places" hidden></ul>
                     </div>
                   </div>
                   <div class="rt-field">
-                    <label class="rt-label" for="calc-nights">Nights</label>
-                    <div class="rt-icon-field">
-                      <svg class="rt-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
-                      <input id="calc-nights" class="calc-input" type="text" inputmode="numeric" autocomplete="off" value="1" />
+                    <label class="rt-label" for="calc-hotel-dest">Where are you staying?</label>
+                    <div class="calc-combo rt-icon-field">
+                      <svg class="rt-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                      <input id="calc-hotel-dest" class="calc-input" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="calc-hotel-dest-list" autocomplete="off" spellcheck="false" placeholder="e.g. Goa or Dubai" />
+                      <ul class="calc-combo-list" id="calc-hotel-dest-list" role="listbox" aria-label="Hotel destinations" hidden></ul>
                     </div>
                   </div>
                 </div>
-                <p class="rt-hint rt-hint-box" id="calc-hotel-note">Hotel programmes price a stay by the hotel's own category, not by city, so the destination does not change the points. It is shown in your trip summary.</p>
+                <div class="rt-field rt-nights">
+                  <label class="rt-label" for="calc-nights">Nights</label>
+                  <div class="rt-icon-field">
+                    <svg class="rt-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+                    <input id="calc-nights" class="calc-input" type="text" inputmode="numeric" autocomplete="off" value="1" />
+                  </div>
+                </div>
+                <p class="rt-hint rt-hint-box" id="calc-hotel-note">Hotel programmes price a stay by the hotel's own category, not by city, so neither city changes the points. Both are shown in your trip summary.</p>
               </div>
 
               <p class="rt-error" id="calc-error-1" role="alert" hidden></p>

@@ -2303,3 +2303,14 @@
 #calc-hotel-fields[hidden] {
     display: none
 }
+
+.rt-nights {
+    max-width: calc(50% - 8px);
+    margin-bottom: 14px
+}
+
+@media (max-width: 640px) {
+    .rt-nights {
+        max-width: none
+    }
+}

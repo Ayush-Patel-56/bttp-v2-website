@@ -6,7 +6,7 @@
   const els = {
     bank: $('calc-bank'), card: $('calc-card'), balance: $('calc-balance'), partner: $('calc-partner'), price: $('calc-price'), points: $('calc-points'),
     partnerLabel: $('calc-partner-label'), partnerNote: $('calc-partner-note'), priceLabel: $('calc-price-label'), priceHint: $('calc-price-hint'), priceField: $('calc-price-field'),
-    flightFields: $('calc-flight-fields'), hotelFields: $('calc-hotel-fields'), hotelDest: $('calc-hotel-dest'), hotelDestList: $('calc-hotel-dest-list'), routeHint: $('calc-route-hint'),
+    flightFields: $('calc-flight-fields'), hotelFields: $('calc-hotel-fields'), hotelDest: $('calc-hotel-dest'), hotelFrom: $('calc-hotel-from'), hotelFromList: $('calc-hotel-from-list'), hotelDestList: $('calc-hotel-dest-list'), routeHint: $('calc-route-hint'),
     origin: $('calc-origin'), dest: $('calc-dest'), originList: $('calc-origin-list'), destList: $('calc-dest-list'), swap: $('calc-swap'),
     detailFlight: $('calc-detail-flight'), cabin: $('calc-cabin'), pax: $('calc-pax'), tripType: $('calc-trip-type'),
     nights: $('calc-nights'), zone: $('calc-zone'), manualToggle: $('calc-manual-toggle'), manual: $('calc-manual'),
@@ -379,7 +379,7 @@
     els.bannerKicker.textContent = hotel && !dest ? 'Your stay with' : COPY[state.mode].kicker;
     if (hotel) els.bannerTitle.textContent = dest || (state.partner ? partnerName(state.partner) : 'Any hotel');
     else els.bannerTitle.textContent = dest || 'Anywhere';
-    els.bannerText.textContent = text || (hotel && dest && state.partner ? `Staying with ${partnerName(state.partner)}. Fill in your details to see how many points you need.` : "Fill in your details to see how many points you need and the value you'll get.");
+    els.bannerText.textContent = text || (hotel && dest && state.partner ? `Staying with ${partnerName(state.partner)}${prettyPlace(els.hotelFrom.value) ? `, travelling from ${prettyPlace(els.hotelFrom.value)}` : ''}. Fill in your details to see how many points you need.` : "Fill in your details to see how many points you need and the value you'll get.");
     const src = bannerPhoto(dest);
     if (!els.bannerImg.src.endsWith(src)) els.bannerImg.src = src;
   };
@@ -807,7 +807,7 @@
   };
 
   const restart = () => {
-    els.origin.value = 'India'; els.dest.value = ''; els.hotelDest.value = '';
+    els.origin.value = 'India'; els.dest.value = ''; els.hotelDest.value = ''; els.hotelFrom.value = 'India';
     els.balance.value = ''; els.price.value = ''; els.points.value = ''; els.nights.value = '1';
     setTrip(1);
     state.maxStep = 1; state.partner = ''; state.exact = false; state.plan = null;
@@ -880,6 +880,7 @@
   els.dest.addEventListener('blur', () => setTimeout(updateRouteHint, 150));
   els.dest.addEventListener('input', () => renderBanner());
   els.hotelDest.addEventListener('input', () => renderBanner());
+  els.hotelFrom.addEventListener('input', () => renderBanner());
   els.swap.addEventListener('click', () => {
     const a = els.origin.value;
     els.origin.value = els.dest.value;
@@ -919,6 +920,8 @@
   makeCombo({ input: els.dest, list: els.destList, items: () => placeItems(false), popular: POPULAR_DEST, heading: 'Popular destinations', after: () => els.next1.focus() });
 
   makeCombo({ input: els.hotelDest, list: els.hotelDestList, items: () => stayItems(), popular: POPULAR_STAY, heading: 'Popular places to stay', after: () => els.nights.focus() });
+
+  makeCombo({ input: els.hotelFrom, list: els.hotelFromList, items: () => stayItems().concat((state.air || []).map(ap => ({ name: ap.label, kind: 'a', ok: true, known: true, ap }))), popular: POPULAR_ORIGIN, heading: 'Popular departure places', after: () => els.hotelDest.focus() });
 
   renderAside();
   renderBanner();
