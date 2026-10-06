@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="Free credit card reward points calculator. Enter the ticket or stay price and the partner points required to see what each credit card point is really worth in rupees." />
+  <meta name="description" content="Free credit card reward points calculator. Pick your card, airline or hotel partner and trip to see how many credit card points you need, and what each point is really worth in rupees." />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <meta name="theme-color" content="#0b0b0a" />
   <title>Credit Card Reward Points Calculator - Back to the Points</title>
@@ -45,7 +45,7 @@
           {
             "@type": "Question",
             "name": "How do I calculate the value of my credit card points?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Convert the partner points a redemption needs into credit card points using the bank's transfer ratio, then divide the rupee value of the redemption by those credit card points. This calculator does both steps for you." }
+            "acceptedAnswer": { "@type": "Answer", "text": "Find the partner miles your trip costs, convert them into credit card points using the bank's transfer ratio, then divide the rupee value of the trip by those card points. This calculator does all three steps for you, using the airline's award chart where we have one." }
           },
           {
             "@type": "Question",
@@ -126,7 +126,7 @@
       <div class="container">
         <div class="calc-head">
           <h2 id="calc-title">Calculate the real value of your points</h2>
-          <p>Pick your card and a transfer partner, then enter the price and the partner points required.</p>
+          <p>Pick your card and a transfer partner, then tell us the trip. We work out the points you need.</p>
         </div>
 
         <div class="calc-grid">
@@ -162,25 +162,66 @@
               </select>
             </div>
 
-            <div class="calc-row">
-              <div class="calc-field">
-                <label class="calc-label" for="calc-price" id="calc-price-label">Ticket price</label>
-                <div class="calc-input-wrap">
-                  <span class="calc-prefix" aria-hidden="true">₹</span>
-                  <input id="calc-price" class="calc-input calc-input-prefixed" type="text" inputmode="numeric" autocomplete="off" placeholder="10,000" aria-describedby="calc-price-hint" />
+            <div id="calc-route" hidden>
+              <div id="calc-flight">
+                <div class="calc-row">
+                  <div class="calc-field">
+                    <label class="calc-label" for="calc-origin">From (country or city)</label>
+                    <input id="calc-origin" class="calc-input" type="text" list="calc-origin-list" autocomplete="off" placeholder="e.g. India" />
+                    <datalist id="calc-origin-list"></datalist>
+                  </div>
+                  <div class="calc-field">
+                    <label class="calc-label" for="calc-dest">To (country or city)</label>
+                    <input id="calc-dest" class="calc-input" type="text" list="calc-dest-list" autocomplete="off" placeholder="e.g. Singapore" />
+                    <datalist id="calc-dest-list"></datalist>
+                  </div>
+                </div>
+                <p class="calc-zone" id="calc-zone" hidden></p>
+                <div class="calc-row">
+                  <div class="calc-field">
+                    <label class="calc-label" for="calc-cabin">Cabin</label>
+                    <select id="calc-cabin" class="calc-select" disabled><option value="">Select cabin</option></select>
+                  </div>
+                  <div class="calc-field">
+                    <label class="calc-label" for="calc-pax">Passengers</label>
+                    <select id="calc-pax" class="calc-select"></select>
+                  </div>
+                </div>
+                <fieldset class="calc-field calc-field-plain" id="calc-trip-type" hidden>
+                  <legend class="calc-label">Trip</legend>
+                  <div class="calc-toggle" role="group" aria-label="Trip type">
+                    <button type="button" class="calc-toggle-btn is-active" data-trip="1" aria-pressed="true">One way</button>
+                    <button type="button" class="calc-toggle-btn" data-trip="2" aria-pressed="false">Round trip</button>
+                  </div>
+                </fieldset>
+              </div>
+              <div id="calc-hotel" hidden>
+                <div class="calc-field">
+                  <label class="calc-label" for="calc-nights">Nights</label>
+                  <input id="calc-nights" class="calc-input" type="text" inputmode="numeric" autocomplete="off" value="1" />
                 </div>
               </div>
-              <div class="calc-field">
-                <label class="calc-label" for="calc-points" id="calc-points-label">Points required</label>
-                <input id="calc-points" class="calc-input" type="text" inputmode="numeric" autocomplete="off" placeholder="15,000" aria-describedby="calc-points-hint" />
-              </div>
             </div>
-            <p class="calc-hint" id="calc-price-hint">Use the price excluding taxes and fees.</p>
-            <p class="calc-hint" id="calc-points-hint">Points required are in the partner's own currency (miles or hotel points).</p>
+
+            <div class="calc-field">
+              <label class="calc-label" for="calc-price" id="calc-price-label">Ticket price</label>
+              <div class="calc-input-wrap">
+                <span class="calc-prefix" aria-hidden="true">₹</span>
+                <input id="calc-price" class="calc-input calc-input-prefixed" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 45,000" aria-describedby="calc-price-hint" />
+              </div>
+              <p class="calc-hint calc-hint-tight" id="calc-price-hint">Use the price excluding taxes and fees.</p>
+            </div>
+
+            <p class="calc-partner-note" id="calc-partner-note" hidden></p>
+
+            <button type="button" class="calc-link" id="calc-manual-toggle" aria-expanded="false" aria-controls="calc-manual" hidden>I know the exact partner points</button>
+            <div class="calc-field calc-manual" id="calc-manual" hidden>
+              <label class="calc-label" for="calc-points" id="calc-points-label">Partner points required</label>
+              <input id="calc-points" class="calc-input" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 15,000" aria-describedby="calc-points-hint" />
+              <p class="calc-hint calc-hint-tight" id="calc-points-hint">In the partner's own currency (miles or hotel points). This overrides our estimate.</p>
+            </div>
 
             <p class="calc-error" id="calc-error" role="alert" hidden></p>
-
-            <button type="submit" class="button calc-submit" id="calc-submit" disabled>Calculate value</button>
           </form>
 
           <div class="calc-result" aria-live="polite">
@@ -215,20 +256,24 @@
             </div>
 
             <div class="calc-verdict" id="calc-verdict" data-tier="none">
-              <p class="calc-verdict-badge" id="calc-badge">Neutral</p>
-              <p class="calc-verdict-caption">Rupee value per credit card point</p>
-              <p class="calc-verdict-value" id="calc-value">₹--</p>
+              <p class="calc-verdict-badge" id="calc-badge">Waiting</p>
+              <p class="calc-verdict-caption" id="calc-caption">Estimated card points needed</p>
+              <p class="calc-verdict-value" id="calc-value">--</p>
               <p class="calc-verdict-label" id="calc-label">Waiting for your inputs</p>
-              <p class="calc-verdict-detail" id="calc-detail">Select your card and spending details to instantly calculate your reward value.</p>
+              <p class="calc-verdict-detail" id="calc-detail">Choose your card, a transfer partner and the trip to see how many points you need.</p>
               <p class="calc-verdict-using" id="calc-using" hidden></p>
               <p class="calc-verdict-note" id="calc-note" hidden></p>
             </div>
+
+            <div class="calc-options" id="calc-options" hidden></div>
+            <p class="calc-asof" id="calc-asof" hidden></p>
+            <a class="calc-xlink" id="calc-xlink" href="/credit-card-points-redemption-tool.html" hidden>See transfer limits and other ways to redeem in the Redemption Planner →</a>
           </div>
         </div>
 
         <p class="calc-art-note">Card images belong to their respective issuers and are shown for identification only. Cards without an official image use a generic design.</p>
 
-        <noscript><p class="calc-noscript">This calculator needs JavaScript. The formula is: credit card points = partner points × (card points ÷ partner points in the transfer ratio); value per point = price ÷ credit card points.</p></noscript>
+        <noscript><p class="calc-noscript">This calculator needs JavaScript. The formula is: credit card points = partner miles from the award chart × (card points ÷ partner points in the transfer ratio); value per point = price ÷ credit card points.</p></noscript>
       </div>
     </section>
 
@@ -239,11 +284,12 @@
           <h2>What your points are actually worth</h2>
           <p>Vouchers and statement credit are convenient, but they are usually the weakest use of points. Transferring to an airline or hotel programme can be worth several times more, when the redemption is chosen well.</p>
           <ol class="calc-steps">
-            <li><strong>Convert.</strong> We turn the partner points you need into credit card points using the bank's transfer ratio.</li>
-            <li><strong>Divide.</strong> The price you enter, divided by those credit card points, is your rupee value per point.</li>
+            <li><strong>Price.</strong> For partners with an award chart we look up the miles your route and cabin cost. Otherwise you can enter the miles, or we give a rough estimate from your price.</li>
+            <li><strong>Convert.</strong> Those partner points become credit card points through the bank's transfer ratio.</li>
+            <li><strong>Divide.</strong> If you add a cash price, dividing it by the card points gives your rupee value per point.</li>
             <li><strong>Judge.</strong> Around ₹1 is low, ₹2–4 is good and ₹4 or more is excellent.</li>
           </ol>
-          <p class="calc-formula"><code>value per point = price ÷ (partner points × card points ÷ partner points ratio)</code></p>
+          <p class="calc-formula"><code>card points = partner miles × (card points ÷ partner points); value per point = price ÷ card points</code></p>
           <p class="calc-source" id="calc-source"></p>
         </div>
 
@@ -251,7 +297,7 @@
           <h3 class="calc-faq-title">Frequently asked questions</h3>
           <details class="calc-faq-item">
             <summary>How do I calculate the value of my credit card points?</summary>
-            <p>Convert the partner points a redemption needs into credit card points using the bank's transfer ratio, then divide the rupee value of the redemption by those credit card points. This calculator does both steps for you.</p>
+            <p>Find the partner miles your trip costs, convert them into credit card points using the bank's transfer ratio, then divide the rupee value of the trip by those card points. This calculator does all three steps for you, using the airline's award chart where we have one.</p>
           </details>
           <details class="calc-faq-item">
             <summary>Why do the same points have different values?</summary>

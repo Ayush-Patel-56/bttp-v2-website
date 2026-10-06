@@ -801,3 +801,148 @@
         font-size: 16px
     }
 }
+
+/* ── Route lookup, estimate extras (calculator) ── */
+#calc-route[hidden],
+#calc-flight[hidden],
+#calc-hotel[hidden],
+.calc-manual[hidden],
+.calc-zone[hidden],
+.calc-partner-note[hidden],
+.calc-options[hidden],
+.calc-asof[hidden],
+.calc-xlink[hidden],
+.calc-link[hidden] {
+    display: none
+}
+
+.calc-hint-tight {
+    margin: 8px 0 0
+}
+
+.calc-zone {
+    margin: -6px 0 16px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #f1ece3;
+    color: #6b6255;
+    font-size: 13px;
+    line-height: 1.5
+}
+
+.calc-partner-note {
+    margin: 0 0 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #f1ece3;
+    color: #6b6255;
+    font-size: 13px;
+    line-height: 1.5
+}
+
+.calc-link {
+    display: inline-block;
+    margin: 0 0 14px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: #b86d3c;
+    text-decoration: underline;
+    cursor: pointer
+}
+
+.calc-link:focus-visible,
+.calc-xlink:focus-visible {
+    outline: 2px solid #b86d3c;
+    outline-offset: 2px
+}
+
+.calc-options {
+    display: grid;
+    gap: 8px
+}
+
+.calc-opt {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    border: 1px solid #ebe3d6;
+    background: #fff
+}
+
+.calc-opt-main,
+.calc-opt-side {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0
+}
+
+.calc-opt-side {
+    align-items: flex-end;
+    text-align: right
+}
+
+.calc-opt strong {
+    font-size: 15px;
+    color: #181512
+}
+
+.calc-opt-main span {
+    font-size: 12px;
+    color: #77706a
+}
+
+.calc-chip {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #f1ece3;
+    color: #6b6255;
+    font-size: 11px;
+    font-weight: 700
+}
+
+.calc-asof {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: center;
+    color: #8a8176
+}
+
+.calc-xlink {
+    display: block;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px dashed #ded4c6;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.45;
+    text-align: center;
+    color: #b86d3c;
+    text-decoration: none
+}
+
+.calc-xlink:hover {
+    background: #fff8f2;
+    border-color: #b86d3c
+}
+
+@media(max-width:640px) {
+    .calc-opt {
+        flex-direction: column;
+        align-items: flex-start
+    }
+
+    .calc-opt-side {
+        align-items: flex-start;
+        text-align: left
+    }
+}
