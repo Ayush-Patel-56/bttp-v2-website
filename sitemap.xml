@@ -2,27 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://backtothepoints.com/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <lastmod>2026-10-04</lastmod>
   </url>
   <url>
     <loc>https://backtothepoints.com/ask-bttp</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-10-04</lastmod>
   </url>
   <url>
-    <loc>https://backtothepoints.com/about.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <loc>https://backtothepoints.com/about</loc>
+    <lastmod>2026-10-04</lastmod>
   </url>
   <url>
-    <loc>https://backtothepoints.com/privacy.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
+    <loc>https://backtothepoints.com/privacy</loc>
+    <lastmod>2026-10-04</lastmod>
   </url>
   <url>
-    <loc>https://backtothepoints.com/terms.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
+    <loc>https://backtothepoints.com/terms</loc>
+    <lastmod>2026-10-04</lastmod>
   </url>
 </urlset>
