@@ -350,10 +350,11 @@
     // Transfer facts for the chosen partner.
     const route = card && state.partner ? routeOf(card, state.partner) : null;
     const xf = card && state.partner ? xferOf(card, state.partner) : [];
-    els.statRatio.textContent = route ? `${trim(route[1])} : ${trim(route[2])}${route[3] ? ' (up to)' : ''}` : '—';
-    els.statMin.textContent = xf[0] ? `${inr.format(xf[0])} points` : '—';
+    const noTransfer = !!card && noPartnerCard(card);
+    els.statRatio.textContent = route ? `${trim(route[1])} : ${trim(route[2])}${route[3] ? ' (up to)' : ''}` : (noTransfer ? 'None recorded' : '—');
+    els.statMin.textContent = xf[0] ? `${inr.format(xf[0])} points` : (noTransfer ? 'Not applicable' : '—');
     const t = xf[2] ? xf[2].replace(/^upto(?=\s)/i, 'Up to') : (xf[3] ? `Up to ${Math.ceil(xf[3] / 24)} days` : '');
-    els.statTime.textContent = t ? t.charAt(0).toUpperCase() + t.slice(1) : '—';
+    els.statTime.textContent = t ? t.charAt(0).toUpperCase() + t.slice(1) : (noTransfer ? 'Not applicable' : '—');
   };
 
   // The photo is only specific when we truly have a picture of that place; otherwise it is a neutral travel image.
@@ -680,11 +681,24 @@
     clearResult();
     if (!card) { renderOther(); return; }
     if (noPartnerCard(card)) {
+      // No transfer partner: lead with what the bank itself offers for these points.
+      const balance = parseNumber(els.balance.value);
+      const best = bestWay(card);
       els.badge.textContent = 'Other ways';
-      els.caption.textContent = 'No transfer partner recorded';
-      els.label.textContent = "See how this card's points compare";
-      els.detail.textContent = 'We have no airline or hotel transfer partner recorded for this card yet. The comparison below shows what its points are worth in other ways.';
-      renderAside(); renderBanner('We have no transfer partner for this card yet. See the other ways to redeem below.');
+      if (best) {
+        const up = best.ceil ? 'Up to ' : '';
+        els.verdict.dataset.tier = 'none';
+        els.caption.textContent = balance ? `Your ${inr.format(balance)} points are worth` : 'Best rupee value per point';
+        els.value.textContent = balance ? `${up}₹${inr.format(Math.round(balance * best.value))}` : `${up}₹${best.value.toFixed(2)}`;
+        els.label.textContent = `Best way: ${best.label}`;
+        els.detail.textContent = `No airline or hotel transfer partner is recorded for this card, so these are the bank's own redemption options. ${balance ? '' : 'Add your points balance to see totals. '}All ways are compared below.`;
+        renderAside(); renderBanner(`Best way to redeem: ${best.label.toLowerCase()} at ${up.toLowerCase()}₹${best.value.toFixed(2)} per point.`);
+      } else {
+        els.caption.textContent = 'No transfer partner recorded';
+        els.label.textContent = 'Nothing to compare yet';
+        els.detail.textContent = 'We have no airline or hotel transfer partner, and no published redemption value, recorded for this card yet.';
+        renderAside(); renderBanner('We have no redemption data for this card yet.');
+      }
       renderOther();
       return;
     }
@@ -774,6 +788,13 @@
   };
 
   // ── Other ways to redeem ──
+  // Highest rupee value among the bank's own redemption options for a card (flights, vouchers, statement credit ...).
+  const bestWay = card => {
+    const modes = (state.red && state.red.modes && state.red.modes[card.id]) || {};
+    const list = Object.entries(modes).map(([k, [value, ceil]]) => ({ label: WAY[k] || k, value, ceil: !!ceil })).sort((a, b) => b.value - a.value);
+    return list[0] || null;
+  };
+
   const renderOther = () => {
     const card = selectedCard();
     els.ways.replaceChildren();
