@@ -368,7 +368,7 @@
     head.appendChild(el('span', 'rec-rank', `#${i + 1}`));
     art.appendChild(head);
     const titleRow = el('div', 'rec-card-title');
-    titleRow.appendChild(el('h4', 'rec-card-name', card.n));
+    titleRow.appendChild(el('h3', 'rec-card-name', card.n));
     titleRow.appendChild(el('span', `rec-tag ${cls}`, label));
     art.appendChild(titleRow);
     art.appendChild(makeArt(card));

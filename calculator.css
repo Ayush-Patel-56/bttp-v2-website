@@ -92,7 +92,7 @@
 
 .calc-head p {
     margin: 0;
-    color: #77706a;
+    color: #6b645e;
     font-size: 17px;
     line-height: 1.55
 }
@@ -118,7 +118,7 @@
     font-size: 12px;
     font-weight: 700;
     letter-spacing: .14em;
-    color: #b86d3c
+    color: #a05a2c
 }
 
 .calc-field {
@@ -210,7 +210,7 @@
 .calc-hint {
     margin: -6px 0 10px;
     font-size: 13px;
-    color: #8a8176;
+    color: #6f665b;
     line-height: 1.4
 }
 
@@ -240,7 +240,7 @@
     margin: 24px auto 0;
     max-width: 640px;
     text-align: center;
-    color: #77706a
+    color: #6b645e
 }
 
 /* ── Toggle ── */
@@ -268,7 +268,7 @@
 
 .calc-toggle-btn.is-active {
     background: #fff;
-    color: #b86d3c;
+    color: #a05a2c;
     box-shadow: 0 2px 8px rgba(24, 21, 18, .1)
 }
 
@@ -331,7 +331,7 @@
     gap: 2px;
     text-align: center;
     font-size: 13px;
-    color: #77706a
+    color: #6b645e
 }
 
 .calc-art-caption strong {
@@ -345,7 +345,7 @@
     text-align: center;
     font-size: 12px;
     line-height: 1.5;
-    color: #8a8176
+    color: #6f665b
 }
 
 /* Real card proportions (ISO/IEC 7810 ID-1, 85.6 x 54 mm) at a capped width.
@@ -541,7 +541,7 @@
     margin: 14px 0 0;
     font-size: 14px;
     font-weight: 500;
-    color: #77706a
+    color: #6b645e
 }
 
 .calc-verdict-value {
@@ -848,7 +848,7 @@
     font: inherit;
     font-size: 14px;
     font-weight: 600;
-    color: #b86d3c;
+    color: #a05a2c;
     text-decoration: underline;
     cursor: pointer
 }
@@ -894,7 +894,7 @@
 
 .calc-opt-main span {
     font-size: 12px;
-    color: #77706a
+    color: #6b645e
 }
 
 .calc-chip {
@@ -912,7 +912,7 @@
     font-size: 12px;
     line-height: 1.5;
     text-align: center;
-    color: #8a8176
+    color: #6f665b
 }
 
 @media(max-width:640px) {
@@ -979,7 +979,7 @@
     font-weight: 700;
     letter-spacing: .14em;
     text-transform: uppercase;
-    color: #8a8176
+    color: #6f665b
 }
 
 .calc-transfer-row {
@@ -1045,7 +1045,7 @@
 
 .calc-other-sub {
     margin: 8px 0 22px;
-    color: #77706a;
+    color: #6b645e;
     font-size: 15px
 }
 
@@ -1125,7 +1125,7 @@
     margin: 20px 0 0;
     font-size: 12px;
     line-height: 1.6;
-    color: #8a8176
+    color: #6f665b
 }
 
 @media(max-width:640px) {
@@ -1194,7 +1194,7 @@
     font-weight: 700;
     letter-spacing: .1em;
     text-transform: uppercase;
-    color: #8a8176
+    color: #6f665b
 }
 
 .calc-combo-foot {
@@ -1226,7 +1226,7 @@
 .calc-combo-opt span {
     flex-shrink: 0;
     font-size: 12px;
-    color: #8a8176;
+    color: #6f665b;
     text-align: right
 }
 
@@ -1234,7 +1234,7 @@
     flex-basis: 100%;
     font-size: 12px;
     line-height: 1.35;
-    color: #8a8176
+    color: #6f665b
 }
 
 .calc-combo-opt:hover,
@@ -1243,11 +1243,11 @@
 }
 
 .calc-combo-opt.is-active strong {
-    color: #b86d3c
+    color: #a05a2c
 }
 
 .calc-combo-opt.is-unpriced strong {
-    color: #8a8176;
+    color: #6f665b;
     font-weight: 500
 }
 
@@ -1281,7 +1281,7 @@
     font-size: 13px;
     font-weight: 700;
     letter-spacing: .24em;
-    color: #b86d3c
+    color: #a05a2c
 }
 
 .rt-hero h1 {
@@ -1295,7 +1295,7 @@
 }
 
 .rt-hero h1 span {
-    color: #b86d3c
+    color: #a05a2c
 }
 
 .rt-lede {
@@ -1341,7 +1341,7 @@
     height: 54px;
     border-radius: 50%;
     background: #f1e6d9;
-    color: #b86d3c
+    color: #a05a2c
 }
 
 .rt-badge-icon svg {
@@ -1449,7 +1449,7 @@
 .rt-step-text span {
     font-size: 13px;
     line-height: 1.35;
-    color: #77706a
+    color: #6b645e
 }
 
 .rt-step.is-active .rt-step-num {
@@ -1462,7 +1462,7 @@
 .rt-step.is-done .rt-step-num {
     background: #fff;
     border-color: #b86d3c;
-    color: #b86d3c
+    color: #a05a2c
 }
 
 .rt-step:disabled .rt-step-text {
@@ -1554,7 +1554,7 @@
 .rt-type.is-active {
     border-color: #b86d3c;
     background: #fdf0e6;
-    color: #b86d3c;
+    color: #a05a2c;
     font-weight: 600
 }
 
@@ -1619,7 +1619,7 @@
     border: 0;
     border-radius: 50%;
     background: #f6e6d8;
-    color: #b86d3c;
+    color: #a05a2c;
     cursor: pointer;
     transition: background .18s ease, transform .18s ease
 }
@@ -1674,7 +1674,7 @@
     margin: 8px 0 0;
     font-size: 13px;
     line-height: 1.5;
-    color: #8a8176
+    color: #6f665b
 }
 
 .rt-hint-box {
@@ -1733,7 +1733,7 @@
 
 .rt-toggle button.is-active {
     background: #fff;
-    color: #b86d3c;
+    color: #a05a2c;
     box-shadow: 0 2px 8px rgba(24, 21, 18, .1)
 }
 
@@ -1746,7 +1746,7 @@
     font: inherit;
     font-size: 14px;
     font-weight: 600;
-    color: #b86d3c;
+    color: #a05a2c;
     text-decoration: underline;
     cursor: pointer
 }
@@ -1763,7 +1763,7 @@
     padding: 0 24px;
     border: 0;
     border-radius: 14px;
-    background: linear-gradient(135deg, #c8743f, #b4592b);
+    background: linear-gradient(135deg, #b0602b, #a5522a);
     box-shadow: 0 12px 26px rgba(184, 109, 60, .28);
     font: inherit;
     font-size: 17px;
@@ -1797,7 +1797,7 @@
 
 .rt-cta-ghost:hover {
     border-color: #b86d3c;
-    color: #b86d3c;
+    color: #a05a2c;
     box-shadow: none
 }
 
@@ -1828,7 +1828,7 @@
 
 .rt-back:hover {
     border-color: #b86d3c;
-    color: #b86d3c
+    color: #a05a2c
 }
 
 /* ── Results pane ── */
@@ -1857,7 +1857,7 @@
     font-weight: 700;
     letter-spacing: .14em;
     text-transform: uppercase;
-    color: #8a8176
+    color: #6f665b
 }
 
 .rt-compare-row {
@@ -1905,7 +1905,7 @@
 
 .rt-compare-name span {
     font-size: 12px;
-    color: #77706a
+    color: #6b645e
 }
 
 /* ── Aside: selected card ── */
@@ -1922,13 +1922,14 @@
 }
 
 .rt-change {
-    padding: 0;
+    min-height: 44px;
+    padding: 0 4px;
     border: 0;
     background: none;
     font: inherit;
     font-size: 15px;
     font-weight: 600;
-    color: #b86d3c;
+    color: #a05a2c;
     cursor: pointer
 }
 
@@ -2007,7 +2008,7 @@
 
 .rt-selected-info>span {
     font-size: 15px;
-    color: #77706a
+    color: #6b645e
 }
 
 .rt-chips {
@@ -2280,7 +2281,7 @@
     margin: 4px 2px 0;
     font-size: 12px;
     line-height: 1.5;
-    color: #8a8176
+    color: #6f665b
 }
 
 /* Tool pages open on a cream header, so the phone menu button needs dark bars.
@@ -2312,5 +2313,17 @@
 @media (max-width: 640px) {
     .rt-nights {
         max-width: none
+    }
+}
+
+/* The tool pages sit on a cream background, so the translucent nav bar needs to be more opaque
+   for its links to stay readable (the home page has a dark hero behind it). */
+.nav {
+    background: rgba(15, 13, 11, .86)
+}
+
+@media (max-width: 900px) {
+    .nav {
+        background: transparent
     }
 }

@@ -210,6 +210,9 @@
     return Array.from(map.values());
   };
 
+  // Headings and hints inside the listbox are not options, so assistive tech should skip over them.
+  const presentational = li => { li.setAttribute('role', 'presentation'); return li; };
+
   const makeCombo = cfg => {
     const { input, list } = cfg;
     let shown = [];
@@ -254,10 +257,10 @@
         let pop = cfg.popular.map(n => byName.get(n)).filter(i => i && i.ok).slice(0, 14);
         if (!pop.length) pop = all.filter(i => i.ok).sort((a, b) => a.name.localeCompare(b.name)).slice(0, 12);
         if (pop.length) {
-          list.appendChild(el('li', 'calc-combo-head', cfg.heading));
+          list.appendChild(presentational(el('li', 'calc-combo-head', cfg.heading)));
           pop.forEach(i => row(i, subOf(i)));
         }
-        list.appendChild(el('li', 'calc-combo-foot', `Type to search all ${all.length} places`));
+        list.appendChild(presentational(el('li', 'calc-combo-foot', `Type to search all ${all.length} places`)));
       } else {
         const rank = i => {
           const n = norm(i.name);
@@ -288,7 +291,7 @@
         aliasHits.slice(0, 3).forEach(a => row(a.item, `Includes ${a.via}`));
         res.filter(x => x.r > 1).slice(0, Math.max(0, 10 - shown.length)).forEach(x => row(x.i, sub(x)));
         if (shown.length > 10) { shown.length = 10; Array.from(list.children).slice(10).forEach(n => n.remove()); }
-        if (!shown.length) list.appendChild(el('li', 'calc-combo-foot', `No place matches "${raw.trim()}"`));
+        if (!shown.length) list.appendChild(presentational(el('li', 'calc-combo-foot', `No place matches "${raw.trim()}"`)));
       }
       list.hidden = false;
       input.setAttribute('aria-expanded', 'true');
@@ -617,7 +620,7 @@
   const renderTransfer = (card, plan) => {
     const [, multiple, , , cap, capWindow] = plan.xf;
     els.transfer.replaceChildren();
-    els.transfer.appendChild(el('h4', 'calc-transfer-title', 'Transfer rules'));
+    els.transfer.appendChild(el('h3', 'calc-transfer-title', 'Transfer rules'));
     const line = (k, v) => { const d = el('div', 'calc-transfer-row'); d.appendChild(el('span', null, k)); d.appendChild(el('strong', null, v)); els.transfer.appendChild(d); };
     line('Ratio', `${trim(plan.route[1])} card points : ${trim(plan.route[2])} ${partnerName(plan.route[0])} ${unitWord()}${plan.route[3] ? ' (up to)' : ''}`);
     if (plan.xf[0]) line('Minimum transfer', `${inr.format(plan.xf[0])} points`);
@@ -656,7 +659,7 @@
     const quotes = routesFor(card).map(r => ({ r, p: buildPlan(card, r, { ...c, manual: 0 }) })).filter(q => q.p.kind === 'chart' && q.p.items.length)
       .map(q => ({ pid: q.r[0], plan: q.p, best: q.p.items[0] })).sort((a, b) => a.best.points - b.best.points);
     if (quotes.length < 2) return;
-    els.compare.appendChild(el('h4', 'rt-compare-title', 'Compare partners for this trip'));
+    els.compare.appendChild(el('h3', 'rt-compare-title', 'Compare partners for this trip'));
     quotes.forEach((q, i) => {
       const b = el('button', `rt-compare-row${q.pid === current ? ' is-current' : ''}`);
       b.type = 'button';
@@ -710,13 +713,15 @@
 
     // No exact price: estimate from typical rupee values.
     if (plan.kind === 'none') {
-      const lo = roundEst(c.price / BENCH.high), mid = roundEst(c.price / BENCH.mid), hi = roundEst(c.price / BENCH.low);
+      // The benchmarks are rupees per partner point. Card points are what you pay to get them, so apply the ratio.
+      const ratio = route[1] / route[2];
+      const lo = roundEst(c.price / BENCH.high * ratio), mid = roundEst(c.price / BENCH.mid * ratio), hi = roundEst(c.price / BENCH.low * ratio);
       els.verdict.dataset.tier = 'none';
       els.badge.textContent = 'Estimate';
       els.caption.textContent = 'Estimated card points needed';
       els.value.textContent = `~${inr.format(mid)}`;
       els.label.textContent = `Estimate: ${inr.format(lo)} to ${inr.format(hi)} card points`;
-      els.detail.textContent = `Without an exact award price we estimate using typical values of ₹${BENCH.low} to ₹${BENCH.high} per point (₹${BENCH.mid} shown). Add the exact partner points in step 3 for a precise answer.`;
+      els.detail.textContent = `Without an exact award price we assume ${partnerName(state.partner)} ${unitWord()} are worth ₹${BENCH.low} to ₹${BENCH.high} each (₹${BENCH.mid} shown), then convert at your card's ${ratioText(route[1], route[2])} ratio. Add the exact partner points in step 3 for a precise answer.`;
       els.using.textContent = `Card points shown in ${card.c || "your card's points"}, at a ${ratioText(route[1], route[2])} transfer ratio to ${partnerName(state.partner)}.`;
       els.using.hidden = false;
       renderTransfer(card, plan);
