@@ -1,17 +1,27 @@
 name: Refresh calculator data
 
-# Regenerates data/calculator-data.json and data/recommender-data.json from Supabase and commits them when changed.
-# Vercel redeploys on the commit, so the live calculator picks up new ratios.
+# Keeps the site's data files in step with Supabase, without ever pushing to main:
+#   1. Regenerates data/calculator-data.json and data/recommender-data.json from the database.
+#   2. If anything changed, commits to the data/refresh branch and opens (or updates) a pull request.
+#      Merging the pull request is what deploys the new data.
+#   3. Checks data/redemption-data.json against the database. That file is assembled by hand, so this step
+#      fails the run (and GitHub emails you) when it has drifted, with a table of which totals differ.
 #
-# One-time setup: add a repository secret named CALCULATOR_DATABASE_URL holding a
-# connection string for a READ-ONLY Postgres role that can select from the corpus schema.
+# One-time setup:
+#   - Repository secret CALCULATOR_DATABASE_URL: a connection string for a READ-ONLY Postgres role that can
+#     select from the corpus schema.
+#   - Settings > Actions > General > Workflow permissions: tick "Allow GitHub Actions to create and approve
+#     pull requests".
+# Scheduled runs only start from the default branch, so this takes effect once it is merged to main. Until then
+# you can run it by hand from the Actions tab.
 on:
   schedule:
-    - cron: "0 3 * * 1" # Mondays 03:00 UTC
+    - cron: "0 3 * * *" # every day, 03:00 UTC
   workflow_dispatch:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: refresh-calculator-data
@@ -30,19 +40,35 @@ jobs:
       - name: Install pg
         run: npm install --no-save --no-package-lock pg
 
-      - name: Regenerate data
+      - name: Regenerate calculator and recommender data
         env:
           CALCULATOR_DATABASE_URL: ${{ secrets.CALCULATOR_DATABASE_URL }}
         run: node scripts/refresh-calculator-data.mjs
 
-      - name: Commit if changed
+      - name: Open or update the data pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           if git diff --quiet -- data/calculator-data.json data/recommender-data.json; then
             echo "No data changes."
             exit 0
           fi
+          BRANCH=data/refresh
           git config user.name "calculator-data-bot"
           git config user.email "calculator-data-bot@users.noreply.github.com"
+          git checkout -B "$BRANCH"
           git add data/calculator-data.json data/recommender-data.json
           git commit -m "chore: refresh calculator and recommender data"
-          git push
+          git push --force origin "$BRANCH"
+          if [ "$(gh pr list --head "$BRANCH" --state open --json number --jq length)" = "0" ]; then
+            gh pr create --base "${{ github.event.repository.default_branch }}" --head "$BRANCH" \
+              --title "Refresh calculator and recommender data" \
+              --body "Automatic refresh from Supabase (corpus). Merge to deploy the new ratios, fees and rewards data to the calculator and card recommender. See the diff of data/*.json for exactly what moved."
+          else
+            echo "Pull request already open; branch updated."
+          fi
+
+      - name: Check redemption data against the database
+        env:
+          CALCULATOR_DATABASE_URL: ${{ secrets.CALCULATOR_DATABASE_URL }}
+        run: node scripts/check-data-drift.mjs
