@@ -3053,9 +3053,18 @@ footer {
         margin: 14px 0 6px
     }
 
+    .how-grid {
+        position: relative
+    }
+
     .how-progress-dots {
+        position: absolute;
+        top: 64%;
+        left: 0;
         display: flex;
-        margin-bottom: 18px
+        flex-direction: column;
+        margin: 0;
+        transform: translateY(-50%)
     }
 
     .how-grid {
