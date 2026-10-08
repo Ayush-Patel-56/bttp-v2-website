@@ -553,11 +553,31 @@
   });
 
   // ── Load data ──
+  // Live data first (/api/tool-data reads the database), then the static copy in /data if the live call fails,
+  // is slow, or returns something unusable. The static file is the safety net, so the tools never go blank.
+  const loadSet = async (set, staticUrl) => {
+    try {
+      const ctl = new AbortController();
+      const timer = setTimeout(() => ctl.abort(), 6000);
+      const r = await fetch(`/api/tool-data?set=${set}`, { signal: ctl.signal });
+      clearTimeout(timer);
+      if (r.ok) {
+        const d = await r.json();
+        if (d && Array.isArray(d.cards) && d.cards.length) { d.__live = true; return d; }
+      } else {
+        await r.text().catch(() => {}); // read and discard the error body so the request closes
+      }
+    } catch (e) { /* fall through to the static copy */ }
+    const s = await fetch(staticUrl);
+    if (!s.ok) throw new Error(`${staticUrl} ${s.status}`);
+    return s.json();
+  };
+
   const init = async () => {
     els.next.disabled = true;
     try {
       const get = (url, optional) => fetch(url).then(r => { if (!r.ok) throw new Error(`${url} ${r.status}`); return r.json(); }).catch(err => { if (optional) return {}; throw err; });
-      const [rec, calc, art] = await Promise.all([get('/data/recommender-data.json'), get('/data/calculator-data.json'), get('/data/card-art.json', true)]);
+      const [rec, calc, art] = await Promise.all([loadSet('recommender', '/data/recommender-data.json'), loadSet('calculator', '/data/calculator-data.json'), get('/data/card-art.json', true)]);
 
       state.art = art;
       state.partnersMeta = calc.partners || {};

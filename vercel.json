@@ -80,5 +80,11 @@
       "destination": "/credit-card-reward-points-calculator",
       "permanent": true
     }
-  ]
+  ],
+  "functions": {
+    "api/tool-data.js": {
+      "includeFiles": "scripts/{calculator,recommender}-data.sql",
+      "maxDuration": 15
+    }
+  }
 }

@@ -851,17 +851,35 @@
     showError(2, 'We could not load card data. Please refresh the page and try again.');
   };
 
+  // Live data first (/api/tool-data reads the database), then the static copy in /data if the live call fails,
+  // is slow, or returns something unusable. The static file is the safety net, so the tools never go blank.
+  const loadSet = async (set, staticUrl) => {
+    try {
+      const ctl = new AbortController();
+      const timer = setTimeout(() => ctl.abort(), 6000);
+      const r = await fetch(`/api/tool-data?set=${set}`, { signal: ctl.signal });
+      clearTimeout(timer);
+      if (r.ok) {
+        const d = await r.json();
+        if (d && Array.isArray(d.cards) && d.cards.length) { d.__live = true; return d; }
+      } else {
+        await r.text().catch(() => {}); // read and discard the error body so the request closes
+      }
+    } catch (e) { /* fall through to the static copy */ }
+    const s = await fetch(staticUrl);
+    if (!s.ok) throw new Error(`${staticUrl} ${s.status}`);
+    return s.json();
+  };
+
   const load = async () => {
     try {
       // Everything except the transfer ratios is optional: without it the tool still works, with less detail.
       const optional = url => fetch(url).then(r => (r.ok ? r.json() : null)).catch(() => null);
       const artRequest = optional('/data/card-art.json');
       const redRequest = optional('/data/redemption-data.json');
-      const recRequest = optional('/data/recommender-data.json');
+      const recRequest = loadSet('recommender', '/data/recommender-data.json').catch(() => null);
       const airRequest = optional('/data/airports.json');
-      const res = await fetch('/data/calculator-data.json');
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      state.data = await res.json();
+      state.data = await loadSet('calculator', '/data/calculator-data.json');
       state.art = (await artRequest) || {};
       state.red = await redRequest;
       const rec = (await recRequest) || { banks: [], cards: [] };
@@ -885,7 +903,7 @@
       if (state.data.generatedAt && els.source) {
         const when = new Date(state.data.generatedAt);
         if (!Number.isNaN(when.getTime())) {
-          els.source.textContent = `Transfer ratios last refreshed ${when.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}. Always confirm the current ratio with your bank before transferring.`;
+          els.source.textContent = `Transfer ratios ${state.data.__live ? 'read live from our database' : 'last refreshed'} ${when.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}. Always confirm the current ratio with your bank before transferring.`;
         }
       }
       els.pax.replaceChildren();

@@ -1,0 +1,9 @@
+{
+  "name": "bttp-v2-website",
+  "private": true,
+  "type": "module",
+  "description": "Static site on Vercel. The only dependency is for api/tool-data.js, which reads Supabase.",
+  "dependencies": {
+    "pg": "^8.13.0"
+  }
+}
