@@ -56,13 +56,21 @@
   };
 
   // Whole numbers only. A decimal point ends the number ("40000.5" is 40,000, not 400,005) and a minus sign rejects it.
-  const digits = value => (/^\s*-/.test(value) ? '' : value.replace(/[^\d.]/g, '').split('.')[0]);
+  const digits = value => (/^\s*-/.test(value) ? '' : value.replace(/[^\d.]/g, '').split('.')[0].slice(0, 9));
   const parseNumber = value => Number(digits(value)) || 0;
-  const formatInput = input => { const d = digits(input.value); input.value = d ? inr.format(Number(d)) : ''; };
+  // While someone is typing a decimal ("40000.5") keep exactly what they typed; the whole-number part is tidied when they leave the box.
+  const formatInput = (input, leaving) => {
+    const raw = input.value;
+    if (!leaving && raw.includes('.') && !/^\s*-/.test(raw)) { input.value = raw.replace(/[^\d.,]/g, '').replace(/\./g, (m, i, str) => (str.indexOf('.') === i ? '.' : '')); return; }
+    const d = digits(raw); input.value = d ? inr.format(Number(d)) : '';
+  };
   const trim = (n, d = 2) => String(Number(n.toFixed(d)));
   const ratioText = (from, to) => `${inr.format(from)} : ${inr.format(to)}`;
   // Round up to whole points. Decimal ratios such as 1.1:1 can leave a result like 1650.0000000000002 in floating point,
   // which a plain Math.ceil would push to 1651, so snap to six decimals first.
+  // Rupees per point, rounded down to paise: 0.99999 must not print as 1.00 while the tier still says Low.
+  const rupee2 = n => (Math.floor(n * 100 + 1e-9) / 100).toFixed(2);
+  const pts = n => `${inr.format(n)} point${n === 1 ? '' : 's'}`;
   const ceilPoints = x => Math.ceil(Math.round(x * 1e6) / 1e6);
   const roundEst = n => Math.max(500, Math.round(n / 500) * 500);
   const norm = v => v.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
@@ -272,7 +280,8 @@
           const n = norm(i.name);
           if (i.ap) {
             // Airports match on code, city, then the airport's own name ("heathrow", "changi").
-            if (i.ap.codeKey === q) return 0;
+            if (n === q || n.startsWith(q + ' (')) return 0;
+            if (i.ap.codeKey === q) return 0.5;
             if (n.startsWith(q)) return 1;
             if (n.split(/[\s,()-]+/).some(w => w.startsWith(q))) return 2;
             return i.ap.nameKey.includes(q) ? 3 : 9;
@@ -309,7 +318,7 @@
       if (list.hidden) { if (e.key === 'ArrowDown' && !input.disabled) { e.preventDefault(); build(true); setActive(0); } return; }
       if (e.key === 'ArrowDown') { e.preventDefault(); if (shown.length) setActive((active + 1) % shown.length); }
       else if (e.key === 'ArrowUp') { e.preventDefault(); if (shown.length) setActive((active - 1 + shown.length) % shown.length); }
-      else if (e.key === 'Enter') { if (active >= 0 && shown[active]) { e.preventDefault(); choose(shown[active]); } else if (shown.length === 1) { e.preventDefault(); choose(shown[0]); } }
+      else if (e.key === 'Enter') { if (active >= 0 && shown[active]) { e.preventDefault(); choose(shown[active]); } else if (shown.length) { e.preventDefault(); choose(shown[0]); } }
       else if (e.key === 'Escape' || e.key === 'Tab') { close(); }
     });
     document.addEventListener('mousedown', e => { if (!input.parentElement.contains(e.target)) close(); });
@@ -349,8 +358,9 @@
       const rec = state.rec.get(card.id) || {};
       const chips = [];
       if (card.c) chips.push(card.c);
-      const partners = routesFor(card).length || card.r.length;
-      if (partners) chips.push(`${partners} transfer partner${partners === 1 ? '' : 's'}`);
+      const nAir = card.r.filter(r => state.data.partners[r[0]] && state.data.partners[r[0]].k === 'airline').length;
+      const nHot = card.r.filter(r => state.data.partners[r[0]] && state.data.partners[r[0]].k === 'hotel').length;
+      if (nAir + nHot) chips.push(`${[nAir ? `${nAir} airline` : '', nHot ? `${nHot} hotel` : ''].filter(Boolean).join(' + ')} partner${nAir + nHot === 1 ? '' : 's'}`);
       if (rec.f != null) chips.push(rec.f === 0 ? 'Lifetime free' : `Annual fee ₹${inr.format(rec.f)}`);
       if (rec.l) chips.push('Lounge access');
       chips.slice(0, 4).forEach(t => els.asideChips.appendChild(el('span', 'rt-chip', t)));
@@ -361,7 +371,7 @@
     const xf = card && state.partner ? xferOf(card, state.partner) : [];
     const noTransfer = !!card && noPartnerCard(card);
     els.statRatio.textContent = route ? `${trim(route[1])} : ${trim(route[2])}${route[3] ? ' (up to)' : ''}` : (noTransfer ? 'None recorded' : '—');
-    els.statMin.textContent = xf[0] ? `${inr.format(xf[0])} points` : (noTransfer ? 'Not applicable' : '—');
+    els.statMin.textContent = xf[0] ? `${inr.format(xf[0])} points` : (xf[1] ? `${inr.format(xf[1])} points` : (noTransfer ? 'Not applicable' : '—'));
     const t = xf[2] ? xf[2].replace(/^upto(?=\s)/i, 'Up to') : (xf[3] ? `Up to ${Math.ceil(xf[3] / 24)} days` : '');
     els.statTime.textContent = t ? t.charAt(0).toUpperCase() + t.slice(1) : (noTransfer ? 'Not applicable' : '—');
   };
@@ -408,6 +418,7 @@
       if (i === n) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
     });
     showError(0);
+    if (n < 4) els.other.hidden = true; // a result from an earlier card must not linger on steps 1 to 3
     const top = form.closest('.rt-card').getBoundingClientRect().top;
     if (top < 0) window.scrollBy({ top: top - 110, behavior: 'smooth' });
   };
@@ -538,7 +549,10 @@
     els.manualToggle.hidden = !state.partner;
     els.priceField.hidden = noPartnerCard(card);
     if (noPartnerCard(card)) {
-      els.partnerNote.textContent = 'We have no airline or hotel transfer partner recorded for this card yet. You can still see how its points compare across other ways to redeem.';
+      const hereKind = state.mode === 'hotel' ? 'hotel' : 'airline', otherKind = hereKind === 'hotel' ? 'airline' : 'hotel';
+      els.partnerNote.textContent = card.r.length
+        ? `No ${hereKind} partner is recorded for this card. It does transfer to ${otherKind} partners: switch to ${otherKind === 'hotel' ? 'Hotels' : 'Flights'} on step 1 to see them. You can still see how its points compare across other ways to redeem.`
+        : 'We have no airline or hotel transfer partner recorded for this card yet. You can still see how its points compare across other ways to redeem.';
       els.partnerNote.hidden = false;
     } else if (state.partner) {
       const st = partnerStatus(card, state.partner);
@@ -765,7 +779,7 @@
       const tier = TIERS.find(t => best.perPoint >= t.min);
       els.verdict.dataset.tier = tier.tier;
       els.badge.textContent = tier.badge;
-      els.label.textContent = `₹${best.perPoint.toFixed(2)} per point: ${tier.label}`;
+      els.label.textContent = `₹${rupee2(best.perPoint)} per point: ${tier.label}`;
       els.detail.textContent = tier.detail;
     } else {
       els.verdict.dataset.tier = diff == null ? 'none' : (diff >= 0 ? 'high' : 'low');
@@ -774,7 +788,7 @@
       els.detail.textContent = `This is what the ${partnerName(state.partner)} award costs in ${card.c || 'your card'} points.`;
     }
     if (diff != null) {
-      els.balanceLine.textContent = diff >= 0 ? `Your balance covers it, with ${inr.format(diff)} points to spare.` : `You are ${inr.format(-diff)} points short.`;
+      els.balanceLine.textContent = diff >= 0 ? `Your balance covers it, with ${pts(diff)} to spare.` : `You are ${pts(-diff)} short.`;
       els.balanceLine.dataset.ok = String(diff >= 0);
       els.balanceLine.hidden = false;
     }
@@ -797,7 +811,7 @@
         const right = el('div', 'calc-opt-side');
         right.appendChild(el('strong', null, `${inr.format(i.points)} pts`));
         if (balance) right.appendChild(el('span', `calc-chip ${balance >= i.points ? 'is-ok' : 'is-short'}`, balance >= i.points ? 'Covered' : `Short ${inr.format(i.points - balance)}`));
-        if (i.perPoint != null) right.appendChild(el('span', 'calc-chip', `₹${i.perPoint.toFixed(2)} / pt`));
+        if (i.perPoint != null) right.appendChild(el('span', 'calc-chip', `₹${rupee2(i.perPoint)} / pt`));
         row.appendChild(right);
         els.options.appendChild(row);
       });
@@ -811,7 +825,7 @@
       els.asof.textContent = `Award chart effective ${Number.isNaN(when.getTime()) ? 'date not recorded' : when.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}. Prices exclude taxes and fees, and seat availability is not guaranteed.`;
       els.asof.hidden = false;
     }
-    renderBanner(`You need about ${inr.format(best.points)} card points${best.perPoint != null ? `, a value of ₹${best.perPoint.toFixed(2)} per point` : '. Add your price to see the value you get'}.`);
+    renderBanner(`You need about ${inr.format(best.points)} card points${best.perPoint != null ? `, a value of ₹${rupee2(best.perPoint)} per point` : '. Add your price to see the value you get'}.`);
     renderOther();
   };
 
@@ -974,7 +988,7 @@
   els.card.addEventListener('change', onCardChange);
   els.partner.addEventListener('change', onPartnerChange);
   tripButtons.forEach(b => b.addEventListener('click', () => setTrip(Number(b.dataset.trip))));
-  [els.price, els.points, els.nights, els.balance].forEach(input => input.addEventListener('input', () => formatInput(input)));
+  [els.price, els.points, els.nights, els.balance].forEach(input => { input.addEventListener('input', () => formatInput(input)); input.addEventListener('blur', () => formatInput(input, true)); });
   els.manualToggle.addEventListener('click', () => {
     const open = els.manual.hidden;
     els.manual.hidden = !open;

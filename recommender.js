@@ -118,7 +118,7 @@
   const stepBtns = Array.from(document.querySelectorAll('[data-step-btn]'));
 
   // ── Helpers ──
-  const digits = v => (/^\s*-/.test(v) ? '' : v.replace(/[^\d.]/g, '').split('.')[0]);
+  const digits = v => (/^\s*-/.test(v) ? '' : v.replace(/[^\d.]/g, '').split('.')[0].slice(0, 9));
   const trim = (n, d = 2) => String(Number(n.toFixed(d)));
   const partnerName = id => {
     if (PARTNER_NAME[id]) return PARTNER_NAME[id];
@@ -518,11 +518,15 @@
 
   // ── Events ──
   els.spend.addEventListener('input', () => {
-    const d = digits(els.spend.value);
+    const raw = els.spend.value;
+    const d = digits(raw);
     state.spend = d ? Number(d) : 0;
-    els.spend.value = d ? inr.format(state.spend) : '';
+    // keep a typed decimal as typed (40000.5) and tidy it when the box is left
+    if (raw.includes('.') && !/^\s*-/.test(raw)) els.spend.value = raw.replace(/[^\d.,]/g, '').replace(/\./g, (m, i, str) => (str.indexOf('.') === i ? '.' : ''));
+    else els.spend.value = d ? inr.format(state.spend) : '';
     syncProfile();
   });
+  els.spend.addEventListener('blur', () => { els.spend.value = state.spend ? inr.format(state.spend) : ''; });
   els.spend.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); els.next.click(); } });
 
   els.next.addEventListener('click', () => {
