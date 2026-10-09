@@ -118,7 +118,7 @@
   const stepBtns = Array.from(document.querySelectorAll('[data-step-btn]'));
 
   // ── Helpers ──
-  const digits = v => v.replace(/[^\d]/g, '');
+  const digits = v => (/^\s*-/.test(v) ? '' : v.replace(/[^\d.]/g, '').split('.')[0]);
   const trim = (n, d = 2) => String(Number(n.toFixed(d)));
   const partnerName = id => {
     if (PARTNER_NAME[id]) return PARTNER_NAME[id];

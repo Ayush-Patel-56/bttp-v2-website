@@ -55,7 +55,8 @@
     air: null, airByLabel: new Map(), airByCode: new Map(), airCities: new Set()
   };
 
-  const digits = value => value.replace(/[^\d]/g, '');
+  // Whole numbers only. A decimal point ends the number ("40000.5" is 40,000, not 400,005) and a minus sign rejects it.
+  const digits = value => (/^\s*-/.test(value) ? '' : value.replace(/[^\d.]/g, '').split('.')[0]);
   const parseNumber = value => Number(digits(value)) || 0;
   const formatInput = input => { const d = digits(input.value); input.value = d ? inr.format(Number(d)) : ''; };
   const trim = (n, d = 2) => String(Number(n.toFixed(d)));
@@ -89,9 +90,11 @@
   const routesFor = card => routesIn(card, state.mode);
   const hasModes = card => !!(state.red && state.red.modes && state.red.modes[card.id]);
   // A card with no transfer partner at all still appears (in both modes) if we know how its points redeem elsewhere.
-  const cardsForMode = () => Array.from(state.cards.values()).filter(c => routesFor(c).length || (!c.r.length && hasModes(c)));
+  const cardsForMode = () => Array.from(state.cards.values());
   const noPartnerCard = card => !!card && !routesFor(card).length;
   const partnerName = id => (state.data.partners[id] ? state.data.partners[id].n.replace(/\s*\(.*?\)\s*/g, ' ').trim() : id);
+  // "Turkish Miles" already says miles, so do not add the word again.
+  const unitsOf = pid => { const n = partnerName(pid); return /\b(miles?|points?)$/i.test(n) ? n : `${n} ${unitWord()}`; };
   const unitWord = () => (state.mode === 'hotel' ? 'points' : 'miles');
   const xferOf = (card, pid) => ((state.red && state.red.xfer && state.red.xfer[card.id]) || {})[pid] || [];
   const routeOf = (card, pid) => card.r.find(r => r[0] === pid);
@@ -492,7 +495,19 @@
   const populateCards = () => {
     const cards = cardsForMode().filter(c => c.b === els.bank.value).sort((a, b) => a.n.localeCompare(b.n));
     if (!els.bank.value) setOptions(els.card, 'Select a bank first', [], true);
-    else setOptions(els.card, 'Select your card', cards.map(c => ({ value: c.id, text: c.n })), false);
+    else {
+      // Cards with a partner of this kind first; the rest stay listed (they still show other ways to redeem) under their own heading.
+      setOptions(els.card, 'Select your card', [], false);
+      const kind = state.mode === 'hotel' ? 'hotel' : 'airline';
+      const add = (label, list) => {
+        if (!list.length) return;
+        const g = el('optgroup'); g.label = label;
+        list.forEach(c => { const o = el('option', null, c.n); o.value = c.id; g.appendChild(o); });
+        els.card.appendChild(g);
+      };
+      add(`Transfer to ${kind} partners`, cards.filter(c => routesFor(c).length));
+      add(`No ${kind} partner recorded (other ways to redeem)`, cards.filter(c => !routesFor(c).length));
+    }
     onCardChange();
   };
 
@@ -501,7 +516,7 @@
     if (!card) {
       setOptions(els.partner, 'Select a card first', [], true);
     } else if (noPartnerCard(card)) {
-      setOptions(els.partner, 'No transfer partner recorded', [], true);
+      setOptions(els.partner, card.r.length ? `No ${state.mode === 'hotel' ? 'hotel' : 'airline'} partner recorded` : 'No transfer partner recorded', [], true);
     } else {
       const order = { priced: 0, unpriced: 1, estimate: 2 };
       const partners = routesFor(card).map(r => ({ r, st: partnerStatus(card, r[0]) }))
@@ -568,10 +583,11 @@
         els.zone.hidden = false;
       }
     }
+    const whole = state.mode === 'hotel' ? 'the total for the whole stay' : 'the total for all passengers';
     els.priceLabel.textContent = state.exact ? `${COPY[state.mode].price} (optional)` : COPY[state.mode].price;
     els.priceHint.textContent = state.exact
-      ? 'Add it to see your rupee value per point. Use the price excluding taxes and fees.'
-      : 'We use it to estimate the points you need. Use the price excluding taxes and fees.';
+      ? `Add it to see your rupee value per point. Enter ${whole}, excluding taxes and fees.`
+      : `We use it to estimate the points you need. Enter ${whole}, excluding taxes and fees.`;
     els.next3.querySelector('span').textContent = state.exact ? 'Calculate points' : 'Estimate points';
     if (show) goTo(3);
   };
@@ -625,7 +641,7 @@
     els.transfer.replaceChildren();
     els.transfer.appendChild(el('h3', 'calc-transfer-title', 'Transfer rules'));
     const line = (k, v) => { const d = el('div', 'calc-transfer-row'); d.appendChild(el('span', null, k)); d.appendChild(el('strong', null, v)); els.transfer.appendChild(d); };
-    line('Ratio', `${trim(plan.route[1])} card points : ${trim(plan.route[2])} ${partnerName(plan.route[0])} ${unitWord()}${plan.route[3] ? ' (up to)' : ''}`);
+    line('Ratio', `${trim(plan.route[1])} card points : ${trim(plan.route[2])} ${unitsOf(plan.route[0])}${plan.route[3] ? ' (up to)' : ''}`);
     if (plan.xf[0]) line('Minimum transfer', `${inr.format(plan.xf[0])} points`);
     if (multiple) line('In multiples of', `${inr.format(multiple)} points`);
     const t = plan.xf[2] ? plan.xf[2].replace(/^upto(?=\s)/i, 'Up to') : (plan.xf[3] ? `Up to ${Math.ceil(plan.xf[3] / 24)} days` : '');
@@ -690,6 +706,10 @@
       // No transfer partner: lead with what the bank itself offers for these points.
       const balance = parseNumber(els.balance.value);
       const best = bestWay(card);
+      // A card can have partners of the other kind: say so, rather than pretending it has none.
+      const here = state.mode === 'hotel' ? 'hotel' : 'airline', other = state.mode === 'hotel' ? 'airline' : 'hotel';
+      const otherNote = card.r.length ? ` It does transfer to ${other} partners: switch to ${other === 'hotel' ? 'Hotels' : 'Flights'} on step 1 to see them.` : '';
+      const noneText = card.r.length ? `No ${here} partner is recorded for this card` : 'No airline or hotel transfer partner is recorded for this card';
       els.badge.textContent = 'Other ways';
       if (best) {
         const up = best.ceil ? 'Up to ' : '';
@@ -697,12 +717,12 @@
         els.caption.textContent = balance ? `Your ${inr.format(balance)} points are worth` : 'Best rupee value per point';
         els.value.textContent = balance ? `${up}₹${inr.format(Math.round(balance * best.value))}` : `${up}₹${best.value.toFixed(2)}`;
         els.label.textContent = `Best way: ${best.label}`;
-        els.detail.textContent = `No airline or hotel transfer partner is recorded for this card, so these are the bank's own redemption options. ${balance ? '' : 'Add your points balance to see totals. '}All ways are compared below.`;
+        els.detail.textContent = `${noneText}, so these are the bank's own redemption options.${otherNote} ${balance ? '' : 'Add your points balance to see totals. '}All ways are compared below.`;
         renderAside(); renderBanner(`Best way to redeem: ${best.label.toLowerCase()} at ${up.toLowerCase()}₹${best.value.toFixed(2)} per point.`);
       } else {
-        els.caption.textContent = 'No transfer partner recorded';
+        els.caption.textContent = card.r.length ? `No ${here} partner recorded` : 'No transfer partner recorded';
         els.label.textContent = 'Nothing to compare yet';
-        els.detail.textContent = 'We have no airline or hotel transfer partner, and no published redemption value, recorded for this card yet.';
+        els.detail.textContent = card.r.length ? `${noneText}, and no published redemption value either.${otherNote}` : 'We have no airline or hotel transfer partner, and no published redemption value, recorded for this card yet.';
         renderAside(); renderBanner('We have no redemption data for this card yet.');
       }
       renderOther();
@@ -724,7 +744,7 @@
       els.caption.textContent = 'Estimated card points needed';
       els.value.textContent = `~${inr.format(mid)}`;
       els.label.textContent = `Estimate: ${inr.format(lo)} to ${inr.format(hi)} card points`;
-      els.detail.textContent = `Without an exact award price we assume ${partnerName(state.partner)} ${unitWord()} are worth ₹${BENCH.low} to ₹${BENCH.high} each (₹${BENCH.mid} shown), then convert at your card's ${ratioText(route[1], route[2])} ratio. Add the exact partner points in step 3 for a precise answer.`;
+      els.detail.textContent = `Without an exact award price we assume ${unitsOf(state.partner)} are worth ₹${BENCH.low} to ₹${BENCH.high} each (₹${BENCH.mid} shown), then convert at your card's ${ratioText(route[1], route[2])} ratio. Add the exact partner points in step 3 for a precise answer.`;
       els.using.textContent = `Card points shown in ${card.c || "your card's points"}, at a ${ratioText(route[1], route[2])} transfer ratio to ${partnerName(state.partner)}.`;
       els.using.hidden = false;
       renderTransfer(card, plan);
@@ -760,7 +780,7 @@
     }
 
     const currency = card.c ? ` (${card.c})` : '';
-    els.using.textContent = `${inr.format(best.partnerUnits)} ${partnerName(state.partner)} ${unitWord()}${plan.descr ? ` for ${plan.descr}` : ''} at a ${ratioText(route[1], route[2])} ratio needs ${inr.format(best.points)} card points${currency}.${best.adjusted ? ` ${best.adjusted.charAt(0).toUpperCase()}${best.adjusted.slice(1)}.` : ''}`;
+    els.using.textContent = `${inr.format(best.partnerUnits)} ${unitsOf(state.partner)}${plan.descr ? ` for ${plan.descr}` : ''} at a ${ratioText(route[1], route[2])} ratio needs ${inr.format(best.points)} card points${currency}.${best.adjusted ? ` ${best.adjusted.charAt(0).toUpperCase()}${best.adjusted.slice(1)}.` : ''}`;
     els.using.hidden = false;
     if (route[3]) {
       els.note.textContent = 'The bank publishes this ratio as "up to", so your actual ratio may be lower and you may need more card points.';
