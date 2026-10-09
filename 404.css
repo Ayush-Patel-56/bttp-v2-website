@@ -1,0 +1,104 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #0b0b0a;
+  color: #f4efe8;
+  font-family: "DM Sans", system-ui, sans-serif;
+  line-height: 1.5
+}
+
+.nf {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px 24px
+}
+
+.nf-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 48px;
+  color: #f4efe8;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: .14em;
+  font-size: 14px
+}
+
+.nf-brand img {
+  display: block;
+  height: 46px;
+  width: auto
+}
+
+.nf-code {
+  margin: 0 0 8px;
+  color: #d18652;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: .24em
+}
+
+.nf h1 {
+  margin: 0 0 16px;
+  font-family: "Playfair Display", serif;
+  font-weight: 600;
+  font-size: clamp(32px, 6vw, 52px);
+  line-height: 1.15
+}
+
+.nf-text {
+  max-width: 460px;
+  margin: 0 0 32px;
+  color: #cfc6ba;
+  font-size: 17px
+}
+
+.nf-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 24px
+}
+
+.nf-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 26px;
+  border-radius: 999px;
+  background: #b86d3c;
+  border: 1px solid #b86d3c;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px
+}
+
+.nf-button:hover,
+.nf-button:focus-visible {
+  background: #a05d31
+}
+
+.nf-link {
+  color: #d18652;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-weight: 500
+}
+
+.nf-link:hover,
+.nf-link:focus-visible {
+  color: #f0b58a
+}
