@@ -120,6 +120,7 @@
   // ── Helpers ──
   // The database stores some names in plain title case ("Sbi", "Hdfc"). Fix the known abbreviations and brand spellings for display only.
   const NAME_FIX = { sbi: 'SBI', hdfc: 'HDFC', icici: 'ICICI', rbl: 'RBL', hpcl: 'HPCL', bpcl: 'BPCL', irctc: 'IRCTC', dmi: 'DMI', tvs: 'TVS', xl: 'XL', idfc: 'IDFC', hsbc: 'HSBC', pnb: 'PNB', bob: 'BoB', rupay: 'RuPay', krisflyer: 'KrisFlyer', indusind: 'IndusInd' };
+  const MAX_SPEND = 100000000; // ₹10 crore a month; anything above is not a real monthly spend
   const tidyName = n => (n || '').replace(/[A-Za-z]+/g, w => NAME_FIX[w.toLowerCase()] || w);
   const digits = v => (/^\s*-/.test(v) ? '' : v.replace(/[^\d.]/g, '').split('.')[0].slice(0, 9));
   const trim = (n, d = 2) => String(Number(n.toFixed(d)));
@@ -283,10 +284,12 @@
 
     const retSorted = rows.map(r => r.retPct).filter(v => v != null).sort((a, b) => a - b);
     const nonGeneral = cats.filter(c => c !== 'general');
-    const excluded = [];
+    const excluded = [], unknownFee = [];
 
     const scored = rows.filter(r => {
-      if (Number.isFinite(limit) && r.card.f != null && r.card.f > limit) { excluded.push(r); return false; }
+      // With a cap chosen, a card whose fee we do not have cannot be shown as inside it.
+      if (Number.isFinite(limit) && r.card.f == null) { unknownFee.push(r); return false; }
+      if (Number.isFinite(limit) && r.card.f > limit) { excluded.push(r); return false; }
       return true;
     }).map(r => {
       const { card } = r;
@@ -328,8 +331,9 @@
 
     // When someone picks an airline or hotel, cards that actually transfer to one of them come before cards that do not.
     const wantsPartner = state.partners.size > 0;
-    scored.sort((a, b) => (wantsPartner ? (b.hits > 0) - (a.hits > 0) : 0) || b.score - a.score || a.card.n.localeCompare(b.card.n));
-    return { scored, excluded };
+    // Cards the issuer has paused go after every card you can actually apply for.
+    scored.sort((a, b) => (a.card.p ? 1 : 0) - (b.card.p ? 1 : 0) || (wantsPartner ? (b.hits > 0) - (a.hits > 0) : 0) || b.score - a.score || a.card.n.localeCompare(b.card.n));
+    return { scored, excluded, unknownFee };
   };
 
   // ── Rendering results ──
@@ -433,15 +437,15 @@
   };
 
   const showResults = () => {
-    const { scored, excluded } = rank();
+    const { scored, excluded, unknownFee } = rank();
     state.ranked = scored;
     state.shown = PAGE_SIZE;
-    $('rec-results-sub').textContent = `Ranked from ${state.cards.length} cards with rewards data${excluded.length ? `. ${excluded.length} over your fee limit hidden` : ''}.`;
+    $('rec-results-sub').textContent = `Ranked from ${state.cards.length} cards with rewards data${excluded.length ? `. ${excluded.length} over your fee limit hidden` : ''}${unknownFee.length ? `${excluded.length ? ' and' : '.'} ${unknownFee.length} with no published fee hidden` : ''}.`;
     $('rec-results-count').textContent = `${scored.length} recommendation${scored.length === 1 ? '' : 's'}`;
     els.wizard.hidden = true;
     els.results.hidden = false;
     if (!scored.length) {
-      els.cards.replaceChildren(el('p', 'rec-empty', 'No cards match that annual fee limit. Try a higher limit.'));
+      els.cards.replaceChildren(el('p', 'rec-empty', 'No cards match that annual fee limit. Try a higher limit, or choose No limit to include cards whose fee we do not have.'));
       els.showMore.hidden = true;
     } else {
       renderCards();
@@ -526,7 +530,7 @@
   els.spend.addEventListener('input', () => {
     const raw = els.spend.value;
     const d = digits(raw);
-    state.spend = d ? Number(d) : 0;
+    state.spend = d ? Math.min(Number(d), MAX_SPEND) : 0;
     // keep a typed decimal as typed (40000.5) and tidy it when the box is left
     if (raw.includes('.') && !/^\s*-/.test(raw)) els.spend.value = raw.replace(/[^\d.,]/g, '').replace(/\./g, (m, i, str) => (str.indexOf('.') === i ? '.' : ''));
     else els.spend.value = d ? inr.format(state.spend) : '';
