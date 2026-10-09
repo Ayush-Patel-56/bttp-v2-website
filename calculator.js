@@ -60,6 +60,9 @@
   const formatInput = input => { const d = digits(input.value); input.value = d ? inr.format(Number(d)) : ''; };
   const trim = (n, d = 2) => String(Number(n.toFixed(d)));
   const ratioText = (from, to) => `${inr.format(from)} : ${inr.format(to)}`;
+  // Round up to whole points. Decimal ratios such as 1.1:1 can leave a result like 1650.0000000000002 in floating point,
+  // which a plain Math.ceil would push to 1651, so snap to six decimals first.
+  const ceilPoints = x => Math.ceil(Math.round(x * 1e6) / 1e6);
   const roundEst = n => Math.max(500, Math.round(n / 500) * 500);
   const norm = v => v.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
@@ -608,7 +611,7 @@
     }
     const items = list.map(m => {
       const partnerUnits = m.units * mult;
-      let points = Math.ceil(partnerUnits * route[1] / route[2]);
+      let points = ceilPoints(partnerUnits * route[1] / route[2]);
       let adjusted = '';
       if (multiple && points % multiple) { points = Math.ceil(points / multiple) * multiple; adjusted = `rounded up to a multiple of ${inr.format(multiple)}`; }
       if (minTransfer && points < minTransfer) { points = minTransfer; adjusted = `raised to the ${inr.format(minTransfer)}-point transfer minimum`; }
