@@ -71,7 +71,7 @@ xf_all as (
   join corpus.card_currency cc on cc.card_id = c.id
   join corpus.transfer_partner t on t.state = 'published' and t.ratio_state = 'published' and t.from_units > 0 and t.to_units > 0
        and (t.card_id = c.id or (t.card_id is null and t.currency_id = cc.currency_id))
-  join prog on prog.id = t.programme_id
+  join corpus.loyalty_programme lp on lp.id = t.programme_id and lp.kind in ('airline', 'hotel')
   where c.status <> 'withdrawn'
     and c.id not in ('icici:pre-approved-credit-card', 'icici:tnc-for-governing-credit-card')
 ),
