@@ -42,6 +42,13 @@ function check(name, d) {
   }
 }
 
+// Each server instance remembers its last good answer per dataset. Within FRESH_MS it answers from memory, so a flood of
+// requests (including ones with made-up query strings that miss the edge cache) cannot turn into a flood of database
+// queries. If the database fails, an answer up to STALE_MS old is served instead of an error.
+const FRESH_MS = 60 * 1000;
+const STALE_MS = 60 * 60 * 1000;
+const memory = new Map();
+
 let pool = null;
 async function getPool() {
   if (pool) return pool;
@@ -54,7 +61,7 @@ async function getPool() {
 }
 
 // Test hook: lets a test supply a fake pool. Not used in production.
-export function __setPool(p) { pool = p; }
+export function __setPool(p) { pool = p; memory.clear(); }
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -64,6 +71,13 @@ export default async function handler(req, res) {
   const name = typeof req.query?.set === 'string' ? req.query.set : '';
   const def = Object.prototype.hasOwnProperty.call(SETS, name) ? SETS[name] : null;
   if (!def) return res.status(400).json({ ok: false, error: 'unknown_set' });
+
+  const hit = memory.get(name);
+  if (hit && Date.now() - hit.at < FRESH_MS) {
+    res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=3600');
+    res.setHeader('X-Data-Source', 'live');
+    return res.status(200).json(hit.body);
+  }
 
   let client;
   try {
@@ -75,6 +89,7 @@ export default async function handler(req, res) {
     const data = rows[0][def.column];
     check(name, data);
     const body = { generatedAt: data.generatedAt, ...Object.fromEntries(def.keys.map((k) => [k, data[k]])) };
+    memory.set(name, { at: Date.now(), body });
     res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=3600');
     res.setHeader('X-Data-Source', 'live');
     return res.status(200).json(body);
@@ -82,6 +97,11 @@ export default async function handler(req, res) {
     if (client) await client.query('rollback').catch(() => {});
     // Details go to the function log, never to the browser.
     console.error('[tool-data]', name, err && err.message);
+    if (hit && Date.now() - hit.at < STALE_MS) {
+      res.setHeader('Cache-Control', 'public, s-maxage=60');
+      res.setHeader('X-Data-Source', 'stale');
+      return res.status(200).json(hit.body);
+    }
     res.setHeader('Cache-Control', 'no-store');
     return res.status(503).json({ ok: false, error: 'unavailable' });
   } finally {

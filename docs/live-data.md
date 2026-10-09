@@ -12,8 +12,8 @@ never go blank.
 | Endpoint | `GET /api/tool-data?set=calculator` or `?set=recommender` (anything else is a 400) |
 | Query | the same files the weekly job uses: `scripts/calculator-data.sql`, `scripts/recommender-data.sql` |
 | Safety | each query runs inside `begin read only`; the function never builds SQL from the request |
-| Cache | 5 minutes at Vercel's edge, then served stale for up to an hour while it refreshes. A database edit shows in the tools within about 5 to 10 minutes |
-| Failure | 503 with `Cache-Control: no-store`; the pages fall back to `data/*.json` |
+| Cache | 5 minutes at Vercel's edge, then served stale for up to an hour while it refreshes. Each server instance also remembers its last answer for 60 seconds, so a burst of requests (even with made-up query strings) becomes one database query. A database edit shows in the tools within about 5 to 10 minutes |
+| Failure | if the database errors, the last good answer (up to an hour old) is served with `X-Data-Source: stale`; with nothing remembered it answers 503 and the pages fall back to `data/*.json` |
 | Page text | the calculator says "read live from our database" when live data was used, "last refreshed" when it fell back |
 
 **Still static** (not read from the database yet): `data/redemption-data.json` (award charts, transfer minimums and
@@ -22,24 +22,32 @@ processing times, bank redemption values, place lists), `data/card-art.json`, `d
 
 ## One-time setup (needs you)
 
-1. **Create a read-only database login.** In the Supabase SQL editor, replace the password and run:
+1. **Create a read-only database login.** In the Supabase SQL editor, replace the password (long, random, letters and
+   digits only) and run:
 
    ```sql
-   create role bttp_site_readonly login password 'REPLACE-WITH-A-LONG-RANDOM-PASSWORD' nologin;
-   alter role bttp_site_readonly login;
+   create role bttp_site_readonly with login password 'PUT-A-LONG-RANDOM-PASSWORD-HERE' bypassrls;
+
    grant usage on schema corpus to bttp_site_readonly;
-   grant select on all tables in schema corpus to bttp_site_readonly;
+
+   grant select on
+     corpus.card, corpus.card_currency, corpus.card_earn_rule, corpus.card_product_term, corpus.issuer,
+     corpus.loyalty_programme, corpus.reward_currency, corpus.transfer_partner, corpus.valuation
+   to bttp_site_readonly;
+
    alter role bttp_site_readonly set default_transaction_read_only = on;
+   alter role bttp_site_readonly set statement_timeout = '12s';
    ```
 
-   The queries read tables only. If a query ever fails with "permission denied for function", grant `execute` on
-   that function to the role.
+   `bypassrls` is required: every one of these tables has row-level security switched on and no policies, so
+   without it the login would see zero rows. It can only read these nine tables and cannot write anywhere. To remove it:
+   `revoke all on schema corpus from bttp_site_readonly; revoke all on all tables in schema corpus from bttp_site_readonly; drop role bttp_site_readonly;`
 
 2. **Add the connection string to Vercel.** Project Settings, Environment Variables, name
    `CALCULATOR_DATABASE_URL`, value the Supabase *pooled* connection string (port 6543, "Transaction pooler"), with
    the user `bttp_site_readonly.<project-ref>` and its password. Tick Production and Preview.
-3. **Redeploy** (or push a commit). Check `https://<your-domain>/api/tool-data?set=calculator`: it should return
-   JSON and the response header `X-Data-Source: live`.
+3. **Redeploy.** Check `https://<your-domain>/api/tool-data?set=calculator`: it should return JSON and the response
+   header `X-Data-Source: live`.
 4. **Optional:** add the same string as the GitHub secret `CALCULATOR_DATABASE_URL` so the daily refresh job and
    drift check run.
 
