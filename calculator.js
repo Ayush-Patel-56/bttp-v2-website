@@ -49,6 +49,9 @@
   ];
 
   const inr = new Intl.NumberFormat('en-IN');
+  // The database stores some names in plain title case ("Sbi", "Hdfc"). Fix the known abbreviations and brand spellings for display only.
+  const NAME_FIX = { sbi: 'SBI', hdfc: 'HDFC', icici: 'ICICI', rbl: 'RBL', hpcl: 'HPCL', bpcl: 'BPCL', irctc: 'IRCTC', dmi: 'DMI', tvs: 'TVS', xl: 'XL', idfc: 'IDFC', hsbc: 'HSBC', pnb: 'PNB', bob: 'BoB', rupay: 'RuPay', krisflyer: 'KrisFlyer', indusind: 'IndusInd' };
+  const tidyName = n => (n || '').replace(/[A-Za-z]+/g, w => NAME_FIX[w.toLowerCase()] || w);
   const state = {
     data: null, red: null, art: {}, banks: new Map(), rec: new Map(), cards: new Map(),
     mode: 'airline', step: 1, maxStep: 1, trip: 1, partner: '', exact: false, plan: null,
@@ -69,7 +72,12 @@
   // Round up to whole points. Decimal ratios such as 1.1:1 can leave a result like 1650.0000000000002 in floating point,
   // which a plain Math.ceil would push to 1651, so snap to six decimals first.
   // Rupees per point, rounded down to paise: 0.99999 must not print as 1.00 while the tier still says Low.
-  const rupee2 = n => (Math.floor(n * 100 + 1e-9) / 100).toFixed(2);
+  const paise = new Intl.NumberFormat('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const rupee2 = n => {
+    let r = Math.round(n * 100 + 1e-9) / 100;
+    for (const b of [1, 2, 4]) if (n < b && r >= b) r = b - 0.01; // rounding up must not cross into a better tier than the label
+    return paise.format(r);
+  };
   const pts = n => `${inr.format(n)} point${n === 1 ? '' : 's'}`;
   const ceilPoints = x => Math.ceil(Math.round(x * 1e6) / 1e6);
   const roundEst = n => Math.max(500, Math.round(n / 500) * 500);
@@ -299,7 +307,7 @@
             if (target && !res.some(x => x.i === target) && !aliasHits.some(a => a.item === target)) aliasHits.push({ item: target, via: key.replace(/\b\w/g, c => c.toUpperCase()) });
           });
         }
-        res.sort((a, b) => a.r - b.r || (b.i.ok - a.i.ok) || a.i.name.localeCompare(b.i.name));
+        res.sort((a, b) => a.r - b.r || (b.i.ok - a.i.ok) || ((a.i.ap && b.i.ap) ? (b.i.ap.big ? 1 : 0) - (a.i.ap.big ? 1 : 0) : 0) || a.i.name.localeCompare(b.i.name));
         // Names that start with what was typed come first, then everyday-name suggestions, then looser matches.
         const sub = x => (x.i.ap ? (x.i.ok ? x.i.ap.country : x.i.known ? 'No price from here' : 'Estimate only') : x.i.ok ? subOf(x.i) : 'No price from here');
         res.filter(x => x.r <= 1).forEach(x => row(x.i, sub(x)));
@@ -371,7 +379,7 @@
     const xf = card && state.partner ? xferOf(card, state.partner) : [];
     const noTransfer = !!card && noPartnerCard(card);
     els.statRatio.textContent = route ? `${trim(route[1])} : ${trim(route[2])}${route[3] ? ' (up to)' : ''}` : (noTransfer ? 'None recorded' : '—');
-    els.statMin.textContent = xf[0] ? `${inr.format(xf[0])} points` : (xf[1] ? `${inr.format(xf[1])} points` : (noTransfer ? 'Not applicable' : '—'));
+    els.statMin.textContent = xf[0] ? `${inr.format(xf[0])} points` : (xf[1] ? `In multiples of ${inr.format(xf[1])}` : (noTransfer ? 'Not applicable' : '—'));
     const t = xf[2] ? xf[2].replace(/^upto(?=\s)/i, 'Up to') : (xf[3] ? `Up to ${Math.ceil(xf[3] / 24)} days` : '');
     els.statTime.textContent = t ? t.charAt(0).toUpperCase() + t.slice(1) : (noTransfer ? 'Not applicable' : '—');
   };
@@ -418,7 +426,7 @@
       if (i === n) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
     });
     showError(0);
-    if (n < 4) els.other.hidden = true; // a result from an earlier card must not linger on steps 1 to 3
+    if (n < 4) { els.other.hidden = true; renderBanner(); } // a result from an earlier answer must not linger on steps 1 to 3
     const top = form.closest('.rt-card').getBoundingClientRect().top;
     if (top < 0) window.scrollBy({ top: top - 110, behavior: 'smooth' });
   };
@@ -729,10 +737,10 @@
         const up = best.ceil ? 'Up to ' : '';
         els.verdict.dataset.tier = 'none';
         els.caption.textContent = balance ? `Your ${inr.format(balance)} points are worth` : 'Best rupee value per point';
-        els.value.textContent = balance ? `${up}₹${inr.format(Math.round(balance * best.value))}` : `${up}₹${best.value.toFixed(2)}`;
+        els.value.textContent = balance ? `${up}₹${inr.format(Math.round(balance * best.value))}` : `${up}₹${rupee2(best.value)}`;
         els.label.textContent = `Best way: ${best.label}`;
         els.detail.textContent = `${noneText}, so these are the bank's own redemption options.${otherNote} ${balance ? '' : 'Add your points balance to see totals. '}All ways are compared below.`;
-        renderAside(); renderBanner(`Best way to redeem: ${best.label.toLowerCase()} at ${up.toLowerCase()}₹${best.value.toFixed(2)} per point.`);
+        renderAside(); renderBanner(`Best way to redeem: ${best.label.toLowerCase()} at ${up.toLowerCase()}₹${rupee2(best.value)} per point.`);
       } else {
         els.caption.textContent = card.r.length ? `No ${here} partner recorded` : 'No transfer partner recorded';
         els.label.textContent = 'Nothing to compare yet';
@@ -852,7 +860,7 @@
       els.otherSub.textContent = 'We have no published redemption values for this card yet. Add a cash price to see the value of a transfer.';
       return;
     }
-    els.otherSub.textContent = balance ? `Rupee value of ${inr.format(balance)} points, best first.` : 'Rupee value per point, best first. Add your balance to see totals.';
+    els.otherSub.textContent = balance ? `Rupee value of ${pts(balance)}, best first.` : 'Rupee value per point, best first. Add your balance to see totals.';
     const max = list[0].value || 1;
     list.forEach((w, i) => {
       const li = el('li', `calc-way${i === 0 ? ' is-best' : ''}${w.planned ? ' is-planned' : ''}`);
@@ -862,7 +870,7 @@
       li.appendChild(head);
       const bar = el('div', 'calc-way-bar'); const fill = el('span'); fill.style.width = `${Math.max(4, (w.value / max) * 100)}%`; bar.appendChild(fill); li.appendChild(bar);
       const meta = el('div', 'calc-way-meta');
-      meta.appendChild(el('span', null, `${w.ceil ? 'Up to ' : ''}₹${w.value.toFixed(2)} per point`));
+      meta.appendChild(el('span', null, `${w.ceil ? 'Up to ' : ''}₹${rupee2(w.value)} per point`));
       if (balance) meta.appendChild(el('strong', null, `${w.ceil ? 'Up to ' : ''}₹${inr.format(Math.round(balance * w.value))}`));
       li.appendChild(meta);
       els.ways.appendChild(li);
@@ -922,9 +930,9 @@
       const rec = (await recRequest) || { banks: [], cards: [] };
       const airData = await airRequest;
       if (airData && airData.airports) {
-        state.air = airData.airports.map(([code, name, city, ci]) => {
+        state.air = airData.airports.map(([code, name, city, ci, big]) => {
           const country = airData.countries[ci];
-          return { code, name, city, country, label: `${city} (${code})`, cityKey: norm(city), countryKey: norm(country), codeKey: code.toLowerCase(), nameKey: norm(`${name} ${city}`) };
+          return { code, name, city, country, label: `${city} (${code})`, cityKey: norm(city), countryKey: norm(country), codeKey: code.toLowerCase(), big: big === 1, nameKey: norm(`${name} ${city}`) };
         });
         state.air.forEach(ap => { state.airByLabel.set(norm(ap.label), ap); state.airByCode.set(ap.codeKey, ap); state.airCities.add(ap.cityKey); });
       }
@@ -933,8 +941,8 @@
       (rec.cards || []).forEach(c => state.rec.set(c.id, c));
       // Transfer ratios come from the calculator data; recommender data names the cards that have none.
       const byId = new Map();
-      (rec.cards || []).forEach(c => byId.set(c.id, { id: c.id, n: c.n, b: c.b, c: c.c, r: [] }));
-      state.data.cards.forEach(c => byId.set(c.id, { ...(byId.get(c.id) || {}), id: c.id, n: c.n, b: c.b, c: c.c || (byId.get(c.id) || {}).c, r: c.r }));
+      (rec.cards || []).forEach(c => byId.set(c.id, { id: c.id, n: tidyName(c.n), b: c.b, c: c.c, r: [] }));
+      state.data.cards.forEach(c => byId.set(c.id, { ...(byId.get(c.id) || {}), id: c.id, n: tidyName(c.n), b: c.b, c: c.c || (byId.get(c.id) || {}).c, r: c.r }));
       byId.forEach(card => { if (card.r.length || hasModes(card)) state.cards.set(card.id, card); });
 
       if (state.data.generatedAt && els.source) {

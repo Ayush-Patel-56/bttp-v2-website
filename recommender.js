@@ -118,6 +118,9 @@
   const stepBtns = Array.from(document.querySelectorAll('[data-step-btn]'));
 
   // ── Helpers ──
+  // The database stores some names in plain title case ("Sbi", "Hdfc"). Fix the known abbreviations and brand spellings for display only.
+  const NAME_FIX = { sbi: 'SBI', hdfc: 'HDFC', icici: 'ICICI', rbl: 'RBL', hpcl: 'HPCL', bpcl: 'BPCL', irctc: 'IRCTC', dmi: 'DMI', tvs: 'TVS', xl: 'XL', idfc: 'IDFC', hsbc: 'HSBC', pnb: 'PNB', bob: 'BoB', rupay: 'RuPay', krisflyer: 'KrisFlyer', indusind: 'IndusInd' };
+  const tidyName = n => (n || '').replace(/[A-Za-z]+/g, w => NAME_FIX[w.toLowerCase()] || w);
   const digits = v => (/^\s*-/.test(v) ? '' : v.replace(/[^\d.]/g, '').split('.')[0].slice(0, 9));
   const trim = (n, d = 2) => String(Number(n.toFixed(d)));
   const partnerName = id => {
@@ -319,10 +322,13 @@
       if (card.e == null) missing.push('earn rate');
       if (card.f == null) missing.push('annual fee');
       if (!routes.length) missing.push('transfer partners');
-      return { ...r, routes, score: total * (0.8 + 0.2 * (have / 3)), missing };
+      const hits = state.partners.size ? routes.filter(x => state.partners.has(x[0])).length : 0;
+      return { ...r, routes, hits, score: total * (0.8 + 0.2 * (have / 3)), missing };
     });
 
-    scored.sort((a, b) => b.score - a.score || a.card.n.localeCompare(b.card.n));
+    // When someone picks an airline or hotel, cards that actually transfer to one of them come before cards that do not.
+    const wantsPartner = state.partners.size > 0;
+    scored.sort((a, b) => (wantsPartner ? (b.hits > 0) - (a.hits > 0) : 0) || b.score - a.score || a.card.n.localeCompare(b.card.n));
     return { scored, excluded };
   };
 
@@ -589,11 +595,11 @@
 
       // Merge: recommender data carries earn/fee/benefits; calculator data carries transfer ratios.
       const byId = new Map();
-      (rec.cards || []).forEach(c => byId.set(c.id, { ...c }));
+      (rec.cards || []).forEach(c => byId.set(c.id, { ...c, n: tidyName(c.n) }));
       (calc.cards || []).forEach(c => {
         const existing = byId.get(c.id);
         if (existing) { existing.r = c.r; if (!existing.c && c.c) existing.c = c.c; }
-        else byId.set(c.id, { id: c.id, n: c.n, b: c.b, c: c.c, r: c.r });
+        else byId.set(c.id, { id: c.id, n: tidyName(c.n), b: c.b, c: c.c, r: c.r });
       });
       state.cards = Array.from(byId.values());
 
