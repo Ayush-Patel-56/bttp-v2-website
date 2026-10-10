@@ -531,8 +531,9 @@
     const raw = els.spend.value;
     const d = digits(raw);
     state.spend = d ? Math.min(Number(d), MAX_SPEND) : 0;
-    // keep a typed decimal as typed (40000.5) and tidy it when the box is left
-    if (raw.includes('.') && !/^\s*-/.test(raw)) els.spend.value = raw.replace(/[^\d.,]/g, '').replace(/\./g, (m, i, str) => (str.indexOf('.') === i ? '.' : ''));
+    // keep a typed decimal as typed (40000.5) and tidy it when the box is left; a typed minus stays visible and counts as nothing
+    if (/^\s*-/.test(raw)) els.spend.value = '-' + raw.replace(/\D/g, '').slice(0, 9);
+    else if (raw.includes('.')) els.spend.value = raw.replace(/[^\d.,]/g, '').replace(/\./g, (m, i, str) => (str.indexOf('.') === i ? '.' : ''));
     else els.spend.value = d ? inr.format(state.spend) : '';
     syncProfile();
   });

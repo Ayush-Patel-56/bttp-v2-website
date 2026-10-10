@@ -64,6 +64,8 @@
   // While someone is typing a decimal ("40000.5") keep exactly what they typed; the whole-number part is tidied when they leave the box.
   const formatInput = (input, leaving) => {
     const raw = input.value;
+    // A typed minus stays visible and counts as nothing, so "-500" is never read as 500; leaving the box clears it.
+    if (!leaving && /^\s*-/.test(raw)) { input.value = '-' + raw.replace(/\D/g, '').slice(0, 9); return; }
     if (!leaving && raw.includes('.') && !/^\s*-/.test(raw)) { input.value = raw.replace(/[^\d.,]/g, '').replace(/\./g, (m, i, str) => (str.indexOf('.') === i ? '.' : '')); return; }
     const d = digits(raw); input.value = d ? inr.format(Number(d)) : '';
   };

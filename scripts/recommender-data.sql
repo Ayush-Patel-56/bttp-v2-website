@@ -56,11 +56,27 @@ cat_best as (
 cat_json as (
   select card_id, jsonb_object_agg(grp, round(ppc, 2)) as cats from cat_best group by 1
 ),
-fee as (
-  select distinct on (card_id) card_id, (effect->>'amount')::numeric as amount
+-- Yearly cost of holding the card, the way api.card defines it: the 'annual' row, else 'renewal'
+-- (SBI and HDFC print the year-2-onwards fee under that word), else 'membership' (joining and annual
+-- printed as one figure). A kind whose live rows disagree on the amount is skipped rather than guessed.
+-- A joining fee alone is not an annual fee.
+fee_kind as (
+  select card_id, effect->>'fee_kind' as kind, min((effect->>'amount')::numeric) as amount,
+         count(distinct (effect->>'amount')::numeric) as amounts
   from rules
-  where rule_type = 'fee' and effect->>'fee_kind' = 'annual' and effect ? 'amount' and predicate = '{}'::jsonb
-  order by card_id, precedence nulls last
+  where rule_type = 'fee' and effect->>'fee_kind' in ('annual', 'renewal', 'membership') and effect ? 'amount' and predicate = '{}'::jsonb
+  group by 1, 2
+),
+fee as (
+  select card_id,
+         coalesce(max(amount) filter (where kind = 'annual' and amounts = 1),
+                  max(amount) filter (where kind = 'renewal' and amounts = 1),
+                  max(amount) filter (where kind = 'membership' and amounts = 1)) as amount
+  from fee_kind
+  group by 1
+  having coalesce(max(amount) filter (where kind = 'annual' and amounts = 1),
+                  max(amount) filter (where kind = 'renewal' and amounts = 1),
+                  max(amount) filter (where kind = 'membership' and amounts = 1)) is not null
 ),
 terms as (
   select card_id,
